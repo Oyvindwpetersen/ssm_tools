@@ -1,0 +1,13 @@
+
+
+-Check smoother, why does covariance empirical does not match predicted? Check vs article, and parameter tracking article
+Related to pseudo inverse?
+##: 
+
+-Extended Kalman filter
+
+-Verify other algoritms in terms of covariance empirical vs predicted
+
+-LFM periodic function
+
+-
