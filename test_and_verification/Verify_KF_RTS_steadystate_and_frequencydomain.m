@@ -27,7 +27,7 @@ p=randn(2,length(t));
 
 x0=zeros(4,1);
 
-[x,y]=statespaceForward(A,B,G,J*0,[],x0,p);
+[x,y]=ssmod_forward(A,B,G,J*0,[],x0,p);
 
 Q=cov((B*p).');
 R=diag([4e-6 1e-6])*10;

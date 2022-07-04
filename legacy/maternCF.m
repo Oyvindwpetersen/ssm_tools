@@ -1,5 +1,12 @@
 function R_out=maternCF(tau_axis,lambda_vec,sigma_w_vec,p_vec,output_type)
 
+%%
+
+error('old function, use matern_cf.m instead')
+
+return
+%%
+
 %% Matern model covariance function
 
 % Inputs:

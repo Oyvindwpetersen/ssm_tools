@@ -65,7 +65,7 @@ end
 
 % CF
 if calcfast
-    R_par=maternCF(tau_axis,lambda_vec,sigma_w_vec,p_vec,'3d');
+    R_par=matern_cf(tau_axis,lambda_vec,sigma_w_vec,p_vec,'3d');
 end
 
 F=blockDiagonal(F_cell);

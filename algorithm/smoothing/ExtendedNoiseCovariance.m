@@ -17,18 +17,17 @@ elseif i<0
     S_L=[zeros(L*ns,nd) S_temp];
 end  
 
-if util(Q_L)<1e-4
+if ( nnz(Q_L)/numel(Q_L) )<1e-4
     Q_L=sparse(Q_L);
 end
 
-if util(R_Lplus)<1e-4
+if ( nnz(R_Lplus)/numel(R_Lplus) )<1e-4
     R_Lplus=sparse(R_Lplus);
 end
 
-if util(S_L)<1e-4
+if ( nnz(S_L)/numel(S_L) )<1e-4
     S_L=sparse(S_L);
 end
-        
 
 checkDim(Q_L,L*ns,L*ns);
 

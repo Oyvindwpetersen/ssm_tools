@@ -26,7 +26,7 @@ end
 p_mat=[0];
 
 tau_m=[0:h:maxtau];
-ind=indexClose(tau_axis,tau_m);
+ind=indexargmin(tau_axis,tau_m);
 
 diff_tau=tau_axis(ind)-tau_m;
 if any(diff_tau~=0)

@@ -1,6 +1,8 @@
 function [x_filt p_filt Px Pp]=JIS_DI(A,B,B_prime,C,D,D_prime,y,u,x0,R,Q,S,P01,varargin)
 
-%% Joint input and state estimation for system with additional known inputs:
+%% Joint input and state estimation for system with additional known (deterministic) inputs
+
+% Model:
 % x(k+1)=A*x(k)+B*p(k)+B_prime*u(k)+w(k);
 % y=C*x(k)+D*p(k)+D_prime*u(k)+v(k);
 

@@ -80,7 +80,7 @@ function S_matrix=EstablishSelection(dof_cell,doflabel)
     s=ones(size(dof_index));
     S_matrix=sparse(dof_index,1:length(dof_index),s,length(doflabel),length(dof_index));
 
-	r=util(S_matrix);
+	r=nnz(S_matrix)/numel(S_matrix);
 	if r>0.01
 		S_matrix=full(S_matrix);
 	end

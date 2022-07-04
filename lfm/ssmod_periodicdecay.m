@@ -17,13 +17,11 @@ Fp=[0 -w0*1 ; w0*1 0];
 Lp=eye(2);
 Hp=[1 0];
 
-
 % Matrices by kronecker product
 
 Fc=kron(Fq,eye(2))+kron(eye(size(Fq)),Fp);
 Lc=kron(Lq,Lp);
 Hc=kron(Hq,Hp);
-
 
 qj=1;
 

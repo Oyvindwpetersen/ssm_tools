@@ -1,5 +1,31 @@
 function [x_filt p_filt P_ss Pp_ss M_ss L_ss] = JIS_trunc_ss(A,B,G,J,y,x0,R,Q,S,P01,varargin)
 
+%% Joint input and state estimation for system with additional known inputs
+
+% Model
+% x(k+1)=A*x(k)+B*p(k)+w(k);
+% y=G*x(k)+J*p(k)+v(k);
+
+% Inputs:
+% A: state matrix
+% B: input matrix
+% G: output matrix
+% J: direct transmission matrix
+% y: output vector
+% x0: initial state estimate
+% R: output noise covariance
+% Q: state noise covariance
+% S: mixed noise covariance
+% P01: initial state error covariance
+
+% Outputs:
+% x_filt: filter state estimate
+% p_filt: filter input estimate
+% P_ss: filter state error covariance
+% Pp_ss: filter input error covariance
+% M_ss: matrix
+% L_ss: matrix
+
 
 %%
 p=inputParser;
@@ -41,6 +67,7 @@ Pkk_=P01;
 
 if strcmpi(doScale,'yes')
    [A,B,G,J,y,Q,R,S,T1,T2]=scaleStateSpaceModelUnitCov(A,B,G,J,y,Q,R,S); 
+   [A,B,G,J,y,Q,R,S,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,J,y,Q,R,S)
 end
 
 %% Steady state
@@ -158,6 +185,11 @@ disp(['JIS calculated in ' sprintf('%2.1f', telapsed) ' seconds, ' sprintf('%2.1
 
 if strcmpi(doScale,'yes')
   	x_filt=T1*x_filt;
+  	P_ss=T1*P_ss*T1.';
+	
+	% Set these to empty for safety
+  	M_ss=[];
+  	L_ss=[];
 end
 %%
 

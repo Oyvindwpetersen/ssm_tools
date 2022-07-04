@@ -32,7 +32,7 @@ function [As,Bs,Gs,Js,ys,Qs,Rs,Ss,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,
 %%%%%%%%%%%%%%%%%
 % State equation:
 % x(k+1)=A*x(k)+B*p(k)+w(k), cov(w(k))=Q;
-% T1*xs_k+1=A*T1*xs_k+B*p(k)+w(k)
+% T1*xs(k+1)=A*T1*xs_k+B*p(k)+w(k)
 % xs(k+1)=inv(T1)*A*T1*xs(k)+inv(T1)*B*p(k)+inv(T1)*w(k)
 % xs(k+1)=As*xs(k)+Bs*p(k)+ws(k)
 % where
@@ -52,23 +52,23 @@ function [As,Bs,Gs,Js,ys,Qs,Rs,Ss,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,
 % Next, require Qs=I
 % Qs=inv(T1)*Q*inv(T1)^T
 % T1*T1^T=Q
-% T1*T1^T=P*S*P^T
+% T1*T1^T=P*Sigma*P^T
 % Conclusion:
-% T1=P*S.^0.5
+% T1=P*Sigma.^0.5
 %%%%%%%%%%%%%%%%%
 % Next, require Rs=I
 % Rs=inv(T2)*R*inv(T2)^T
 % T2*T2^T=R
-% T2*T2^T=P*S*P^T
+% T2*T2^T=P*Sigma*P^T
 % Conclusion:
-% T2=P*S.^0.5
+% T2=P*Sigma.^0.5
 
 %%
 
 if ~isempty(A)
-	[P1,S1]=eig(Q);
+	[P1,Sigma1]=eig(Q);
 	% Q=P1*S1*P1.'
-	T1=(P1*S1.^0.5);
+	T1=(P1*Sigma1.^0.5);
 	T1_inv=eye(size(T1))/T1;
 
 	As=T1_inv*A*T1;
@@ -83,9 +83,9 @@ else
 end
 
 if ~isempty(G)
-	[P2,S2]=eig(R);
+	[P2,Sigma2]=eig(R);
 	% R=P2*S2*P2.'
-	T2=(P2*S2.^0.5);
+	T2=(P2*Sigma2.^0.5);
 	T2_inv=eye(size(T2))/T2;
     
 	ys=T2_inv*y;
@@ -105,8 +105,8 @@ else
 	Ss=[];
 end
 
-if any(diag(S1))<0; warning('Negative eigenvalues of Q'); end
+if any(diag(Sigma1))<0; warning('Negative eigenvalues of Q'); end
 if ~isreal(P1); warning('Eigenvectors of Q not real'); end
 
-if any(diag(S2))<0; warning('Negative eigenvalues of R'); end
+if any(diag(Sigma2))<0; warning('Negative eigenvalues of R'); end
 if ~isreal(P2); warning('Eigenvectors of R not real'); end
