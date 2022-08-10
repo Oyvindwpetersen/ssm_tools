@@ -1,7 +1,7 @@
 function H=ssmod_tf(A,B,C,D,w,dt,varargin)
 
 %% Transfer function for state space model (input-output or input-state)
-
+%
 % Inputs:
 % A: state matrix (cont or disc)
 % B: input matrix (cont or disc)
@@ -9,10 +9,10 @@ function H=ssmod_tf(A,B,C,D,w,dt,varargin)
 % D: direct transmission matrix (cont or disc)
 % w: frequency vector in rad/s
 % dt: time discretization, set to empty [] if cont
-
+%
 % Outputs:
 % H: transfer function
-
+%
 %%
 
 p=inputParser;

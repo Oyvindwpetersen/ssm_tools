@@ -1,14 +1,16 @@
 function H_RF=rf2tf(w_axis,a,d)
 
 %% Transfer function for rational function
-
+%
 % Inputs:
 % w_axis: frequency axis in [rad/s]
 % a: scale factor vector
 % d: poles (real)
-
+%
 % Outputs:
 % H: transfer function
+
+%%
 
 a_vec(:,1)=a;
 d_vec(:,1)=d;

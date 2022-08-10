@@ -1,17 +1,17 @@
 function [lambda,phi,w,xi]=eigA(A,dt)
 
 %% Eigenvalues for A-matrix
-
+%
 % Inputs:
 % A: state matrix (cont or disc)
 % dt: time discretization, if omitted or empty then A is Ac (cont)
-
+%
 % Outputs:
 % lambda: eigenvalues of A
 % phi: eigenvectors of A
 % w: undamped natural frequency, abs(lambda)
 % xi: damping ratio, -real(lambda)./abs(lambda)
-
+%
 %% If A is a cell with many A-matrices, calculate for all
 
 if iscell(A)

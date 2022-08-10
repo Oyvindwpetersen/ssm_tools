@@ -1,7 +1,7 @@
 function [x y]=ssmod_forward_stoch(A,B,G,J,F,x0,p,w,v)
 
 %% Simulate (forward solution) of state-space system with stochastic noise
-
+%
 % Inputs:
 % A: state matrix
 % B: input matrix
@@ -12,11 +12,11 @@ function [x y]=ssmod_forward_stoch(A,B,G,J,F,x0,p,w,v)
 % p: input vector, can be set to empty [] or zero
 % w: state noise
 % v: output vector
-
+%
 % Outputs:
 % x: state vector
 % y: output vector
-
+%
 %% 
 
 ns=size(A,1);

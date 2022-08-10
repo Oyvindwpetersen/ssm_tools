@@ -1,17 +1,17 @@
 function R_out=matern_cf(tau_axis,lambda_vec,sigma_w_vec,p_vec,output_type)
 
 %% Matern model covariance function
-
+%
 % Inputs:
 % tau_axis: time axis in [s]
 % lambda_vec: vector with hyperparameters, inverse length scale
 % sigma_w_vec: vector with hyperparameters, standard deviations
 % p_vec: vector with order
 % output_type: '2d' or '3d'
-
+%
 % Outputs:
 % R_out: matrix with CF
-
+%
 %%
 
 if any(tau_axis<0)

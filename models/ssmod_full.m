@@ -1,7 +1,7 @@
 function [A B G J Ac Bc Gc Jc F]=ssmod_full(K,C,M,Sa,Sd,Sp,dt)
 
 %% State space model of full (non-reduced) (M,C,K) system
-
+%
 % Inputs:
 % K: stiffness matrix
 % C: damping matrix
@@ -10,7 +10,7 @@ function [A B G J Ac Bc Gc Jc F]=ssmod_full(K,C,M,Sa,Sd,Sp,dt)
 % Sd: selection matrix for displacement
 % Sp: selection matrix for input
 % dt: time discretization
-
+%
 % Outputs:
 % A: state matrix (disc)
 % B: input matrix (disc)
@@ -19,7 +19,7 @@ function [A B G J Ac Bc Gc Jc F]=ssmod_full(K,C,M,Sa,Sd,Sp,dt)
 % Ac: state matrix (cont)
 % Bc: input matrix (cont)
 % F: matrix for first-order-hold
-
+%
 %% 
 
 ndof=size(K,1);

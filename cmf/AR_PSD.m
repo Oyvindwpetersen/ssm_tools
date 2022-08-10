@@ -1,17 +1,17 @@
 function [S,H]=AR_PSD(w_axis,A,B,j_lag,dt)
 
-%% PSD of AR-model
-
+%% Spectral density of AR-model
+%
 % z[n] = sum_r_1toP( A[j(r)]*z[n-j(r)] ) + B*epsilon[n]
 % Cov(epsilon)=E[epsilon*epsilon^T]=I
-
+%
 % Inputs:
 % w_axis: frequency axis in [rad/s]
 % A: block of square A-matrices: A=[A_1,A_2,A_3,...] or in 3d: A(:,:,1)=A_1, A(:,:,2)=A_2, A(:,:,3)=A_3
 % B: input matrix
 % j_lag: lags in AR-model, can be regular [1,2,3] or skipping [1,3,9]
 % dt: time lag
-
+%
 % Outputs:
 % S: spectral density of output
 % H: transfer function of AR-model

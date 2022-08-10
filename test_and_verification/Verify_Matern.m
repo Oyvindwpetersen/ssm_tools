@@ -5,6 +5,7 @@ clear all
 close all
 
 %%
+close all
 
 rng(1);
 
@@ -36,6 +37,8 @@ plotAutocorr(tau_axis,R_par_1,tau_axis,R_par_2,...
     'LineStyle',{'-' '--'},...
     'log','no','xlim',[0 50]);
 
+
+tilefigs
 
 
 %% Simulate time series, compare spectra
@@ -73,9 +76,5 @@ plotSpectrum(w_axis,S_par_1_onesided,w_axis,S_par_2_onesided,w_welch,S_welch,...
 
 
 tilefigs
-
-
-
-
 
 

@@ -30,56 +30,49 @@ end
 doflabel=getLabel('U1',[1:length(phi)]);
 
 %%% Modal
-a_cell={'20_U1' '30_U1' '40_U1' '60_U1'}
-d_cell=a_cell;
-p_cell={'20_U1' '60_U1' '80_U1'}
-[Sd,Sa,Sp]=DofSelection(d_cell,a_cell,p_cell,doflabel);
-
-[A B G J Ac Bc]=ssmod_modal(phi,Omega,Gamma,Sa,Sd,[],dt,'force','modal');
-
-ny=size(Sa,1); nx=size(A,1); np=nm;
-
-phi_p=Sp.'*phi;
-Cf=1e8*eye(size(phi_p,1));
-Cp=phi_p.'*Cf*phi_p
-plotcorr(Cp)
-
-R0=eye(ny)*[1e-4]^2;
-Q=B*Cp*B.'; Q=Q+eye(size(Q))*max(max(Q))*0.01;
-R=J*Cp*J.'+R0
-S=B*Cp*J.'*0
-
-%%% Disc
 % a_cell={'20_U1' '30_U1' '40_U1' '60_U1'}
 % d_cell=a_cell;
-% p_cell={'20_U1' }
+% p_cell={'20_U1' '60_U1' '80_U1'     '10_U1' '30_U1' '40_U1' '50_U1' '90_U1'}
 % [Sd,Sa,Sp]=DofSelection(d_cell,a_cell,p_cell,doflabel);
 % 
 % [A B G J Ac Bc]=ssmod_modal(phi,Omega,Gamma,Sa,Sd,Sp,dt,'force','disc');
 % 
-% ny=size(Sa,1); nx=size(A,1); np=size(Sp,2);
+% ny=size(Sa,1); nx=size(A,1); np=nm;
+% 
+% phi_p=Sp.'*phi;
+% Cf=1e8*eye(size(phi_p,1));
+% Cp=phi_p.'*Cf*phi_p
+% plotcorr(Cp)
 % 
 % R0=eye(ny)*[1e-4]^2;
-% Q=eye(size(Q))*0.01;
-% R=R0;
-% S=zeros(nx,ny);
+% Q=B*Cp*B.'; Q=Q+eye(size(Q))*max(max(Q))*0.01;
+% R=J*Cp*J.'+R0
+% S=B*Cp*J.'*0
 
+%%% Disc
+a_cell={'10_U1' '20_U1' '30_U1' '40_U1' '50_U1' '60_U1' '70_U1' '80_U1' '90_U1'}
+d_cell=a_cell;
+p_cell={'20_U1'}% '60_U1' '80_U1'  '90_U1'
+[Sd,Sa,Sp]=DofSelection(d_cell,a_cell,p_cell,doflabel);
+
+[A B G J Ac Bc]=ssmod_modal(phi,Omega,Gamma,Sa,Sd,Sp,dt,'force','disc');
+
+ny=size(Sa,1); nx=size(A,1); np=size(Sp,2);
+
+R0=eye(ny)*[1e-8]^2;
+Q=eye(size(A))*1e-12;
+R=R0;
+S=zeros(nx,ny);
 
 Ctot=[Q S ; S.' R]
 Ccorr=plotcorr(Ctot);
 
-nt=1e6;
+nt=1e4;
 t=[1:nt]*dt;
 
 %% Generate noise
 
-[wv]=mvnrnd(zeros(size(Ctot,1),1),Ctot,nt).';
-
-w=wv(1:nx,:);
-v=wv(nx+1:end,:);
-
-C2=corrcoef2(wv);
-C2-Ccorr
+[w,v]=cov_noisegen(Q,R,S,t);
 
 %%
 
@@ -111,7 +104,7 @@ A_star=A-S/R*G;
 % plotTime(t,x,x_k_kmin,x_k_kminb);
 % plotTime(t,x,x_k_k,x_k_kb);
 % 
-plotTime(t,x,x_k_N,x_k_Nb,x_k_N_false);
+% plotTime(t,x,x_k_N,x_k_Nb,x_k_N_false);
 % plotFreq(t,x-x_k_N,x-x_k_Nb,x-x_k_N_false,'xlim',[0 5]);
 
 %%
@@ -135,7 +128,6 @@ plot(var_smooth,'om','Markersize',8,'DisplayName','RTS');
 plot(var_smooth_b,'sk','Markersize',8,'DisplayName','RTS (S=0)');
 plot(var_smooth_false,'xg','Markersize',8,'DisplayName','RTS (no corr)');
 
-
 [P_k_kmin_ss,~,~,info]=idare(A.',G.',Q,R,S); %,'noscaling'
 P_k_k_ss=P_k_kmin_ss-P_k_kmin_ss*G.'/(G*P_k_kmin_ss*G.'+R)*G*P_k_kmin_ss;
 
@@ -148,9 +140,8 @@ plot(diag(P_k_kmin_ss),'xg','Markersize',8,'DisplayName','DARE');
 figure(); hold on; grid on; ylog;
 title('P_{k|k} variance'); legend show; 
 plot(diag(P_k_k),'db','Markersize',8,'DisplayName','KF');
-plot(diag(P_k_kminb),'*r','Markersize',8,'DisplayName','KF (S=0)');
+plot(diag(P_k_kb),'*r','Markersize',8,'DisplayName','KF (S=0)');
 plot(diag(P_k_k_ss),'xg','Markersize',8,'DisplayName','DARE');
-
 
 figure(); hold on; grid on; ylog;
 title('Ratio variance empirical/predicted'); legend show; 
@@ -165,8 +156,7 @@ plot(var_smooth_b./diag(P_k_Nb),'*r','Markersize',8,'DisplayName','RTS (S=0)');
 plot(var_smooth_false./diag(P_k_N_false),'xg','Markersize',8,'DisplayName','RTS (no corr)');
 
 tilefigs([3 3],'l');
-tilefigs
-return
+% return
 
 %% Check JIS and smoother
 
@@ -174,12 +164,14 @@ close all
 
 rng(1);
 
-p=BandLimitedWhiteNoise(0.3,4,t,np)*50;
+p=BandLimitedWhiteNoise(0.3,4,t,np)*100;
+% p=BandLimitedWhiteNoise(3,4,t,np)*50;
 
-[wv]=mvnrnd(zeros(size(Ctot,1),1),Ctot,nt).';
+% p=trianglepulse(3,3.25,3.3,t)*1000;
 
-w=wv(1:nx,:);
-v=wv(nx+1:end,:);
+[w,v]=cov_noisegen(Q,R,S,t);
+
+w=w*0;
 
 x0=zeros(nx,1);
 [x,y]=ssmod_forward_stoch(A,B,G,J,[],x0,p,w,v);
@@ -190,7 +182,7 @@ close all
 
 P_0_1=eye(size(Q));
 
-[x_jis p_jis Px_jis_ss Pp_jis_ss ] = JIS_trunc_ss(A,B,G,J,y,x0,R,Q,S,P_0_1,'trunc','yes');
+[x_jis p_jis Px_jis_ss Pp_jis_ss ] = JIS_trunc_ss(A,B,G,J,y,x0,R,Q,S,P_0_1,'trunc','no');
 
 var_state_jis=std(x-x_jis,0,2).^2
 var_force_jis=std(p-p_jis,0,2).^2
@@ -215,13 +207,13 @@ plot(var_force_smooth./diag(Pp_smooth_ss),'*r','Markersize',8,'DisplayName','Smo
 
 tilefigs([3 3],'l');
 
-% plotTime(t,x,x_jis,x_smooth);
-% plotTime(t,p,p_jis,p_smooth);
+plotTime(t,x,x_jis,x_smooth);
+plotTime(t,p,p_jis,p_smooth);%xlimall([1000 2000]);
 % 
-% plotTime(t,x-x_jis,x-x_smooth);
+% plotTime(t,y);
 
 
-return
+% return
 
 %%
 
@@ -271,6 +263,8 @@ p_k_N=Hc*xa_k_N((2*nm+1):end,:);
 
 plotTime(t,x,x_k_k,x_k_N);
 plotTime(t,p,p_k_k,p_k_N);
+plotFreq(t,p,p_k_k,p_k_N);
+
 
 var_state_kf=std(x-x_k_k,0,2).^2
 var_force_kf=std(p-p_k_k,0,2).^2
@@ -293,13 +287,17 @@ tilefigs([3 3],'l');
 
 %%
 
-lambda_vec=logspace(-1,2,100);
+lambda_vec=logspace(-3,2,100);
+
+sigma_p_scale=logspace(-2,3,100);
+
 
 for ind=1:length(lambda_vec)
 
-lambda=lambda_vec(ind);
+% lambda=lambda_vec(ind);
+lambda=0.1;
 
-[Fc,Lc,Hc,sigma_w]=ssmod_matern(lambda,0,sigma_p);
+[Fc,Lc,Hc,sigma_w]=ssmod_matern(lambda,0,sigma_p*sigma_p_scale(ind));
 
 Fc=blockDiagonal(repcell(Fc,1,np));
 Lc=blockDiagonal(repcell(Lc,1,np));
@@ -323,7 +321,7 @@ var_force_rts=std(p-p_k_N,0,2).^2;
 
 
 Omega=Had*Pa_k_kmin*Had.'+R;
-[negLL(ind),negLL_1(ind),negLL_2(ind)]=loglik_evidence(Had,xa_k_kmin,y,Omega);
+[negLL(ind),negLL_1(ind),negLL_2(ind)]=loglik_evidence(Had,xa_k_kmin,y,Omega,'cut',[100 100]);
 
 Vx_kf(ind,:)=var_state_kf;
 Vp_kf(ind,:)=var_force_kf;

@@ -49,13 +49,15 @@ close all
 figure(); hold on;
 plot(rs)
 
+figure(); hold on;
+plot(rs_all(:,1:10));
 
 %%
 
 doflabel=getLabel({'U' 'UR'},[1:(N_el+1)]);
 
 mod1=struct();
-mod1.nm=20
+mod1.nm=100
 mod1.omega=Kg(1:mod1.nm,1:mod1.nm).^0.5;
 mod1.gamma=2*mod1.omega*0.01;
 mod1.phi=phi_full(:,1:mod1.nm);
@@ -105,13 +107,14 @@ return
 
 % mod1.P_0_1=eye(size(mod1.Q));
 % mod1.Q=diag([ 1e-3*ones(1,20) 1e-3*ones(1,180) ]);
-% 
+
 % mod1.Q=blkdiag(mod1.Q,mod1.Q);
-% mod1.P_0_1=eye(size(mod1.Q));
-% 
-% [fid1.x_jis fid1.p_jis]=JIS_trunc_ss(mod1.A,mod1.B,mod1.G,mod1.J,y1,mod1.x0,mod1.R,mod1.Q,mod1.S,mod1.P_0_1,'trunc','yes');
-% [fid1.x_smooth fid1.p_smooth Px_smooth_ss Pp_smooth_ss ]=JIS_smooth(mod1.A,mod1.B,mod1.G,mod1.J,y1,mod1.R,mod1.Q,mod1.S,mod1.x0,mod1.P_0_1,3,'convtol',1e-8);
-% 
+mod1.P_0_1=eye(size(mod1.Q));
+
+[fid1.x_jis fid1.p_jis]=JIS_trunc_ss(sparse(mod1.A),sparse(mod1.B),mod1.G,mod1.J,y1,mod1.x0,mod1.R,mod1.Q,sparse(mod1.S),mod1.P_0_1,'trunc','no','dispconv',true,'maxsteps',200e3,'scale','yes');
+
+% [fid1.x_smooth fid1.p_smooth Px_smooth_ss Pp_smooth_ss ]=JIS_smooth(mod1.A,mod1.B,mod1.G,mod1.J,y1,mod1.R,mod1.Q,mod1.S,mod1.x0,mod1.P_0_1,3,'convtol',1e-6,'maxsteps',200e3);
+
 % % 
 close all
 % % 
@@ -121,18 +124,19 @@ close all
 
 % return
 
-mod2.Q=1e-10*eye(size(mod2.A));
+mod2.Q=1e-6*eye(size(mod2.A));
 mod2.R=mod1.R;
 mod2.S=zeros(size(mod2.Q,1),size(mod2.R,1));
 mod2.P_0_1=eye(size(mod2.Q));
 
 mod2.x0=zeros(size(mod2.A,1),1);
 
-[fid2.x_jis fid2.p_jis]=JIS_trunc_ss(mod2.A,mod2.B,mod2.G,mod2.J,y1,mod2.x0,mod2.R,mod2.Q,mod2.S,mod2.P_0_1,'maxsteps',200e3);
+[fid2.x_jis fid2.p_jis]=JIS_trunc_ss(mod2.A,mod2.B,mod2.G,mod2.J,y1,mod2.x0,mod2.R,mod2.Q,mod2.S,mod2.P_0_1,'maxsteps',200e3,'scale','yes');
 
 
 % [fid1.x_smooth fid1.p_smooth Px_smooth_ss Pp_smooth_ss ]=JIS_smooth(mod2.A,mod2.B,mod2.G,mod2.J,y1,mod2.R,mod2.Q,mod2.S,mod2.x0,mod2.P_0_1,3,'convtol',1e-8);
 
+plotTime(t,p,fid1.p_jis,fid2.p_jis);
 plotTime(t,p,fid2.p_jis);
 
 

@@ -1,4 +1,5 @@
 %%
+
 clc
 clear all
 close all
@@ -36,6 +37,7 @@ Qdw_aug_approx=Qcw_aug*dt;
 figure(); hold on;
 plot(diag(Qdw_aug),'ob','DisplayName','Diagonal of Qw (aug) (exact)');
 plot(diag(Qdw_aug_approx),'xr','DisplayName','Diagonal of Qw (aug) (approx)');
+legend show
 ylog;
 
 plotcorr(Qdw_aug);
@@ -51,7 +53,7 @@ Qde_aug_approx=Qce_aug*dt;
 figure(); hold on;
 plot(diag(Qde_aug),'ob','DisplayName','Diagonal of Qw (aug) (exact)');
 plot(diag(Qde_aug_approx),'xr','DisplayName','Diagonal of Qw (aug) (approx)');
-% ylog;
+legend show
 
 plotcorr(Qde_aug);
 
@@ -85,7 +87,7 @@ Pa_inf= lyap(Ac_aug,Qcw_aug)
 Qd_test=Pa_inf-Ad_aug*Pa_inf*Ad_aug.';
 
 
-%%
+%% Check effect of dt
 
 dt_mat=10.^[-3:0.1:0];
 

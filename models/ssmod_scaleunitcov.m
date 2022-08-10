@@ -1,10 +1,10 @@
 function [As,Bs,Gs,Js,ys,Qs,Rs,Ss,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,J,y,Q,R,S)
 
 %% Scale stochastic state space model so that Q=I,R=I
-
+%
 % Rule #1: new state xs such that x=T1*xs, ie multiplied state eq by inv(T1)
 % Rule #2: new output ys=inv(T2)*y, ie multiplied output equation by inv(T2)
-
+%
 % Inputs:
 % A: state matrix
 % B: input matrix
@@ -14,7 +14,7 @@ function [As,Bs,Gs,Js,ys,Qs,Rs,Ss,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,
 % Q: state noise covariance
 % R: output noise covariance
 % S: mixed noise covariance
-
+%
 % Outputs:
 % As: state matrix (transformed)
 % Bs: input matrix (transformed)
@@ -28,7 +28,7 @@ function [As,Bs,Gs,Js,ys,Qs,Rs,Ss,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,
 % T2: transformation matrix, see below
 % T1_inv: transformation matrix inverse, see below
 % T2_inv: transformation matrix inverse, see below
-
+%
 %%%%%%%%%%%%%%%%%
 % State equation:
 % x(k+1)=A*x(k)+B*p(k)+w(k), cov(w(k))=Q;
@@ -62,7 +62,7 @@ function [As,Bs,Gs,Js,ys,Qs,Rs,Ss,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,
 % T2*T2^T=P*Sigma*P^T
 % Conclusion:
 % T2=P*Sigma.^0.5
-
+%
 %%
 
 if ~isempty(A)

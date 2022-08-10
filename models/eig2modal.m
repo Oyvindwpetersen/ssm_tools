@@ -1,14 +1,14 @@
 function [w,xi]=eig2modal(lambda)
 
 %% Convert eigenvalue to modal properties
-
+%
 % Inputs:
 % lambda: eigenvalues, either array or cell with array
-
+%
 % Outputs:
 % w: undamped natural frequency
 % xi: damping ratio
-
+%
 %% If A is a cell with many A-matrices, calculate for all
 
 

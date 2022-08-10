@@ -3,21 +3,21 @@ function [A_mat,B]=AR_fit(tau_target,R_target,j_lag,l_lag,dt)
 %% Fit AR-model with sparse lags
 % From Gallego-Castillo 2021, A tutorial on reproducing a predefined autocovariance function
 % through AR models: application to stationary homogeneous isotropic turbulence
-
+%
 % z[n] = sum_r_1toP( A[j(r)]*z[n-j(r)] ) + B*epsilon[n]
 % Cov(epsilon)=E[epsilon*epsilon^T]=I
-
+%
 % Inputs:
 % tau_target: frequency axis in [rad/s]
 % R_target: spectral density
 % j_lag: lags in AR-model, can be regular [1,2,3] or skipping [1,3,9]
 % l_lag: lags in AR-model (target in fit)
 % dt: time discretization
-
+%
 % Outputs:
 % A_mat: 3d-form of A-matrices
 % B: input matrix
-
+%
 %%
 
 j_lag=j_lag(:);

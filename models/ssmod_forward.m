@@ -1,7 +1,7 @@
 function [x y]=ssmod_forward(A,B,G,J,F,x0,p)
 
 %% Simulate (forward solution) of state-space system
-
+%
 % Inputs:
 % A: state matrix
 % B: input matrix
@@ -10,11 +10,11 @@ function [x y]=ssmod_forward(A,B,G,J,F,x0,p)
 % F: matrix for first-order-hold, can be set to empty []
 % x0: initial state
 % p: input vector
-
+%
 % Outputs:
 % x: state vector
 % y: output vector
-
+%
 %% 
 
 ns=size(A,1);

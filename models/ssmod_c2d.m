@@ -1,21 +1,21 @@
 function [A B C D F]=ssmod_c2d(Ac,Bc,Cc,Dc,dt,varargin)
 
 %% Continuous to discrete state-space model
-
+%
 % Inputs:
 % Ac: state matrix
 % Bc: input matrix
 % Cc: output matrix
 % Dc: direct transmission matrix
 % dt: time discretization
-
+%
 % Outputs:
 % A: state matrix
 % B: input matrix
 % C: output matrix
 % D: direct transmission matrix
 % F: matrix for first-order-hold
-
+%
 %% Input
 
 p=inputParser;

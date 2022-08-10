@@ -1,9 +1,9 @@
 function [A B O D B_plus B_minus]=ssmod_Galpha(phi,omega,gamma,Sa,Sd,Sp,dt,varargin)
 
 %% State space model from G-alpha discretization
-
+%
 % From Aucejo (2019)
-
+%
 % Inputs:
 % phi: mode shape matrix
 % omega: natural frequency matrix with diagonal omega
@@ -12,7 +12,7 @@ function [A B O D B_plus B_minus]=ssmod_Galpha(phi,omega,gamma,Sa,Sd,Sp,dt,varar
 % Sd: selection matrix for displacement
 % Sp: selection matrix for input
 % dt: time discretization
-
+%
 % Outputs:
 % A: state matrix
 % B: input matrix
@@ -20,23 +20,23 @@ function [A B O D B_plus B_minus]=ssmod_Galpha(phi,omega,gamma,Sa,Sd,Sp,dt,varar
 % D: direct transmission matrix
 % B_plus: other system matrix, see below
 % B_minus: other system matrix, see below
-
+%
 % Model:
 % x(k+1)=A*x(k)+Bplus*u(k+1)+Bminus*u(k)+w(k)
 % y(k)=O*x(k)+v(k)
-
+%
 % Modal state: x(k)=[z(k) z(k)' z(k)'']^T
-
+%
 % Transformation:
 % x(k)=xbar(k)+Bplus*u(k)
-
+%
 % Introduced to model:
 % xbar(k+1)=A*xbar(k)+B*u(k)+w(k)
 % y(k)=O*xbar(k)+D*u(k)+v(k)
 % where
 % B=A*B_plus+B_minus
 % D=O*B_plus
-
+%
 %%
 
 p=inputParser;

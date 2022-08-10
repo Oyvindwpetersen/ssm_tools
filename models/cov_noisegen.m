@@ -1,17 +1,17 @@
 function [w,v]=cov_noisegen(Q,R,S,t)
 
 %% Convert covariance from cont to disc 
-
+%
 % Model:
 % w(k);
 % v(k);
-
+%
 % Inputs:
 % Q: covariance matrix of process noise
 % R: covariance matrix of measurement noise
 % S: covariance matrix
 % t: time vector
-
+%
 % Outputs:
 % w: process noise
 % v: measurement noise

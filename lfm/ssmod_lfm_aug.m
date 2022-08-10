@@ -1,18 +1,18 @@
 function [Fac,Bac,Hac,Jac,Fad,Bad,Had,Jad,Qad]=ssmod_lfm_aug(Ac,Bc,Gc,Jc,Fc,Hc,Lc,Qxd,sigma_w,dt)
 
 %% Augmented model with modal states and latent states
-
+%
 % xa(t)=[ x(t) ; s(t) ]
-
+%
 % dx/dt=Ac*x(t)+Bc*p(t)
 % y=Gc*x(t)+Jc*p(t)
-
+%
 % ds/dt=Fc*s(t)+Lc*w(t)
 % p(t)=Lc*s(t)
-
+%
 % dxa/dt=[ Ac Bc*Hc ; 0 Fc ]*xa(t)+[ 0 ;  Lc*w(t)]
 % y(t)=[ Gc Jc*Hc ]*xa(t)
-
+%
 % Inputs:
 % Ac: state matrix (cont)
 % Bc: input matrix (cont)
@@ -24,7 +24,7 @@ function [Fac,Bac,Hac,Jac,Fad,Bad,Had,Jad,Qad]=ssmod_lfm_aug(Ac,Bc,Gc,Jc,Fc,Hc,L
 % Qxd: additional covariance on state equation
 % sigma_w: vector with standard deviations (cont)
 % dt: time discretization
-
+%
 % Outputs:
 % Fac: augmented state matrix (cont)
 % Bac: 
@@ -35,8 +35,7 @@ function [Fac,Bac,Hac,Jac,Fad,Bad,Had,Jad,Qad]=ssmod_lfm_aug(Ac,Bc,Gc,Jc,Fc,Hc,L
 % Had: augmented output matrix (disc)
 % Jad:
 % Qad: augmented covariance (disc)
-
-
+%
 %% 
 
 ns=size(Ac,2);

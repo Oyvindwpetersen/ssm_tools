@@ -1,20 +1,20 @@
 function Qd=cov_c2d(Fac,Qc,dt,method)
 
 %% Convert covariance from cont to disc 
-
+%
 % Model:
 % x(k+1)=F*x(k)+w(k);
 % y=H*x(k)+v(k);
-
+%
 % Inputs:
 % Fac: state matrix (cont)
 % Qc: covariance matrix (cont)
 % dt: time discretization (cont)
 % method: 'matrix' or 'integral', should give same result but the former is faster
-
+%
 % Outputs:
 % Qd: covariance matrix (disc)
-
+%
 %%
 
 % Default matrix method
@@ -65,6 +65,7 @@ end
 
 if norm(Qd-Qd.')./norm(Qd) > 1e-6
 	a=norm(Qd-Qd.')./norm(Qd)
+	Qd=forcesym(Qd);
 	warning('Loss of symmetry in covariance, take a look here')
 else
 	Qd=forcesym(Qd);

@@ -1,7 +1,7 @@
 function [tau,h]=ssmod_irf(A,B,C,D,dt,tau_max,tau_vector)
 
 %% Impulse response function for state space model
-
+%
 % Inputs:
 % A: state matrix (cont or disc)
 % B: input matrix (cont or disc)
@@ -10,11 +10,11 @@ function [tau,h]=ssmod_irf(A,B,C,D,dt,tau_max,tau_vector)
 % dt: time discretization, set to empty [] if cont
 % tau_max: max time lag in [s] (only for disc)
 % tau_vector: time lag vector (only for cont)
-
+%
 % Outputs:
 % tau: time lag vector
 % h: impulse response
-
+%
 %%
 
 if nargin==6 

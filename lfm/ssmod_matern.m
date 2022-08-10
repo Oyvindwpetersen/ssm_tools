@@ -1,25 +1,25 @@
 function [Fc,Lc,Hc,sigma_w]=ssmod_matern(lambda,p_order,sigma_p)
 
 %% State space model for Matern
-
+%
 % ds/dt = F*s(t) + L*w(t)
 % p(t) = H*s(t)
-
+%
 % Inputs:
 % lambda: hyperparameter, inverse length scale
 % p_order: order of the differential equation (+1), v=p+0.5
 % sigma_p: standard deviation of p
-
+%
 % Outputs:
 % Fc: state matrix (cont)
 % Lc: input matrix (cont)
 % Hc: output matrix (cont)
-
+%
 % Depending on the order of p:
 % p=0: CF(tau) ~ c0*exp(-b*tau) (Ornstein-Uhlenbeck)
 % p=1: CF(tau) ~ (c0+c1*tau)*exp(-b*tau)
 % p=2: CF(tau) ~ (c0+c1*tau+c2*tau^2)*exp(-b*tau)
-
+%
 %% Assign state space matrices
 
 if p_order==0

@@ -3,21 +3,21 @@ function [R_AR]=AR_CF(A_r,B,j_lag,l_lag,q)
 %% Covariance function for AR-model
 % From Gallego-Castillo 2021, A tutorial on reproducing a predefined autocovariance function
 % through AR models: application to stationary homogeneous isotropic turbulence
-
+%
 % Eq 46:
 % z[n] = sum_r_1toP( A[j(r)]*z[n-j(r)] ) + B*epsilon[n]
 % Cov(epsilon)=E[epsilon*epsilon^T]=I
-
+%
 % Inputs:
 % A_r: AR-matrix for selcted lags
 % Sigma: input matrix
 % j_lag: lags for the AR-matrices
 % l_lag: desired lags for the output CF
 % q: cutoff where the CF is approx zero, see discussion in Gallego Eq. 58
-
+%
 % Outputs:
-% R_AR: 
-
+% R_AR: covariance function
+%
 %%
 
 Phi_r=AR_coeffconv(A_r,'cell');

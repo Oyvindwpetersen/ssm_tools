@@ -1,16 +1,16 @@
 function tz=ssmod_tzero(A,B,G,J)
 
-%% Transmission zeros for state space model (input-output or input-state)
-
+%% Transmission zeros for state space model
+%
 % Inputs:
 % A: state matrix (disc)
 % B: input matrix (disc)
 % G: output matrix (disc)
 % J: direct transmission matrix (disc)
-
+%
 % Outputs:
 % tz: transmission zeros
-
+%
 %%
 
 tz=tzero(A,B,G,J);

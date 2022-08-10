@@ -1,22 +1,22 @@
 function [Ac_t Bc_t Cc_t Dc_t T]=ssmod_truncbalanced(Ac,Bc,Cc,Dc,n,varargin)
 
 %% Balanced trunction for state space model (input-output or input-state)
-
+%
 % See Unneland, Chapter 5.2
-
+%
 % Inputs:
 % Ac: state matrix (cont)
 % Bc: input matrix (cont)
 % Cc: output matrix (cont)
 % Dc: direct transmission matrix (cont)
 % n: truncation order (dimension of truncated problem)
-
+%
 % Outputs:
 % Ac_t: state matrix (cont) (truncated)
 % Bc_t: input matrix (cont) (truncated)
 % Cc_t: output matrix (cont) (truncated)
 % Dc_t: direct transmission matrix (cont) (truncated)
-
+%
 %%
 
 p=inputParser;

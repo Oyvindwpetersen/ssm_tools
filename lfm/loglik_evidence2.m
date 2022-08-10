@@ -1,5 +1,19 @@
 function [negLL,negLL_1,negLL_2,negLL_1h,negLL_2h,Nred]=loglik_evidence2(S,y,varargin)
 
+%% Log likelihood of model evidence in state-space function
+%
+% Inputs:
+% S: covariance matrix
+% y: data time series
+%
+% Inputs:
+% negLL: (negative) log likelihood
+% negLL_1: contribution from complexity
+% negLL_2: contribution from data fit
+% negLL_1h: history of complexity
+% negLL_2h: history of data fit
+% Nred: number of data point, if cut start and end
+%
 %%
 
 p=inputParser;
@@ -8,12 +22,6 @@ addParameter(p,'cut',[0 0],@isnumeric)
 parse(p,varargin{:});
 
 cut=p.Results.cut;
-
-
-%% Log likelihood of model evidence in state-space function
-
-% Inputs:
-
 
 %%
 if cut(1)>0 | cut(2)>0;
@@ -29,8 +37,6 @@ if cut(1)>0 | cut(2)>0;
 else
     Nred=size(y,2);
 end
-
-
 
 %% Model complexity
 
@@ -49,7 +55,7 @@ end
 
 if any(any(isinf(S)))
     S
-    error('S contains nan');
+    error('S contains inf');
 end
 
 Omega=forcesym(S);

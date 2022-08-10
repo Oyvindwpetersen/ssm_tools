@@ -1,11 +1,11 @@
-function ssmod_psd_rf(n,a)
+function [Fc,Lc,Hc,sigma_w,alpha]=ssmod_psd_rf(n,a)
 
-%% Design of state-space model with target PSD
+%% Design of state-space model with target spectral density
 %
 % ds/dt=Fc*s(t)+Lc*w(t)
 % p(t)=Hc*s(t)
 %
-% The PSD of the output p(t) is the rational function
+% The (two-sided) PSD of the output p(t) is the rational function
 %
 % S(omega)=N(omega)/A(omega)=alpha*N(omega)/D(omega)
 %
@@ -31,6 +31,7 @@ function ssmod_psd_rf(n,a)
 % n=[0 1 0];
 % S_exact(1,1,:)=omega.^2./(1-3*omega.^2+5*omega.^4+2*omega.^6);
 
+% Matern with lambda=0.3, sigma_w=2.2
 % a=[0.3^2 1]*2*pi/(2.2^2);
 % n=1
 % S_exact(1,1,:)=2.2.^2./(2*pi*(0.3.^2+omega.^2));
@@ -55,6 +56,10 @@ sigma_w=sqrt(sigma_w_squared);
 %% Order of polynomials
 
 num_d=length(d);
+
+if d(end)==0
+    warning('Highest d coefficient is zero. This means the state-space model is smaller than intended.');
+end
 
 % Cut at highest polynomial order not equal to zero
 ind_cut=max(find(n~=0));
@@ -90,13 +95,21 @@ p_all(ind_p_zero)=[];
 % Select stable
 p_selected=p_all(real(p_all)<0);
 
-% Add back zeros
+% Substitute back zero roots
 if ~isempty(ind_p_zero)
     p_zero=zeros(length(ind_p_zero)/2,1);
     p_selected=[p_selected ; p_zero];
 end
 
-c_coeff=flip(poly(p_selected)); c_coeff=c_coeff(1:end-1);
+% [c0,c1,c2,...]
+c_coeff=flip(poly(p_selected)); 
+
+if abs(c_coeff(end)-1)>1e-6
+    warning('Highest c coefficient should be 1. Something is wrong, check this line');
+    c_coeff
+end
+
+c_coeff=c_coeff(1:end-1);
 
 %% Nominator
 
@@ -120,16 +133,17 @@ z_all(ind_z_zero)=[];
 % Select stable
 z_selected=z_all(real(z_all)<0);
 
-% Add back zeros
+% Substitute back zero roots
 if ~isempty(ind_z_zero)
     z_zero=zeros(length(ind_z_zero)/2,1);
     z_selected=[z_selected ; z_zero];
 end
 
-b_coeff=flip(poly(z_selected))
+% [b0,b1,b2,...]
+b_coeff=flip(poly(z_selected));
 
-% Add zeros to b coeff if the nominator poly is lower than the de
-b_zeros=zeros(1,num_d-num_n-1)
+% Add zeros to b coeff if the nominator poly is lower than the denominator minus one (e.g. D~omega^6 and N~omega^2)
+b_zeros=zeros(1,num_d-num_n-1);
 b_coeff=[b_coeff b_zeros];
 
 

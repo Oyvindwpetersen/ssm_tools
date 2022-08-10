@@ -1,15 +1,15 @@
 function [p,q]=rf2poly(a,d)
 
 %% Poly coefficients for rational function
-
+%
 % Inputs:
 % a: scale factor vector
 % d: poles (real)
-
+%
 % Outputs:
 % p: polynomial coefficients
 % q: polynomial coefficients
-
+%
 %%
 % H(w)= sum_k a_k/(iw+d_k) = a_1/(iw+d_1) + a_2/(iw+d_2) + a_3/(iw+d_3)...
 %
@@ -18,8 +18,9 @@ function [p,q]=rf2poly(a,d)
 % BOTTOM = (iw+d_1)(iw+d_2)(iw+d_3): product of all
 % TOP = a_1*(iw+d_2)(iw+d_3)+a_2*(iw+d_1)(iw+d_3)+a_3*(iw+d_1)(iw+d_2): one removed
 % H=polynomial_of_p / polynomial_of_q
-
+%
 %%
+
 q=poly(-d);
 
 % r=length(d)

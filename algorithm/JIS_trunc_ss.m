@@ -35,6 +35,7 @@ addParameter(p,'scale','no',@ischar)
 addParameter(p,'minsteps',100,@isnumeric)
 addParameter(p,'maxsteps',100e3,@isnumeric)
 addParameter(p,'convtol',1e-6,@isnumeric)
+addParameter(p,'dispconv',false,@islogical)
 
 parse(p,varargin{:});
 doTruncation = p.Results.trunc;
@@ -43,6 +44,7 @@ doScale = p.Results.scale;
 minsteps = p.Results.minsteps;
 maxsteps = p.Results.maxsteps;
 convtol = p.Results.convtol;
+dispconv = p.Results.dispconv;
 
 %%
 
@@ -66,8 +68,8 @@ x_pred(:,1)=[x0];
 Pkk_=P01;
 
 if strcmpi(doScale,'yes')
-   [A,B,G,J,y,Q,R,S,T1,T2]=scaleStateSpaceModelUnitCov(A,B,G,J,y,Q,R,S); 
-   [A,B,G,J,y,Q,R,S,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,J,y,Q,R,S)
+%    [A,B,G,J,y,Q,R,S,T1,T2]=scaleStateSpaceModelUnitCov(A,B,G,J,y,Q,R,S); 
+   [A,B,G,J,y,Q,R,S,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,J,y,Q,R,S);
 end
 
 %% Steady state
@@ -146,6 +148,10 @@ while convreached==false
 	Ppkk_prev=Ppkk_current; 	Ppkk_current=Ppkk;
     r_tracePp(k)=trace(abs(Ppkk_current-Ppkk_prev))./trace(Ppkk_current);
     
+    if dispconv & mod(k,100)==0
+        [r_traceP(k),r_tracePp(k)]
+    end
+    
     if k>minsteps & abs(r_traceP(k)) < convtol & abs(r_tracePp(k)) < convtol
 		convreached=true;
 		disp(['Trace convergence reached, k=' num2str(k)]);
@@ -156,8 +162,8 @@ while convreached==false
     elseif k>=maxsteps
     
 % 		if strcmpi(doPlot,'yes')
-		figure(); hold on; grid on; plot(r_tracePp); set(gca,'YScale','log');
-		figure(); hold on; grid on; plot(r_traceP); set(gca,'YScale','log');
+		figure(); hold on; grid on; plot(r_traceP); set(gca,'YScale','log'); title('Ratio Px');
+		figure(); hold on; grid on; plot(r_tracePp); set(gca,'YScale','log'); title('Ratio Pp');
 % 		end
 		error(['Divergence reached, k=' num2str(k)]);
     end
@@ -187,10 +193,12 @@ if strcmpi(doScale,'yes')
   	x_filt=T1*x_filt;
   	P_ss=T1*P_ss*T1.';
 	
-	% Set these to empty for safety
+	% Set these to empty for safety, not yet checked how these would be affected
   	M_ss=[];
   	L_ss=[];
 end
+
+
 %%
 
 

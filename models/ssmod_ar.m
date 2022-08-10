@@ -1,24 +1,23 @@
 function [A_ss,B_ss]=ssmod_ar(A_block,B,j_lag)
 
-
 %% PSD of AR-model
-
+%
 % AR-form:
 % y[n] = sum_r_1toP( A_r[j(r)]*y[n-j(r)] ) + B*eta[n]
-
+%
 % State-space form:
 % x[n]=A_ss*x[n-1]+B_ss*eta[n]
-
+%
 % |y[n]  |     | A1 A2 A3 A4 | |y[n-1]|   |B| eta[n]
 % |y[n-1]|   = | I  0  0  0  | |y[n-2]| + |0|
 % |y[n-2]|     | 0  I  0  0  | |y[n-3]|   |0|
 % |y[n-3]|     | 0  0  I  0  | |y[n-4]|   |0|
-
+%
 % Inputs:
 % A_block: cell of square A-matrices: A_block={A[j(1)],A[j(2)],...} or in 3d: A_block(:,:,1)=A[j(1)], A(:,:,2)=A[j(2)]
 % B: input matrix
 % j_lag: vector with lags for the AR-model. The non-sparse AR has j_lag=[0,1,2,3,...].
-
+%
 % Inputs:
 % A_ss: state matrix
 % B_ss: input matrix

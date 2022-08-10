@@ -1,7 +1,7 @@
 function [F,L,H,Ht,S_par,R_par]=ssmod_maternglobal(lambda_vec,sigma_w_vec,p_vec,w_axis,tau_axis,calcfast)
 
 %% Block diagonal Matern state space model
-
+%
 % Inputs:
 % lambda_vec: vector with hyperparameters, inverse length scale
 % sigma_vec: vector with hyperparameters, standard deviations
@@ -9,12 +9,12 @@ function [F,L,H,Ht,S_par,R_par]=ssmod_maternglobal(lambda_vec,sigma_w_vec,p_vec,
 % w_axis: frequency axis in [rad/s], can be omitted
 % tau_axis: time axis in [s], can be omitted
 % calcfast: false/true for premade equations or general calculation through state-space model
-
+%
 % Outputs:
 % F: state matrix (cont)
 % L: input matrix (cont)
 % H: output matrix (cont)
-
+%
 %%
 
 if nargin<6
