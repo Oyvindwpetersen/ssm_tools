@@ -4,6 +4,8 @@ clc
 clear all
 close all
 
+%%
+
 rng(1);
 
 freq=[0.05 0.2]
@@ -28,6 +30,9 @@ Lc=eye(2);
 
 Ac_aug=[Ac Bc*Hc ; zeros(2,4) Fc];
 
+
+%% Covariance for LFM
+
 Qcw=diag([3 2]);
 Qcw_aug=blockDiagonal(zeros(size(Ac)),Lc*Qcw*Lc.');
 
@@ -43,6 +48,8 @@ ylog;
 plotcorr(Qdw_aug);
 
 % ratio=1./(Qw_aug(end,end)./diag(Qw_aug))
+
+%% Covariance for additional white noise excitation
 
 Qce=diag([0.5 0.8]);
 Qce_aug=blockDiagonal(Bc*Qce*Bc.',zeros(2));
@@ -82,12 +89,11 @@ tilefigs
 
 Ad_aug=expm(Ac_aug*dt);
 
-Pa_inf= lyap(Ac_aug,Qcw_aug)
+% Pa_inf= lyap(Ac_aug,Qcw_aug)
+% Qd_test=Pa_inf-Ad_aug*Pa_inf*Ad_aug.';
 
-Qd_test=Pa_inf-Ad_aug*Pa_inf*Ad_aug.';
 
-
-%% Check effect of dt
+%% Effect of dt
 
 dt_mat=10.^[-3:0.1:0];
 
@@ -106,7 +112,7 @@ tilefigs;
 ylog;
 xlog;
 
-%% Check matrix method vs integral
+%% Check matrix method vs numerical integral method
 
 Qdw_aug1=covarianceContToDisc(Ac_aug,Qcw_aug,dt,'matrix');
 Qdw_aug2=covarianceContToDisc(Ac_aug,Qcw_aug,dt,'integral');

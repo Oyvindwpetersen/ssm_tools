@@ -1,4 +1,4 @@
-function [domegasim,omega_max]=MC_freqaxis(dt_target,T_target);
+function [domegasim,omega_max]=MC_freqaxis(dt_target,T_target)
 
 %% Find required omega axis in Monte Carlo simulation with target dt and T
 %
@@ -26,8 +26,11 @@ while converged==false
 
 	omegaaxissim=domegasim:domegasim:omega_max;
 	NFFT=2^nextpow2(2*length(omegaaxissim));
-	t=linspace(0,2*pi/domegasim,NFFT);
-	dt=diff(t(1:2));
+    
+% 	t=linspace(0,2*pi/domegasim,NFFT);
+% 	dt=diff(t(1:2));
+    
+    dt=(2*pi/domegasim)/(NFFT-1);
 
 	if dt>dt_target
 	omega_max=omega_max+0.1;

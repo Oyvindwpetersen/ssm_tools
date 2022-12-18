@@ -1,83 +1,90 @@
-%%
+%% Verification of KF/RTS
+
 clc
 clear all
+close all
 
-rng(1);
-omega=diag([3 6]);
-gamma=2*omega*0.02
+% rng('Default');
 
-dt=0.01;
+%% Create system
 
-phi=eye(2);
+mod=ImportSimplySupportQuick(2);
 
-Sa=[1 0 ; 0 1  ].';
-Sd=[0 0 ; 0 0].';
+mod.dt=0.05;
 
-% Sa=[0 0 ; 0 0].';
-% Sd=[1 0 ; 0 1  ].';
+%% Disc force
 
-% Sp=[1 0.5].';
+mod.a_cell={'10_U' '20_U' '30_U' '40_U' '50_U' '60_U' '70_U' '80_U' '90_U'}
+mod.d_cell=mod.a_cell;
+mod.p_cell={'30_U'}
+[mod.Sd,mod.Sa,mod.Sp]=DofSelection(mod.d_cell,mod.a_cell,mod.p_cell,mod.doflabel);
 
-[A B G J Ac Bc F]=ssmod_modal(phi,omega,gamma,Sa,Sd,[],dt);
+[mod.A mod.B mod.G mod.J mod.Ac mod.Bc]=ssmod_modal(mod.phi,mod.Omega,mod.Gamma,mod.Sa,mod.Sd,mod.Sp,mod.dt,'force','disc');
 
-Tmax=100;
-t=[0:dt:Tmax];
+mod.ny=size(mod.Sa,1); mod.nx=size(mod.A,1); mod.np=size(mod.Sp,2);
 
-p=randn(2,length(t));
+%%
 
-x0=zeros(4,1);
+mod.Q=eye(mod.nx)*[1e-2]^2;
+mod.R=eye(mod.ny)*[1e-4]^2;
+mod.S=zeros(mod.nx,mod.ny);
+% mod.S=[ones(mod.nx/2,mod.ny)*0.1 ; ones(mod.nx/2,mod.ny)*-0.1].*diag(mod.Q).^0.5.*(diag(mod.R).').^0.5;
 
-[x,y]=ssmod_forward(A,B,G,J*0,[],x0,p);
+Ctot=[mod.Q mod.S ; mod.S.' mod.R]
+Ctot=plotcorr([mod.Q mod.S ; mod.S.' mod.R]);
 
-Q=cov((B*p).');
-R=diag([4e-6 1e-6])*10;
+sim.nt=1e4+1;
+sim.t=[1:sim.nt]*mod.dt;
 
-S=zeros(4,2);
 
-noise=diag(R).^0.5.*randn(size(R,1),length(t));
+%% Generate noise
 
-ynoise=y+noise;
+[sim.w,sim.v]=cov_noisegen(mod.Q,mod.R,mod.S,sim.t);
 
 close all
-plotTime(t,x);
-plotTime(t,y,ynoise);
-clear y
+
+sim.x0=zeros(mod.nx,1);
+[sim.x,sim.y]=ssmod_forward_stoch(mod.A,[],mod.G,[],[],sim.x0,[],sim.w,sim.v);
+
+% plotTime(sim.t,sim.x);
+% plotTime(sim.t,sim.y);
+
+tilefigs
+
 %% Estimate
 
-P_0_0=eye(size(Q));
-F=A
-H=G
+P_0_0=eye(size(mod.Q));
 
-[x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KalmanFilter(F,H,Q,R,S,ynoise,x0,P_0_0,'steadystate','yes');
-[x_k_N,P_k_N]=RTSSmoother(F,x_k_k,x_k_kmin,P_k_k,P_k_kmin,'steadystate','yes');
+[x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KalmanFilter(mod.A,mod.G,mod.Q,mod.R,mod.S,sim.y,sim.x0,P_0_0,'steadystate','yes');
+[x_k_N,P_k_N]=RTSSmoother(mod.A,x_k_k,x_k_kmin,P_k_k,P_k_kmin,'steadystate','yes');
 
 close all
 
-plotTime(t,x,x_k_kmin,x_k_k,x_k_N);
-plotFreq(t,x,x_k_kmin,x_k_k,x_k_N,'xlim',[0 10]);
+plotTime(sim.t,sim.x,x_k_kmin,x_k_k,x_k_N);
+plotFreq(sim.t,sim.x,x_k_kmin,x_k_k,x_k_N,'xlim',[0 10]);
 
 
 figure(); hold on;
 plot(diag(P_k_kmin),'-ob');
-plot(diag(P_k_k),'-xr');
-plot(diag(P_k_N),'-dm');
-plot(std(x-x_k_kmin,0,2).^2,'--ob');
-plot(std(x-x_k_k,0,2).^2,'--xr');
-plot(std(x-x_k_N,0,2).^2,'--dm');
+plot(diag(P_k_k),'-or');
+plot(diag(P_k_N),'-om');
+plot(std(sim.x-x_k_kmin,0,2).^2,'--xb');
+plot(std(sim.x-x_k_k,0,2).^2,'--xr');
+plot(std(sim.x-x_k_N,0,2).^2,'--xm');
 ylog;
 
 legend({'P_k_kmin (filter)' 'P_k_k (filter)' 'P_k_N (filter)' 'P_k_kmin (empirical)' 'P_k_k (empirical)' 'P_k_N (empirical)'})
 
 %% Check that SS and no SS is equal
 
-[x_k_k_noss,x_k_kmin_noss,P_k_k_noss,P_k_kmin_noss]=KalmanFilter(F,H,Q,R,S,ynoise,x0,P_0_0,'steadystate','no');
-[x_k_N_noss,P_k_N_noss]=RTSSmoother(F,x_k_k_noss,x_k_kmin_noss,P_k_k_noss,P_k_kmin_noss,'steadystate','no');
+[x_k_k_noss,x_k_kmin_noss,P_k_k_noss,P_k_kmin_noss]=KalmanFilter(mod.A,mod.G,mod.Q,mod.R,mod.S,sim.y,sim.x0,P_0_0,'steadystate','np');
+[x_k_N_noss,P_k_N_noss]=RTSSmoother(mod.A,x_k_k_noss,x_k_kmin_noss,P_k_k_noss,P_k_kmin_noss,'steadystate','no');
 
 close all
 
-plotTime(t,x_k_kmin,x_k_kmin_noss);
-plotTime(t,x_k_k,x_k_k_noss);
-plotTime(t,x_k_N,x_k_N_noss);
+plotTime(sim.t,x_k_kmin,x_k_kmin_noss);
+plotTime(sim.t,x_k_k,x_k_k_noss);
+plotTime(sim.t,x_k_N,x_k_N_noss);
 
 % plotFreq(t,x,x_k_kmin,x_k_k,x_k_N,'xlim',[0 10]);
 
@@ -90,22 +97,22 @@ delta_s=std(x_k_N-x_k_N_noss,0,2)./std(x_k_N,0,2)
 
 P_k_kmin_ss=P_k_kmin;
 P_k_k_ss=P_k_k;
-N_k_ss=P_k_k_ss*F.'/P_k_kmin_ss;
+N_k_ss=P_k_k_ss*mod.A.'/P_k_kmin_ss;
 
-[f_axis,Gy]=fft_function(ynoise,dt);
+[f_axis,Gy]=fft_function(sim.y,mod.dt);
 w_axis=f_axis*2*pi;
 
 % w_axis=[0:0.0001:1]*2*pi;
-nx=size(F,1);
-ny=size(H,1);
+nx=size(mod.A,1);
+ny=size(mod.G,1);
 
 H_yx=zeros(nx*3,ny,length(w_axis));
 
 for k=1:length(w_axis)
-    z=exp(1i*w_axis(k)*dt);
+    z=exp(1i*w_axis(k)*mod.dt);
     Mat=[
-        -eye(nx)+K_k_ss*H eye(nx) zeros(nx) ;
-        z*eye(nx) -F zeros(nx) ;
+        -eye(nx)+K_k_ss*mod.G eye(nx) zeros(nx) ;
+        z*eye(nx) -mod.A zeros(nx) ;
         N_k_ss*z -eye(nx) eye(nx)-N_k_ss*z 
         ];
     
@@ -142,26 +149,23 @@ close all
 % [f_axis,Gxf]=fft_function(x_k_k,dt);
 % [f_axis,Gxs]=fft_function(x_k_N,dt);
 
-
-Gxp2=zeros(4,length(w_axis));
-Gxf2=zeros(4,length(w_axis));
-Gxs2=zeros(4,length(w_axis));
+Gxp2=zeros(mod.nx,length(w_axis));
+Gxf2=zeros(mod.nx,length(w_axis));
+Gxs2=zeros(mod.nx,length(w_axis));
 
 for k=1:length(w_axis)
     Gxp2(:,k)=Hp(:,:,k)*Gy(:,k);
     Gxf2(:,k)=Hf(:,:,k)*Gy(:,k);
     Gxs2(:,k)=Hs(:,:,k)*Gy(:,k);
 end
-    
 
-[tau,x_k_kmin2]=ifft_function(Gxp2,1/dt);
-[tau,x_k_k2]=ifft_function(Gxf2,1/dt);
-[tau,x_k_N2]=ifft_function(Gxs2,1/dt);
+[tau,x_k_kmin2]=ifft_function(Gxp2,1/mod.dt);
+[tau,x_k_k2]=ifft_function(Gxf2,1/mod.dt);
+[tau,x_k_N2]=ifft_function(Gxs2,1/mod.dt);
 
-
-plotTime(t,x_k_kmin,x_k_kmin2);
-plotTime(t,x_k_k,x_k_k2);
-plotTime(t,x_k_N,x_k_N2);
+plotTime(sim.t,x_k_kmin,x_k_kmin2);
+plotTime(sim.t,x_k_k,x_k_k2);
+plotTime(sim.t,x_k_N,x_k_N2);
 
 delta_p=std(x_k_kmin-x_k_kmin2,0,2)
 delta_f=std(x_k_k-x_k_k2,0,2)

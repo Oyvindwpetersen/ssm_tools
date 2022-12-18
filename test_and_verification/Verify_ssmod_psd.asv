@@ -20,4 +20,24 @@ S_ss=mtimes3(H,Sw,H,'nnh');
 
 close all
 
+
+dt=0.02;
+[Fd,~,Hd]=ssmod_c2d(Fc,[],Hc,[],dt);
+Ld=eye(size(Fd));
+
+Qc=Lc*sigma_w.^2*Lc.';
+Qd=cov_c2d(Fc,Qc,dt);
+
+t=[0:dt:1000];
+s0=zeros(size(Fd,1),1);
+
+w_sim=mvnrnd(zeros(size(Fd,1),1),Qd,length(t)).';
+
+[s,p]=ssmod_forward(Fd,Ld,Hd,[],[],s0,w_sim);
+
+
+
 plotSpectrum(omega,S_exact,S_ss,'LineStyleSet',{'-' '--'},'xlim',[0 10],'legend',{'Exact original' 'State-space model'});
+
+
+

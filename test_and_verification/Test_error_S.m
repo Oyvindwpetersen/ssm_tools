@@ -31,7 +31,7 @@
 
 %%
 
-% Note 2020-15-05:
+% Note 2020-05-15:
 
 % JIS with S appears to be the same for Maes (2016) and Yan Niu (2011). 
 

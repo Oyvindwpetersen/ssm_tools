@@ -55,9 +55,10 @@ if all(all(F==0))
 
         for k=1:nt-1
             x(:,k+1)=A*x(:,k)+B*p(:,k)+w(:,k);
-            y(:,k)=G*x(:,k)+J*p(:,k)+v(:,k);
+%             y(:,k)=G*x(:,k)+J*p(:,k)+v(:,k);
         end
-
+            y=G*x+J*p+v;
+            
         % Final time step
         y(:,nt)=G*x(:,nt)+J*p(:,nt)+v(:,nt);
 

@@ -1,6 +1,6 @@
 function [x_filt p_filt P_ss Pp_ss M_ss L_ss] = JIS_trunc_ss(A,B,G,J,y,x0,R,Q,S,P01,varargin)
 
-%% Joint input and state estimation for system with additional known inputs
+%% Joint input and state estimation for linear system
 
 % Model
 % x(k+1)=A*x(k)+B*p(k)+w(k);

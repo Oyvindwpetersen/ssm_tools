@@ -18,9 +18,31 @@ function [w,v]=cov_noisegen(Q,R,S,t)
 
 %% Generate noise
 
+
 nt=length(t);
 
+if isempty(Q) & isempty(S)
+    [w]=mvnrnd(zeros(size(Q,1),1),Q,nt).';
+    return
+end
+
+nq=size(Q,1);
+nr=size(R,1);
+
+if isempty(S)
+    S=zeros(nq,nr);
+end
+
+
 Ctot=[Q S ; S.' R];
+
+Ctot=(Ctot+Ctot.')/2;
+
+[v,d]=eig(Ctot);
+dd=diag(d);
+if any(dd<0)
+    disp(dd);
+end
 
 [wv]=mvnrnd(zeros(size(Ctot,1),1),Ctot,nt).';
 

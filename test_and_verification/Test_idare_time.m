@@ -3,7 +3,7 @@
 % S vs no S
 % scaling vs noscaling
 
-% conc:
+% Conc:
 % S or no S plays no role
 % noscaling gives 1/3 reduction in computational time
 

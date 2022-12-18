@@ -23,7 +23,7 @@ end
     
 %% Disc time
 
-if ~isempty(dt);
+if ~isempty(dt)
 
 nlag_max=ceil(tau_max/dt);
 ind=0;

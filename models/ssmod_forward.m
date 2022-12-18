@@ -47,6 +47,10 @@ end
 
 if isempty(G) & isempty(J)
     y=[];
+elseif isempty(J)
+    y=G*x; 
+    %y for final step, making x and y same length
+    y(:,nt)=G*x(:,nt);    
 else
     y=G*x+J*p; 
     %y for final step, making x and y same length

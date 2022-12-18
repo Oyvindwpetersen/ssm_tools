@@ -1,52 +1,59 @@
-function [Fc,Lc,Hc,sigma_w,alpha]=ssmod_psd_rf(n,a)
+function [Fc,Lc,Hc,sigma_w]=ssmod_psd_rf(n,d,alpha)
 
 %% Design of state-space model with target spectral density
 %
+% Model:
 % ds/dt=Fc*s(t)+Lc*w(t)
 % p(t)=Hc*s(t)
 %
 % The (two-sided) PSD of the output p(t) is the rational function
 %
-% S(omega)=N(omega)/A(omega)=alpha*N(omega)/D(omega)
+% S(omega)=alpha*N(omega)/D(omega)
 %
-% N(omega)=n0+n2*omega^2+n4*omega^4+...
-% A(omega)=a0+a2*omega^2+a4*omega^4+a6*omega^6+...
+% N(omega)=n0+n2*omega^2+n4*omega^4+...+n_2M*omega^(2M)
+% D(omega)=d0+d2*omega^2+d4*omega^4+...+d_2K*omega^(2K)
 %
 % Inputs:
-% n: vector with polynomial coefficients n=[n0 n2 n4 ...];
-% a: vector with polynomial coefficients a=[a0 a2 a4 a6 ...];
+% n: polynomial coefficients of N(omega), even terms only, n=[n_2M ... n2 n0]
+% d: polynomial coefficients of D(omega), even terms only, d=[d_2K ... d2 d0]
 %
 % Outputs:
 % Fc: state matrix (cont)
 % Lc: input matrix (cont)
 % Hc: output matrix (cont)
 % sigma_w: standard deviation of w
-% alpha: scale factor such that d(end)=1
-
+%
 %% Example numbers
 
 % omega=[0:0.01:20];
 
-% a=[1 -3 5 2];
-% n=[0 1 0];
-% S_exact(1,1,:)=omega.^2./(1-3*omega.^2+5*omega.^4+2*omega.^6);
-
-% Matern with lambda=0.3, sigma_w=2.2
-% a=[0.3^2 1]*2*pi/(2.2^2);
-% n=1
-% S_exact(1,1,:)=2.2.^2./(2*pi*(0.3.^2+omega.^2));
+% d=[1 5 -3 8];
+% n=[1 0];
+% alpha=5;
+% S_exact(1,1,:)=5*omega.^2./(8-3*omega.^2+5*omega.^4+omega.^6);
 
 %%
 
 % Ensure row vector
-if size(a,1)>size(a,2); a=a.'; end
+if size(d,1)>size(d,2); d=d.'; end
 if size(n,1)>size(n,2); n=n.'; end
 
-% Scale factor
-alpha=1/a(end);
+% Cut at highest polynomial order not equal to zero
+ind_first_nonzero=find(n~=0,1);
 
-% Highest d coefficient equal to one
-d=a*alpha;
+if ind_first_nonzero>1
+    n=n(ind_first_nonzero:end);
+end
+
+if abs(n(1)-1)>1e-12
+    n
+    error('First coefficient in n must be 1');
+end
+
+if abs(d(1)-1)>1e-12
+    d
+    error('First coefficient in d must be 1');
+end
 
 % White noise variance
 sigma_w_squared=alpha*2*pi;
@@ -57,13 +64,9 @@ sigma_w=sqrt(sigma_w_squared);
 
 num_d=length(d);
 
-if d(end)==0
-    warning('Highest d coefficient is zero. This means the state-space model is smaller than intended.');
+if d(1)==0
+    error('Highest d coefficient is zero. This means the state-space model is smaller than intended.');
 end
-
-% Cut at highest polynomial order not equal to zero
-ind_cut=max(find(n~=0));
-n=n(1:ind_cut);
 
 num_n=length(n);
 
@@ -75,18 +78,16 @@ end
 
 %% Denominator
 
-% Fill zero for odd terms, reverse every other term
-d_all=[];
-for k=1:length(d)
-    if mod(k,2)==1; signcoeff=1;
-    else signcoeff=-1;
-    end
-    d_all=[d_all signcoeff*d(k) 0];
+% Fill zero for odd terms, flip sign of every other term
+signflip=[];
+for k=0:(length(d)-1)
+    signflip=[(-1)^k signflip] ;
 end
-d_all=d_all(1:end-1);
+d_signflip=d.*signflip;
+d_signflip_all=reshape([d_signflip ; zeros(size(d_signflip))],1,[]); d_signflip_all(end)=[];
 
 % Find roots
-p_all=roots(flip(d_all));
+p_all=roots(d_signflip_all);
 
 % Identify zero roots, remove temporarily
 ind_p_zero=find(p_all==0);
@@ -101,30 +102,29 @@ if ~isempty(ind_p_zero)
     p_selected=[p_selected ; p_zero];
 end
 
-% [c0,c1,c2,...]
-c_coeff=flip(poly(p_selected)); 
+% a_coeff=[a(n),...,a2,a1,a0]
+a_coeff=poly(p_selected); 
 
-if abs(c_coeff(end)-1)>1e-6
+if abs(a_coeff(1)-1)>1e-6
+    a_coeff
     warning('Highest c coefficient should be 1. Something is wrong, check this line');
-    c_coeff
 end
 
-c_coeff=c_coeff(1:end-1);
+% a_coeff=[a(n-1),...,a2,a1,a0]
+a_coeff=a_coeff(2:end); 
 
 %% Nominator
 
-% Fill zero for odd terms, reverse every other term
-n_all=[];
-for k=1:length(n)
-    if mod(k,2)==1; signcoeff=1;
-    else signcoeff=-1;
-    end
-    n_all=[n_all signcoeff*n(k) 0];
+% Fill zero for odd terms, flip sign of every other term
+signflip=[];
+for k=0:(length(n)-1)
+    signflip=[(-1)^k signflip];
 end
-n_all=n_all(1:end-1);
+n_signflip=n.*signflip;
+n_signflip_all=reshape([n_signflip ; zeros(size(n_signflip))],1,[]); n_signflip_all(end)=[];
 
 % Find roots
-z_all=roots(flip(n_all));
+z_all=roots(n_signflip_all);
 
 % Identify zero roots, remove temporarily
 ind_z_zero=find(z_all==0);
@@ -139,23 +139,21 @@ if ~isempty(ind_z_zero)
     z_selected=[z_selected ; z_zero];
 end
 
-% [b0,b1,b2,...]
-b_coeff=flip(poly(z_selected));
+% c_coeff=[b(n),...,b2,b1,b0]
+c_coeff=poly(z_selected);
 
 % Add zeros to b coeff if the nominator poly is lower than the denominator minus one (e.g. D~omega^6 and N~omega^2)
-b_zeros=zeros(1,num_d-num_n-1);
-b_coeff=[b_coeff b_zeros];
-
+c_zeros=zeros(1,num_d-num_n-1);
 
 %% State-space matrices
 
-ns=length(c_coeff);
+ns=length(a_coeff);
 
-Fc=[zeros(ns-1,1) eye(ns-1) ; -c_coeff];
+Fc=[zeros(ns-1,1) eye(ns-1) ; -flip(a_coeff)];
 
 Lc=zeros(ns,1); Lc(end)=1;
 
-Hc=b_coeff;
+Hc=[flip(c_coeff) c_zeros];
 
 %% 
 % return

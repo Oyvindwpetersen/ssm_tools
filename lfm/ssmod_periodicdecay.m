@@ -9,7 +9,7 @@ elseif strcmpi(kernel,'matern')
     p_order=ns-1;
     [Fq,Lq,Hq,sigma_w]=ssmod_matern(lambda,p_order,sigma_p);
 else
-    error('Kernel not reqcognized')
+    error('Kernel not recognized')
 end
 
 % Periodic kernel

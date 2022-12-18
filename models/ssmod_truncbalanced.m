@@ -60,6 +60,9 @@ SD_sum=sum(SD);
 figure(); hold on; grid on;
 plot(SD./SD_sum,'x');
 
+
+
+
 SD_cumsum=cumsum(SD);
 plot(SD_cumsum./SD_sum,'o');
 
@@ -71,5 +74,9 @@ title('Singulvar values (normalized)');
 legend({'SV' 'Cummulative SV' '90%' '99%' '99.9%'});
 
 set(gca,'Yscale','log');
+
+
+figure(); hold on; grid on;
+plot(SD./SD(1),'x'); ylog;
 
 end

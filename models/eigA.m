@@ -1,18 +1,20 @@
-function [lambda,phi,w,xi]=eigA(A,dt)
+function [lambda,phi,omega,xi]=eigA(A,dt)
 
 %% Eigenvalues for A-matrix
 %
 % Inputs:
 % A: state matrix (cont or disc)
-% dt: time discretization, if omitted or empty then A is Ac (cont)
+% dt: time discretization, if omitted or empty then A=Ac (continuous time); if provided, then A=Ad
 %
 % Outputs:
 % lambda: eigenvalues of A
 % phi: eigenvectors of A
-% w: undamped natural frequency, abs(lambda)
+% omega: undamped natural frequency, abs(lambda)
 % xi: damping ratio, -real(lambda)./abs(lambda)
 %
 %% If A is a cell with many A-matrices, calculate for all
+
+% Stack 3D
 
 if iscell(A)
     A_cell=A;  A=zeros(size(A_cell{1},1),size(A_cell{1},2),length(A_cell));
@@ -40,10 +42,9 @@ v=v(:,i_sort);
 
 v=v./max(abs(v),[],1);
 
-
 lambda=d_cont;
 phi=v;
-w=abs(lambda); 
+omega=abs(lambda); 
 xi=-real(lambda)./abs(lambda); 
 
 end
@@ -76,19 +77,19 @@ if s3>1
 
     lambda=d_cont;
 %     phi=v;
-    w=abs(lambda);
+    omega=abs(lambda);
     xi=-real(lambda)./abs(lambda);
     
     v_all(:,:,k)=v;
     lambda_all(:,k)=lambda;
-    w_all(:,k)=w;
+    omega_all(:,k)=omega;
     xi_all(:,k)=xi;
     
     end
     
 %     v=v_all;
     lambda=lambda_all;
-    w=w_all;
+    omega=omega_all;
     xi=xi_all;
     phi=v_all;
 end

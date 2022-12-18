@@ -27,11 +27,15 @@ plot(mod.phi(2:6:end,1:6));
 linevertical(gca,[20 40],'-',2,'b')
 linevertical(gca,[10],'-',2,'k')
 
-
 %% Forces
 
 mod.a_cell=getLabel('U2',[20 40]+1e3); 
 mod.p_cell=getLabel('U2',[12 ]+1e3);
+mod.d_cell=getLabel('U2',[20 40]+1e3);
+
+
+mod.a_cell=getLabel('U2',[20 40 ]+1e3); 
+mod.p_cell=getLabel('U2',[20 ]+1e3);
 mod.d_cell=getLabel('U2',[20 40]+1e3);
 
 % mod.a_cell=getLabel('U2',[10 20 40 50 60 70 ]+1e3); 
@@ -56,13 +60,21 @@ disp(['rank(J) = ' num2str(rank(mod.J)) ', cond(J) = ' num2str(cond(mod.J),'%0.3
 
 %%
 
-fid.t=[0:dt:10000];
+T=1000
+fid.t=[0:dt:T];
 
 fid.x0=zeros(mod.nm*2,1);
 
 fid.p=[];
 % fid.p(1,:)=sin( cos(fid.t*1.5).*(fid.t+20)*0.2);
-fid.p=BandLimitedWhiteNoise(0.4,8,fid.t,1)
+fid.p(1,:)=sin( cos(fid.t.^(1*0.5)).*fid.t*1/10);
+
+
+fid.p(1,:)=chirp(fid.t-T/2,0.1,T/2,8,'quadratic',[],'convex');
+
+pspectrum(fid.p,fid.t,'spectrogram','TimeResolution',1, ...
+    'OverlapPercent',90,'Leakage',0.85)
+% fid.p=BandLimitedWhiteNoise(0.4,8,fid.t,1)
 
 % fid.p(1,:)=sin( 2*pi*linspace(0,10,length(fid.t)).*fid.t);
 % fid.p(1,:)=sin( 2*pi*(exp(linspace(-2,1,length(fid.t))/2)).*fid.t);

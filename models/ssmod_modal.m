@@ -1,4 +1,4 @@
-function [A B G J Ac Bc F]=ssmod_modal(phi,omega,gamma,Sa,Sd,Sp,dt,varargin)
+function [A B G J Ac Bc Gc Jc F]=ssmod_modal(phi,omega,gamma,Sa,Sd,Sp,dt,varargin)
 
 %% Impulse response function for state space model
 
