@@ -32,9 +32,14 @@ np=size(B,2);
 ns=size(A,1);
 ny=size(C,1);
 
-
 if isempty(D)
     D=zeros(ny,np);
+end
+
+if strcmpi(type,'io')
+    if isempty(D) | isempty(C)
+        error('C,D must be given');
+    end
 end
 
 %%
