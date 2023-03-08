@@ -17,9 +17,14 @@ function [w,v]=cov_noisegen(Q,R,S,t)
 % v: measurement noise
 
 %% Generate noise
-
-
 nt=length(t);
+
+if ~any(any(Q)) & ~any(any(S))
+	[w]=zeros(size(Q,1),nt);
+    [v]=mvnrnd(zeros(size(R,1),1),R,nt).';
+    return
+end
+
 
 if isempty(Q) & isempty(S)
     [w]=mvnrnd(zeros(size(Q,1),1),Q,nt).';
@@ -32,7 +37,6 @@ nr=size(R,1);
 if isempty(S)
     S=zeros(nq,nr);
 end
-
 
 Ctot=[Q S ; S.' R];
 
