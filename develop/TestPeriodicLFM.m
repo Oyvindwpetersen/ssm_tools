@@ -14,9 +14,9 @@ T=6000
 t=[0:dt:T];
 
 sigma_p=3.4
-ns=2;
+ns=3;
 
-[Fc,Lc,Hc,Qc,sigma_w]=ssmod_periodicdecay(w0,lambda,sigma_p,'se',ns);
+[Fc,Lc,Hc,Qc,sigma_w]=ssmod_periodicdecay(w0,lambda,sigma_p,'matern',ns);
 
 
 [Fd,~,Hd,~]=ssmod_c2d(Fc,Lc,Hc,0,dt);
