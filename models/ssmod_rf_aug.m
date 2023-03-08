@@ -3,7 +3,7 @@ function [A B G J Ac Bc Gc Jc F]=ssmod_rf_aug(K,C,M,Ahat,Bhat,Chat,Sa,Sd,Sp,dt)
 %% State space model of augmented system with velocity input
 %
 % [udot ]   [    0            I            0     ][u    ]   [     0      ]
-% [uddot] = [-inv(M)*K   -inv(M)*C   -inv(M)*Chat][udot ] + [ -inv(M)*Sp ] p
+% [uddot] = [-inv(M)*K   -inv(M)*C   -inv(M)*Chat][udot ] + [  inv(M)*Sp ] p
 % [sdot ]   [    0          Bhat        Ahat     ][s    ]   [     0      ]
 %
 % Inputs:
