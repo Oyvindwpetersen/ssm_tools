@@ -55,7 +55,7 @@ c_precalc3=cell(1,size(GG,1));
 for m=1:size(GG,1)
     c_precalc3{m}=zeros(m,length(omegaaxissim));
 	for n=1:m    
-	c_precalc3{m}(n,:)=interp1(omegaaxisinput,permute(GG(m,n,:),[1,3,2]),omegaaxissim,'linear','extrap');
+	c_precalc3{m}(n,:)=interp1(omegaaxisinput,permute(GG(m,n,:),[1,3,2]),omegaaxissim,'linear',0);
 	end
 end
 
