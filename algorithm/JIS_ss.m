@@ -33,8 +33,8 @@ addParameter(p,'minsteps',100,@isnumeric)
 addParameter(p,'maxsteps',100e3,@isnumeric)
 addParameter(p,'convtol',1e-6,@isnumeric)
 addParameter(p,'dispconv',false,@islogical)
-addParameter(p,'B_prime',[],@isnumeric)
-addParameter(p,'J_prime',[],@isnumeric)
+addParameter(p,'Bu',[],@isnumeric)
+addParameter(p,'Ju',[],@isnumeric)
 addParameter(p,'u',[],@isnumeric)
 
 parse(p,varargin{:});
@@ -45,8 +45,8 @@ minsteps=p.Results.minsteps;
 maxsteps=p.Results.maxsteps;
 convtol=p.Results.convtol;
 dispconv=p.Results.dispconv;
-B_prime=p.Results.B_prime;
-J_prime=p.Results.J_prime;
+Bu=p.Results.Bu;
+Ju=p.Results.Ju;
 u=p.Results.u;
 
 %%
@@ -81,20 +81,23 @@ if scale==true
     [A,B,G,J,y,Q,R,S,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,J,y,Q,R,S);
     
     % If deterministic force is present, then scale
-    B_prime=T1_inv*B_prime;
-    J_prime=T2_inv*J_prime;
+    if ~isempty(Bu); Bu=T1_inv*Bu; end
+    if ~isempty(Ju); Ju=T2_inv*Ju; end
     
 end
 
 % Check if deterministic input are present
-if ~isempty(B_prime) & ~isempty(J_prime) & ~isempty(u)
-    % With deterministic input
-elseif isempty(B_prime) & isempty(J_prime) & isempty(u)
-    B_prime=0;
-    J_prime=0;
+if all([isempty(Bu) isempty(Ju) isempty(u)])
+	Bu=0;
+    Ju=0;
     u=zeros(1,nt);
+elseif ~all([isempty(Bu) ~isempty(Ju) ~isempty(u)])
+    % With deterministic input
 else
-    error('All or none of B_prime, J_prime, and u should be empty');
+    size(Bu)
+    size(Ju)
+    size(u)
+    error('All or none of Bu, Ju, and u should be empty');
 end
 
 %% Steady state
@@ -200,9 +203,9 @@ end
 
 for k=1:nt
     
-    p_filt(:,k)=M_ss*(y(:,k)-G*x_pred(:,k)-J_prime*u(:,k));
-    x_filt(:,k)=x_pred(:,k)+L_ss*(y(:,k)-G*x_pred(:,k)-J*p_filt(:,k)-J_prime*u(:,k));
-    x_pred(:,k+1)=A*x_filt(:,k)+B*p_filt(:,k)+B_prime*u(:,k);
+    p_filt(:,k)=M_ss*(y(:,k)-G*x_pred(:,k)-Ju*u(:,k));
+    x_filt(:,k)=x_pred(:,k)+L_ss*(y(:,k)-G*x_pred(:,k)-J*p_filt(:,k)-Ju*u(:,k));
+    x_pred(:,k+1)=A*x_filt(:,k)+B*p_filt(:,k)+Bu*u(:,k);
     
 end
 
