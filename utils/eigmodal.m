@@ -1,18 +1,20 @@
-function [omega,phi]=eigmodal(K,M,varargin)
+function [omega,phi]=eigmodal(K,M,normalize)
 
-%% Find index of x that most closely matches x_val
-
+%% Find mode shapes
+%
 % Inputs:
-% x: vector with all values
-% x_val: vector with desired values
-
+% K: stiffness matrix
+% M: mass matrix
+%
 % Outputs:
-% ind: closest index
-% dist: distances/residuals
-
+% omega: natural frequencies
+% phi: 
+%
 %%
 
-normalize='mass';
+if nargin<3
+    normalize='mass';
+end
 
 n=length(K);
 
@@ -43,11 +45,8 @@ end
 if strcmpi(normalize,'mass')
     
     for i=1:n
-        
-        alfa=1/sqrt(V(:,i)'*M*V(:,i));
-        
+        alfa=1/sqrt(V(:,i).'*M*V(:,i));
         phi(:,i)=V(:,i)*alfa;
-        
     end
     
 end
