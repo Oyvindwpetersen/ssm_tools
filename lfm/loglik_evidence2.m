@@ -19,12 +19,14 @@ function [negLL,negLL_1,negLL_2,negLL_1h,negLL_2h,Nred]=loglik_evidence2(S,y,var
 p=inputParser;
 
 addParameter(p,'cut',[0 0],@isnumeric)
+addParameter(p,'rejectcov',true,@islogical)
 parse(p,varargin{:});
 
 cut=p.Results.cut;
+rejectcov=p.Results.rejectcov;
 
 %%
-if cut(1)>0 | cut(2)>0;
+if cut(1)>0 | cut(2)>0
     
     ind_start=[1+cut(1)];
     ind_end=size(y,2)-cut(2);
@@ -42,7 +44,18 @@ end
 
 N=size(y,2);
 
-negLL_1=N*log(det(S));
+det_S=det(S);
+
+% If determinant inf, then set to nan
+if isinf(abs(det_S))
+    det_S=NaN;
+    
+    negLL_1=NaN; negLL_2=NaN; negLL_2=NaN; negLL_2h=NaN; negLL=NaN;
+    return
+    
+end
+    
+negLL_1=N*log(det_S);
 
 negLL_1h=negLL_1/N;
 
@@ -67,8 +80,21 @@ Temp2=Omega_half_inv*y;
 negLL_2_temp=sum(Temp2.^2,1);
 negLL_2=sum(negLL_2_temp);
 
-
 negLL_2h=negLL_2_temp;
+
+if any(abs(diag(D))>1e100)
+    
+    negLL_1=NaN; negLL_2=NaN; negLL_2=NaN; negLL_2h=NaN; negLL=NaN;
+    return
+    
+end
+
+if any(diag(D)<-1e-6)
+    
+    negLL_1=NaN; negLL_2=NaN; negLL_2=NaN; negLL_2h=NaN; negLL=NaN;
+    return
+    
+end
 
 % negLL_2_check=0;
 % for k=1:length(e)
