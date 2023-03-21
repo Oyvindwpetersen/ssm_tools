@@ -107,7 +107,7 @@ if noscaling==true
 else
     [P_k_kmin_ss,~,~,info]=idare(A.',G.',Q,R,S);  
 end
-
+info.Report
 if info.Report~=0
     
     if info.Report==1
@@ -127,7 +127,6 @@ if info.Report~=0
     
 end
 
-
 if info.Report==1
     disp('***** DARE solution accuracy poor');
     warning('***** DARE solution accuracy poor');
@@ -146,7 +145,23 @@ K_k_ss=(A*P_k_kmin_ss*G.'+S)*Omega_k_ss_inv;
 % close all
 
 % Possibly do further iterations on steady state
-% Removed
+
+for k=1:100
+    
+    % measurement update    
+    Omega_k_ss=G*P_k_kmin_ss*G.'+R; Omega_k_ss=forcesym(Omega_k_ss);
+    Omega_k_ss_inv=eye(size(Omega_k_ss))/Omega_k_ss; 
+
+    P_k_k_ss=P_k_kmin_ss-P_k_kmin_ss*G.'*Omega_k_ss_inv*G*P_k_kmin_ss; P_k_k_ss=forcesym(P_k_k_ss);
+	K_k_ss=(A*P_k_kmin_ss*G.'+S)*Omega_k_ss_inv;
+    
+    % time update
+ 	P_k_kmin_ss=A*P_k_kmin_ss*A.'-(A*P_k_kmin_ss*G.'+S)*Omega_k_ss_inv*(A*P_k_kmin_ss*G.'+S).'+Q; P_k_kmin_ss=forcesym(P_k_kmin_ss);
+          
+end
+
+
+
 
 t0=tic;
 Mat_precalc=(P_k_kmin_ss*G.')*Omega_k_ss_inv;
