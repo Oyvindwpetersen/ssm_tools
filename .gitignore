@@ -1,0 +1,8 @@
+
+
+# Other
+develop/
+__old__/
+
+# TOML file
+*.toml
