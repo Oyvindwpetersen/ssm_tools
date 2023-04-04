@@ -226,21 +226,12 @@ warning('on','MATLAB:singularMatrix');
 if do_plot
     
     plotopt=struct();
-%     plotopt.xlim=[0 10];
-%     plotopt.legend={'Target' 'Initial' 'Optimized'};
-%     plotopt.legend={'Target' 'Initial' 'Optimized'};
-% 
-%     plotSpectrum(omega,S_target,S0,S_opt2,plotopt);
-
-    plotopt=struct();
     plotopt.xlim=[0 10];
     plotopt.xlabel={'Frequency [rad/s]'};
-    plotopt.Displayname={'Target' 'Initial' 'Optimized'};
-    plotopt.LineStyle={'-' '-' '--'};
-    disp('aa')
-%     clc
+    plotopt.displayname={'Target' 'Initial' 'Optimized'};
+    plotopt.lineStyle={'-' '-' '--'};
+    
     plotpsd(omega,S_target,S0,S_opt2,plotopt);
-%     plotpsd(omega,S_target,S0,S_opt2,plotopt);
 end
 
 %%
