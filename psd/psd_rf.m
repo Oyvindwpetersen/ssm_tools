@@ -15,6 +15,7 @@ function S_rf=psd_rf(omega,n,d,alpha)
 % Outputs:
 % S_rf: 1*1*N spectral density
 %
+
 %%
 
 if nargin==3

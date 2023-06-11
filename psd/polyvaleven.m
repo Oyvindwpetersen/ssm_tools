@@ -10,6 +10,7 @@ function y=polyvaleven(p,x)
 % Outputs:
 % y: polynomial
 %
+
 %% Evaluate polynomial recursively
 
 % Copied from polyval.m, x replaced with x_squared 

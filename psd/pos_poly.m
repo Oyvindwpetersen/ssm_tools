@@ -13,6 +13,7 @@ function [r,c_even,c_all]=pos_poly(R,I,forcezero)
 % c_even: polynomial coeffcients for even terms, c_even=[c(k) c(k-2) ... c(2) c(0)];
 % c_all: polynomial coeffcients for all terms, c=[c(k) 0 c(k-2) 0 ... 0 c(2) 0 c(0)];
 %
+
 %%
 
 if nargin==2

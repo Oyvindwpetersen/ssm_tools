@@ -16,6 +16,7 @@ function [n_opt,d_opt,alpha_opt,S_opt,rn_opt,rd_opt]=fit_psd_rf(omega,S_target,o
 % order_d: order of D-polynomial, must be even
 % varargin: see below
 %
+
 %% Inputs
 
 p=inputParser;
