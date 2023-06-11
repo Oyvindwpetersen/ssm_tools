@@ -145,7 +145,7 @@ end
 
 S0=psd_rf_func(x0);
 
-% plotSpectrum(omega,S_target,S0,'xlim',[0 10]);
+% plotpsd(omega,S_target,S0,'xlim',[0 10]);
 
 %% Scaling of objective function for easier interpretation
 
