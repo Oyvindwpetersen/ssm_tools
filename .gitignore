@@ -3,6 +3,70 @@
 # Other
 develop/
 __old__/
+expired/
+doc_private/
+*expired*/
+*.asv*/
 
 # TOML file
 *.toml
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Other
+dist/
+__old__/
+develop/
+
+# Python cache
+**/__pycache__/
+*.pyc
+
+# Abaqus replay
+*.rpy*
+*.rpy.*
+*.rpy.?
+*.rpy.??
+*.guiState*
+
+# TOML file
+*.toml
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Translations
+*.mo
+*.pot
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
