@@ -1,4 +1,4 @@
-function [x_filt p_filt P_ss Pp_ss M_ss L_ss]=JIS_ss(A,B,G,J,y,x0,R,Q,S,P01,varargin)
+function [x_filt p_filt P_ss Pp_ss M_ss L_ss]=JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,varargin)
 %% Joint input and state estimation for linear system
 %
 % Model
@@ -12,8 +12,8 @@ function [x_filt p_filt P_ss Pp_ss M_ss L_ss]=JIS_ss(A,B,G,J,y,x0,R,Q,S,P01,vara
 % J: direct transmission matrix
 % y: output vector
 % x0: initial state estimate
-% R: output noise covariance
 % Q: state noise covariance
+% R: output noise covariance
 % S: mixed noise covariance
 % P01: initial state error covariance
 %
