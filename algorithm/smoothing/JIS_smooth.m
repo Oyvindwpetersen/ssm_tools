@@ -1,11 +1,11 @@
 function [x_smooth p_smooth P_x_ss P_p_ss P_xp_ss P_px_ss]=JIS_smooth(A,B,G,J,y,R,Q,S,x0,P01,L,varargin)
 
 %% Joint input and state estimation with smoothing
-
+%
 % Model
 % x(k+1)=A*x(k)+B*p(k)+w(k);
 % y=G*x(k)+J*p(k)+v(k);
-
+%
 % Inputs:
 % A: state matrix
 % B: input matrix
@@ -18,7 +18,7 @@ function [x_smooth p_smooth P_x_ss P_p_ss P_xp_ss P_px_ss]=JIS_smooth(A,B,G,J,y,
 % x0: initial state estimate
 % P01: initial state error covariance
 % L: number of lags
-
+%
 % Outputs:
 % x_smooth: smoothed state estimate
 % p_smooth: smoothed input estimate
@@ -27,6 +27,7 @@ function [x_smooth p_smooth P_x_ss P_p_ss P_xp_ss P_px_ss]=JIS_smooth(A,B,G,J,y,
 % P_xp_ss: mixed state/input error covariance
 % P_px_ss: mixed state/input error covariance
 
+%% Parse inputs
 
 p=inputParser;
 % p.KeepUnmatched=true;
