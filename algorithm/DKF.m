@@ -1,7 +1,7 @@
 function [x_filt p_filt x_pred]=DKF(A,B,G,J,y,x0,p0,Q,R,Qp,P0,Pp0,varargin)
 
 %% Dual Kalman Filter
-
+%
 % Inputs:
 % A: state matrix
 % B: input matrix
@@ -14,7 +14,7 @@ function [x_filt p_filt x_pred]=DKF(A,B,G,J,y,x0,p0,Q,R,Qp,P0,Pp0,varargin)
 % Q: state noise covariance
 % P0: initial state error covariance
 % Pp0: initial input error covariance
-
+%
 % Outputs:
 % x_filt: filter state estimate
 % p_filt: filter input estimate

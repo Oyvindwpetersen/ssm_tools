@@ -1,11 +1,11 @@
 function [x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KalmanFilterWithInput(A,B,G,J,Q,R,S,y,p_det,x0,P_0_0,varargin)
 
 %% Kalman filter with known input
-
+%
 % Model:
 % x(k+1)=F*x(k)+B*p(k)+w(k);
 % y=G*x(k)+J*p(k)+v(k);
-
+%
 % Inputs:
 % A: state matrix
 % B: input matrix
@@ -18,8 +18,9 @@ function [x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KalmanFilterWithInput(A,B,G,J,Q,
 % p_det: known (deterministic) input
 % x0: initial state estimate
 % P_0_0: initial state error covariance
+%
 
-%% Input
+%% Parse inputs
 
 p=inputParser;
 p.KeepUnmatched=true;

@@ -1,24 +1,24 @@
 function [x_k_N,P_k_N,P_klag_N]=RTSSmoother(A,x_k_k,x_k_kmin,P_k_k,P_k_kmin,varargin)
 
 %% RTS smoother
-
+%
 % Inputs:
 % A: state matrix
 % x_k_k: filter state estimate from Kalman filter
 % x_k_kmin: prediction state estimate from Kalman filter
 % P_k_k: filter error covariance from Kalman filter
 % P_k_kmin: prediction error covariance from Kalman filter
-
+%
 % Outputs:
 % x_k_N: smoothed state estimate
 % P_k_N: smoothed state error covariance
 % P_klag_N: error covariance between k and k-1 given all N data
-
+%
 % Note: 
 % For S~=0, the system must be transformed so that the process and maesurement noise is uncorrelated. A_star=A-S/R*G;
 % See Niu (2011) and Verify_KF_RTS.m 
 
-%% Inputs
+%% Parse inputs
 
 p=inputParser;
 

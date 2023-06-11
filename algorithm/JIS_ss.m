@@ -25,7 +25,9 @@ function [x_filt p_filt P_ss Pp_ss M_ss L_ss]=JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,vara
 % M_ss: matrix
 % L_ss: matrix
 %
-%%
+
+%% Parse inputs
+
 p=inputParser;
 addParameter(p,'trunc',false,@islogical)
 addParameter(p,'scale',false,@islogical)

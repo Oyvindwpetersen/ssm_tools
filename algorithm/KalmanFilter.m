@@ -1,11 +1,11 @@
 function [x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KalmanFilter(F,H,Q,R,S,y,x0,P_0_0,varargin)
 
 %% Kalman filter
-
+%
 % Model:
 % x(k+1)=F*x(k)+w(k);
 % y=H*x(k)+v(k);
-
+%
 % Inputs:
 % F: state matrix
 % H: output matrix
@@ -15,14 +15,14 @@ function [x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KalmanFilter(F,H,Q,R,S,y,x0,P_0_
 % y: output vector
 % x0: initial state estimate
 % P_0_0: initial state error covariance
-
+%
 % Outputs:
 % x_k_k: filter state estimate
 % x_k_kmin: prediction state estimate
 % P_k_k: filter error covariance
 % P_k_kmin: prediction error covariance
 
-%% Input
+%% Parse inputs
 
 p=inputParser;
 p.KeepUnmatched=true;
