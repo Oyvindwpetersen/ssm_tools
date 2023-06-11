@@ -4,7 +4,7 @@ function y=polyvaleven(p,x)
 % y=p0+p2*x^2+p4*x^4...
 %
 % Inputs:
-% p: polynomial coefficients for even terms, [p(n) p(n-2) ... p(2) p(0)]
+% p: polynomial coefficients for even terms, [p(k) p(k-2) ... p(2) p(0)]
 % x: vector
 %
 % Outputs:

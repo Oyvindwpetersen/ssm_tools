@@ -276,11 +276,13 @@ if any(isinf(S_target))
 end
 
 % Check real
-if ~isreal(S_target)
-    
-    ratio=norm(imag(S_target))./norm(real(S_target))
-    
+
+ratio=norm(imag(S_target))./norm(real(S_target));
+
+if ratio>1e-6  
     error('Target spectral density must be non-imaginary');
+else
+    S_target=real(S_target);
 end 
 
 if mod(order_n,2)==1

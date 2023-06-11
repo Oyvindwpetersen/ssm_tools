@@ -3,7 +3,7 @@ function [r,re,im]=pos_poly2(c_even)
 %% Find real and imaginary part of roots of an even polynomial
 %
 % Inputs:
-% c_even: polynomial coeffcients for even terms, c_even=[c(n) c(n-2) ... c(2) c(0)];
+% c_even: polynomial coeffcients for even terms, c_even=[c(k) c(k-2) ... c(2) c(0)];
 %
 % Outputs:
 % r: all roots

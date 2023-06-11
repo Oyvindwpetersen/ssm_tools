@@ -13,7 +13,7 @@ function S_rf=psd_rf(omega,n,d,alpha)
 % d: polynomial coefficients of D(omega), even terms only, d=[d_2K ... d2 d0]
 %
 % Outputs:
-% S_rf: 1*1*Nomega spectral density
+% S_rf: 1*1*N spectral density
 %
 %%
 
