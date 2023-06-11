@@ -74,7 +74,7 @@ function S_matrix=EstablishSelection(dof_cell,doflabel)
     if isempty(dof_cell)
         S_matrix=[]; return
     else
-        [dof_index] = getCellIndex(dof_cell,doflabel);
+        [dof_index] = cellsubindex(dof_cell,doflabel);
     end
     
     s=ones(size(dof_index));
