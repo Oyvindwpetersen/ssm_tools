@@ -95,9 +95,9 @@ end
 
 if strcmpi(doPlot,'yes')
     
-plotAutocorr(tau_axis,R_target,tau_axis,R_par_out,'type','auto','xlim',[0 max(tau_axis)],'legend',{'Target' 'Matern fit' });
+plotcf(tau_axis,R_target,tau_axis,R_par_out,'type','auto','xlim',[0 max(tau_axis)],'legend',{'Target' 'Matern fit' });
 
-plotSpectrum(w_axis,S_target,w_axis,S_par_out*2,'xlim',[0 w_axis(end)],'type','auto','log','yes','legend',{'Target' 'Matern fit'});
+plotpsd(w_axis,S_target,w_axis,S_par_out*2,'xlim',[0 w_axis(end)],'type','auto','log','yes','legend',{'Target' 'Matern fit'});
 
 end
 

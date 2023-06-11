@@ -166,4 +166,4 @@ Hc=[flip(c_coeff) c_zeros];
 % 
 % close all
 % 
-% plotSpectrum(omega,S_exact,S_ss,'LineStyleSet',{'-' '--'},'xlim',[0 10]);
+% plotpsd(omega,S_exact,S_ss,'LineStyleSet',{'-' '--'},'xlim',[0 10]);
