@@ -1,4 +1,4 @@
-function [x_filt p_filt x_pred]=DKF(A,B,G,J,y,x0,p0,R,Q,Qp,P0,Pp0,varargin)
+function [x_filt p_filt x_pred]=DKF(A,B,G,J,y,x0,p0,Q,R,Qp,P0,Pp0,varargin)
 
 %% Dual Kalman Filter
 
