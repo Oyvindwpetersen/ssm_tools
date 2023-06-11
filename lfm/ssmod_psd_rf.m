@@ -23,15 +23,16 @@ function [Fc,Lc,Hc,sigma_w]=ssmod_psd_rf(n,d,alpha)
 % Hc: output matrix (cont)
 % sigma_w: standard deviation of w
 %
+
 %% Example numbers
-
+%
 % omega=[0:0.01:20];
-
+%
 % d=[1 5 -3 8];
 % n=[1 0];
 % alpha=5;
 % S_exact(1,1,:)=5*omega.^2./(8-3*omega.^2+5*omega.^4+omega.^6);
-
+%
 %%
 
 % Ensure row vector
@@ -102,7 +103,7 @@ if ~isempty(ind_p_zero)
     p_selected=[p_selected ; p_zero];
 end
 
-% a_coeff=[a(n),...,a2,a1,a0]
+% a_coeff=[a(k),...,a2,a1,a0]
 a_coeff=poly(p_selected); 
 
 if abs(a_coeff(1)-1)>1e-6
@@ -110,7 +111,7 @@ if abs(a_coeff(1)-1)>1e-6
     warning('Highest c coefficient should be 1. Something is wrong, check this line');
 end
 
-% a_coeff=[a(n-1),...,a2,a1,a0]
+% a_coeff=[a(k-1),...,a2,a1,a0]
 a_coeff=a_coeff(2:end); 
 
 %% Nominator
@@ -139,7 +140,7 @@ if ~isempty(ind_z_zero)
     z_selected=[z_selected ; z_zero];
 end
 
-% c_coeff=[b(n),...,b2,b1,b0]
+% c_coeff=[c(k),...,c2,c1,c0]
 c_coeff=poly(z_selected);
 
 % Add zeros to b coeff if the nominator poly is lower than the denominator minus one (e.g. D~omega^6 and N~omega^2)
