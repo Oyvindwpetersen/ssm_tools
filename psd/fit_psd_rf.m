@@ -60,6 +60,10 @@ if forcezero  & any(order_n==[2 6 10 14 18 22 26])
     no_z_im=no_z_im-1;
 end
 
+if any(order_n>[28])
+    error('Such high orders not implemented, code above this line must be fixed');
+end
+
 no_p_im=ceil(order_d/2/2);
 no_p_re=order_d/2-no_p_im;
 
@@ -102,8 +106,8 @@ p_im0=linspace(0.5,0.5,no_p_im).';
 % Initial values for polynomial coeffcients, even terms only
 if ~isempty(n_ini) & ~isempty(d_ini)
 
-    [rn_ini,z_re0,z_im0]=pos_poly2(n_ini);
-    [rd_ini,p_re0,p_im0]=pos_poly2(d_ini);
+    [rn_ini,z_re0,z_im0]=rooteven(n_ini);
+    [rd_ini,p_re0,p_im0]=rooteven(d_ini);
 
 % Initial values for roots, must be conjugate pairs
 elseif ~isempty(rn_ini) & ~isempty(rd_ini)
@@ -124,8 +128,8 @@ elseif ~isempty(rn_ini) & ~isempty(rd_ini)
     end
     
     
-    [rn_ini,z_re0,z_im0]=pos_poly2(n_ini);
-    [rd_ini,p_re0,p_im0]=pos_poly2(d_ini);
+    [rn_ini,z_re0,z_im0]=rooteven(n_ini);
+    [rd_ini,p_re0,p_im0]=rooteven(d_ini);
     
 end
 
