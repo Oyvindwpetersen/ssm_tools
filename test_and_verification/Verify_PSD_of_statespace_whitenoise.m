@@ -19,7 +19,7 @@ w_sim=randn(size(t))*sigma_wd_squared.^0.5;
 
 S_test(1,1,1:length(w_axis))=sigma_wc_squared/(2*pi);
 
-plotSpectrum(w_welch,S_welch,w_axis,S_test*2*dt^2,'xlim',[0 500]); % Still not quite sure why dt^2 is needed here, but ok
+plotpsd(w_welch,S_welch,w_axis,S_test*2*dt^2,'xlim',[0 500]); % Still not quite sure why dt^2 is needed here, but ok
 
 %% Example: Ornstein Uhlenbeck subjected to WN
 
@@ -64,12 +64,12 @@ S_theory(1,1,:)=(Bc*Gc)^2*sigma_wc_squared/(2*pi)./(lambda.^2+w_axis.^2);
 % Empirical from Welch
 [S_welch,w_welch]=estimateSpectrumWelch(y_sim,1/dt,'Nwelch',100,'unit','rad','plot','no');
 
-plotSpectrum(w_welch,S_welch,w_axis,S_y_ss_disc*2);
+plotpsd(w_welch,S_welch,w_axis,S_y_ss_disc*2);
 
 plotopt=struct()
 plotopt.xlim=[0 100];
 plotopt.LineStyleSet={'-' '--' ':' '--'}
 
-plotSpectrum(w_welch,S_welch,w_axis,S_y_ss_cont*2,w_axis,S_theory*2,plotopt);
+plotpsd(w_welch,S_welch,w_axis,S_y_ss_cont*2,w_axis,S_theory*2,plotopt);
 
 tilefigs([],'l');

@@ -16,12 +16,12 @@ S_target(1,1,:)=400*(omega.^2)./(omega.^6-2*omega.^4+5*omega.^2+10);
 order_n=2; order_d=6;
 forcezero=true;
 
-plotSpectrum(omega,S_target,'xlim',[0 20]);
+plotpsd(omega,S_target,'xlim',[0 20]);
 
 S_target_twosided=S_target/2;
 [n_opt,d_opt,alpha_opt]=fit_psd_rf(omega,S_target_twosided,order_n,order_d);
 
-% plotSpectrum(omega,S_target_twosided,S_ssmod_twosided,'xlim',[0 10]);
+% plotpsd(omega,S_target_twosided,S_ssmod_twosided,'xlim',[0 10]);
 
 %%
     
@@ -64,7 +64,7 @@ Sw(1,1,1:length(omega))=sigma_w.^2/(2*pi);
 Ht=ssmod_tf(Fc,Lc,Hc,zeros(1),omega);
 S_ssmod_twosided=mtimes3(Ht,Sw,Ht,'nnh');
 
-plotSpectrum(omega,S_target_twosided,S_opt,S_ssmod_twosided,'xlim',[0 10]);
+plotpsd(omega,S_target_twosided,S_opt,S_ssmod_twosided,'xlim',[0 10]);
 
 % Simulate
 dt=0.02;
@@ -86,7 +86,7 @@ plotTime(t,y);
 
 [S_welch,f_welch]=estimateSpectrumWelch(y,1/dt,'Nwelch',100); w_welch=f_welch*2*pi; S_welch=S_welch/(2*pi);
 
-plotSpectrum(omega,S_target,omega,S_ssmod_twosided*2,w_welch,S_welch,'xlim',[0 10]);
+plotpsd(omega,S_target,omega,S_ssmod_twosided*2,w_welch,S_welch,'xlim',[0 10]);
 
 %%
 
@@ -98,7 +98,7 @@ plotSpectrum(omega,S_target,omega,S_ssmod_twosided*2,w_welch,S_welch,'xlim',[0 1
 % 
 % S_target(1,1,:)=KaimalSpectrum(omega,10,20,1,50);
 % 
-% % plotSpectrum(omega,S_target,'xlim',[0 10]);
+% % plotpsd(omega,S_target,'xlim',[0 10]);
 % 
 % % forcezero=true; order_n=2; order_d=6; n0=[1 0]; a0=[1 -3 2 5]; 
 % % [a_opt,n_opt,alpha_opt]=fit_psd_rf(omega,S_target,order_n,order_d,'n0',n0,'a0',a0);
