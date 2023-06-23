@@ -75,11 +75,11 @@ close all
 XTickLabel={'x_1' 'x_2' 'x_3' 'x_4' 's_1' 's_2'};
 % YTickLabel={'x_1' 'x_2'};
 
-plotCovarianceMatrix((Qdw_aug),XTickLabel,XTickLabel,'','');
+plotcovmatrix((Qdw_aug),XTickLabel,XTickLabel,'','');
 
 % plotscriptmain('h',6,'w',6,'name','Qw','path',cd,'labelsize',6,'ticksize',6,'legendsize',6,'titlesize',6,'box','on','format',{'jpg'});
 
-plotCovarianceMatrix((Qde_aug),XTickLabel,XTickLabel,'','');
+plotcovmatrix((Qde_aug),XTickLabel,XTickLabel,'','');
 
 % plotscriptmain('h',6,'w',6,'name','Qe','path',cd,'labelsize',6,'ticksize',6,'legendsize',6,'titlesize',6,'box','on','format',{'jpg'});
 
@@ -128,10 +128,10 @@ ratio_e=Qde_aug1./Qde_aug2
 XTickLabel={'x_1' 'x_2' 'x_3' 'x_4' 's_1' 's_2'};
 
 close all
-plotCovarianceMatrix(ratio_w,XTickLabel,XTickLabel,'','');
+plotcovmatrix(ratio_w,XTickLabel,XTickLabel,'','');
 % plotscriptmain('h',6,'w',6,'name','Qw_ratio','path',cd,'labelsize',6,'ticksize',6,'legendsize',6,'titlesize',6,'box','on','format',{'jpg'});
 
-plotCovarianceMatrix(ratio_e,XTickLabel,XTickLabel,'','');
+plotcovmatrix(ratio_e,XTickLabel,XTickLabel,'','');
 % plotscriptmain('h',6,'w',6,'name','Qe_ratio','path',cd,'labelsize',6,'ticksize',6,'legendsize',6,'titlesize',6,'box','on','format',{'jpg'});
 
 tilefigs
