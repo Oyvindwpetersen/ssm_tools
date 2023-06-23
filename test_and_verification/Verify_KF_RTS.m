@@ -6,7 +6,7 @@ close all
 
 %% Create system
 
-mod=ImportSimplySupportQuick(2);
+mod=importbeamquick(2);
 
 mod.dt=0.05;
 
