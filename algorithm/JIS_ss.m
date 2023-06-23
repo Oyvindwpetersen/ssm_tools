@@ -56,7 +56,7 @@ u=p.Results.u;
 % Matrix size
 nm=NaN;
 ns=size(A,1);
-nt=length(y);
+nt=size(y,2);
 ny=size(G,1);
 np=size(B,2);
 
@@ -65,13 +65,21 @@ x_pred=zeros(ns,nt);
 x_filt=zeros(ns,nt);
 p_filt=zeros(np,nt);
 
-ratio_trace_P=zeros(1,maxsteps);
+ratio_trace_Px=zeros(1,maxsteps);
 ratio_trace_Pp=zeros(1,maxsteps);
 
 if trunc
     lambdaRk=zeros(ny,maxsteps);
     lambdaJRkJ=zeros(np,maxsteps);
     lambdaJPpkkJ=zeros(ny,maxsteps);
+end
+
+if isempty(x0) | x0==0
+    x0=zeros(ns,1);
+end
+
+if isempty(P01) | P01==0
+    P01=eye(ns);
 end
 
 %assign initial values
@@ -172,17 +180,17 @@ while convreached==false
     % Trace
     Pkk_prev=Pkk_current;
     Pkk_current=Pkk;
-    ratio_trace_P(k)=trace(abs(Pkk_current-Pkk_prev))./trace(Pkk_current);
+    ratio_trace_Px(k)=trace(abs(Pkk_current-Pkk_prev))./trace(Pkk_current);
     
     Ppkk_prev=Ppkk_current;
     Ppkk_current=Ppkk;
     ratio_trace_Pp(k)=trace(abs(Ppkk_current-Ppkk_prev))./trace(Ppkk_current);
     
     if dispconv & mod(k,100)==0
-        disp(['***** Step ' num2str(k,'%3.0f') ', ratio_trace_P ' num2str(ratio_trace_P(k),'%0.3e') ', ratio_trace_Pp ' num2str(ratio_trace_Pp(k),'%0.3e')]);
+        disp(['***** Step ' num2str(k,'%3.0f') ', ratio_trace_P ' num2str(ratio_trace_Px(k),'%0.3e') ', ratio_trace_Pp ' num2str(ratio_trace_Pp(k),'%0.3e')]);
     end
     
-    if k>minsteps & abs(ratio_trace_P(k)) < convtol & abs(ratio_trace_Pp(k)) < convtol
+    if k>minsteps & abs(ratio_trace_Px(k)) < convtol & abs(ratio_trace_Pp(k)) < convtol
         convreached=true;
         disp(['Trace convergence reached, k=' num2str(k)]);
         M_ss=Mk;
@@ -190,9 +198,10 @@ while convreached==false
         P_ss=Pkk;
         Pp_ss=Ppkk;
     elseif k>=maxsteps
-        
-        figure(); hold on; grid on; plot(ratio_trace_P); set(gca,'YScale','log'); title('Ratio Px');
-        figure(); hold on; grid on; plot(ratio_trace_Pp); set(gca,'YScale','log'); title('Ratio Pp');
+        figure(); hold on; grid on;
+        plot(ratio_trace_Px);
+        plot(ratio_trace_Pp);
+        set(gca,'YScale','log'); title('Ratio Px');
         error(['Divergence reached, k=' num2str(k)]);
     end
     
