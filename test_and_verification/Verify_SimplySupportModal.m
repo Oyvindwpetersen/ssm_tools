@@ -14,7 +14,7 @@ n=1:10
 
 f_ref=1/(2*pi)*n.^2*pi^2*sqrt(E*I/(m*L^4));
 
-mod=ImportSimplySupport(L,E,I,m,N_el);
+mod=importbeam(L,E,I,m,N_el);
 
 figure(); hold on; grid on;
 title('Natural frequencies');
