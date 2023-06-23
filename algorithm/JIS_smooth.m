@@ -1,4 +1,4 @@
-function [x_smooth p_smooth P_x_ss P_p_ss P_xp_ss P_px_ss]=JIS_smooth(A,B,G,J,y,R,Q,S,x0,P01,L,varargin)
+function [x_smooth p_smooth P_x_ss P_p_ss P_xp_ss P_px_ss]=JIS_smooth(A,B,G,J,y,Q,R,S,x0,P01,L,varargin)
 
 %% Joint input and state estimation with smoothing
 %
@@ -33,7 +33,8 @@ p=inputParser;
 % p.KeepUnmatched=true;
 
 addParameter(p,'text',true,@islogical)
-addParameter(p,'plot',true,@islogical)
+addParameter(p,'dispconv',true,@islogical)
+addParameter(p,'plotconv',false,@islogical)
 addParameter(p,'convtol',1e-6,@isnumeric)
 addParameter(p,'minsteps',25,@isnumeric)
 addParameter(p,'maxsteps',20e3,@isnumeric)
@@ -41,7 +42,8 @@ addParameter(p,'maxsteps',20e3,@isnumeric)
 parse(p,varargin{1:end});
 
 do_text=p.Results.text;
-do_plot=p.Results.plot;
+dispconv=p.Results.dispconv;
+plotconv=p.Results.plotconv;
 convtol=p.Results.convtol;
 minsteps=p.Results.minsteps;
 maxsteps=p.Results.maxsteps;
@@ -61,6 +63,21 @@ minsteps=max(minsteps,L);
 
 if L==0
     error('L must be larger than zero (minimum one)');
+end
+
+if isempty(x0) | x0==0
+    x0=zeros(size(A,1),1);
+end
+
+if isempty(P01)
+    P01=100*eye(size(A,1));
+    
+    L_cyc=[min(2,L) ceil(L*0.5)]; L_cyc=unique(L_cyc);
+    for j=1:length(L_cyc)
+        [~,~,P_x_ss,~,~,~]=JIS_smooth(A,B,G,J,y(:,1:min(100,nt)),Q,R,S,x0,P01,L_cyc(j),'dispconv',true,'text',false,'convtol',1e-6);
+        P01=P_x_ss;
+    end
+
 end
 
 
@@ -117,8 +134,9 @@ P_x_k_kLminus=P01; %initial error covariance for state
 K_L_k=cell(1,maxsteps);
 CommonSumTerm_k=cell(1,maxsteps);
 
-convreached=false; clear r_traceP;
-Pp_prev=nan(np); Pp_current=nan(np);
+convreached=false; clear ratio_trace_Pp;
+Pp_prev=nan(np); Pp_current=nan(np); 
+Px_prev=nan(ns); Px_current=nan(ns); 
 
 % for k=0:(nt-1)
 n=0; k=-1;
@@ -151,10 +169,10 @@ while convreached==false
 
         %     CommonSumTerm=(Id1_union-K_L_k{n-i}*N_L);
         CommonSumTerm=CommonSumTerm_k{n-i};
-
+        
         SumTerm_xw_i=CommonSumTerm*Q_L_i{i}-K_L_k{n-i}*S_L_minusi{i}.';
         SumTerm_xv_i=CommonSumTerm*S_L_i{i}-K_L_k{n-i}*R_Lplus_i{i};
-
+        
         Sum_loop_xw=Sum_loop_xw+Product_loop_i*SumTerm_xw_i;
         Sum_loop_xv=Sum_loop_xv+Product_loop_i*SumTerm_xv_i;
 
@@ -210,14 +228,18 @@ while convreached==false
 
     Pp_prev=Pp_current;
     Pp_current=P_p_k_kL;
+    ratio_trace_Pp(n)=trace(abs(Pp_current-Pp_prev))./trace(Pp_current);
 
-    r_traceP(n)=trace(abs(Pp_current-Pp_prev))./trace(Pp_current);
 
-    if do_text & mod(k,10)==0  & k>0
-        disp(['Ratio trace Pp ' num2str(r_traceP(n),'%0.3e')]);
+    Px_prev=Px_current;
+    Px_current=P_x_kplus_kL;
+    ratio_trace_Px(n)=trace(abs(Px_current-Px_prev))./trace(Px_current);
+    
+    if dispconv & mod(k,100)==0 & k>0
+        disp(['***** Step ' num2str(k,'%3.0f') ', ratio_trace_Px ' num2str(ratio_trace_Px(k),'%0.3e') ', ratio_trace_Pp ' num2str(ratio_trace_Pp(k),'%0.3e')]);
     end
 
-    if k>=minsteps & abs(r_traceP(n)) < convtol
+    if k>=minsteps & abs(ratio_trace_Pp(n)) < convtol & abs(ratio_trace_Px(n)) < convtol
         convreached=true;
         disp(['Trace convergence reached, k=' num2str(k)]);
         K_L_ss=K_L_k{n};
@@ -240,10 +262,10 @@ if do_text
 end
 %%
 
-if strcmpi(do_plot,'yes')
+if plotconv==true
     % close all;
     figure(); hold on; grid on;
-    plot(r_traceP); set(gca,'YScale','log');
+    plot(ratio_trace_Pp); set(gca,'YScale','log');
     xlabel('Steps');
     ylabel('Ratio trace Pp');
 end
@@ -333,16 +355,46 @@ elseif i<0
     S_L=[zeros(L*ns,nd) S_temp];
 end
 
-if ( nnz(Q_L)/numel(Q_L) )<1e-4
-    Q_L=sparse(Q_L);
+if issparse(Q_L) 
+    if ( nnz(Q_L)/numel(Q_L) )<1e-3 & numel(Q_L)>100^2
+        % Q_L=sparse(Q_L);
+    else
+        Q_L=full(Q_L);
+    end
+else
+    if ( nnz(Q_L)/numel(Q_L) )<1e-3 & numel(Q_L)>100^2
+        Q_L=sparse(Q_L);
+    else
+        %Q_L=full(Q_L);
+    end
 end
 
-if ( nnz(R_Lplus)/numel(R_Lplus) )<1e-4
-    R_Lplus=sparse(R_Lplus);
+if issparse(R_Lplus) 
+    if ( nnz(R_Lplus)/numel(R_Lplus) )<1e-3 & numel(R_Lplus)>100^2
+        % R_Lplus=sparse(R_Lplus);
+    else
+        R_Lplus=full(R_Lplus);
+    end
+else
+    if ( nnz(R_Lplus)/numel(R_Lplus) )<1e-3 & numel(R_Lplus)>100^2
+        R_Lplus=sparse(R_Lplus);
+    else
+        %R_Lplus=full(R_Lplus);
+    end
 end
 
-if ( nnz(S_L)/numel(S_L) )<1e-4
-    S_L=sparse(S_L);
+if issparse(S_L) 
+    if ( nnz(S_L)/numel(S_L) )<1e-3 & numel(S_L)>100^2
+        % S_L=sparse(S_L);
+    else
+        S_L=full(S_L);
+    end
+else
+    if ( nnz(S_L)/numel(S_L) )<1e-3 & numel(S_L)>100^2
+        S_L=sparse(S_L);
+    else
+        %S_L=full(S_L);
+    end
 end
 
 checkdim(Q_L,L*ns,L*ns);
