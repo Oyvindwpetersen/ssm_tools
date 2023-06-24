@@ -119,9 +119,9 @@ Rbar_k_precalc=R_Lplus_nil+N_L*Q_L_nil*N_L.'+N_L*S_L_nil+S_L_nil.'*N_L.';
 Sbar_k_precalc=Id1_union*Q_L_nil*N_L.'+Id1_union*S_L_nil;
 
 telapsed=toc(tstart);
-if do_text
-    disp(['Base matrices calculated in ' sprintf('%2.1f', telapsed) ' s']);
-end
+% if do_text
+    % disp(['Base matrices calculated in ' sprintf('%2.1f', telapsed) ' s']);
+% end
 % return
 
 clear Pp_save M_L_k_save  Rbar_k_cond
@@ -241,7 +241,11 @@ while convreached==false
 
     if k>=minsteps & abs(ratio_trace_Pp(n)) < convtol & abs(ratio_trace_Px(n)) < convtol
         convreached=true;
-        disp(['Trace convergence reached, k=' num2str(k)]);
+
+        if dispconv
+            disp(['***** Trace convergence reached, k=' num2str(k)]);
+        end
+        
         K_L_ss=K_L_k{n};
         M_L_ss=M_L_k;
         P_x_ss=P_x_kplus_kL;
@@ -249,7 +253,7 @@ while convreached==false
         P_xp_ss=-(P_x_kplus_kL*Obs_L.'+P_xw_k*N_L.'+P_xv_k)*M_L_ss.';
         P_px_ss=P_xp_ss.';
     elseif k>= maxsteps
-        disp(['Trace divergence reached, k=' num2str(k)]); break;
+        disp(['***** Trace divergence reached, k=' num2str(k)]); break;
     end
 
 
@@ -258,7 +262,7 @@ end
 telapsed=toc(tstart);
 
 if do_text
-    disp(['Steady state convergence calculated in ' sprintf('%2.1f', telapsed) ' s']);
+    disp(['***** Steady state convergence calculated in ' sprintf('%2.1f', telapsed) ' s']);
 end
 %%
 
