@@ -3,7 +3,7 @@ function [x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KalmanFilterWithInput(A,B,G,J,Q,
 %% Kalman filter with known input
 %
 % Model:
-% x(k+1)=F*x(k)+B*p(k)+w(k);
+% x(k+1)=A*x(k)+B*p(k)+w(k);
 % y=G*x(k)+J*p(k)+v(k);
 %
 % Inputs:

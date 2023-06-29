@@ -1,14 +1,14 @@
-function [x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KalmanFilter(F,H,Q,R,S,y,x0,P_0_0,varargin)
+function [x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KalmanFilter(A,G,Q,R,S,y,x0,P_0_0,varargin)
 
 %% Kalman filter
 %
 % Model:
-% x(k+1)=F*x(k)+w(k);
-% y=H*x(k)+v(k);
+% x(k+1)=A*x(k)+w(k);
+% y=G*x(k)+v(k);
 %
 % Inputs:
-% F: state matrix
-% H: output matrix
+% A: state matrix
+% G: output matrix
 % Q: output noise covariance
 % R: state noise covariance
 % S: mixed noise covariance
@@ -39,8 +39,8 @@ forcescaling=p.Results.forcescaling;
 
 %% Zero matrices
 
-nx=size(F,1);
-ny=size(H,1);
+nx=size(A,1);
+ny=size(G,1);
 nt=size(y,2);
 
 m_hat_k_kmin=zeros(nx,nt);
@@ -51,7 +51,7 @@ trace_P_k_k=zeros(1,nt);
 delta_trace_P_k_k=zeros(1,nt);
 
 if isempty(P_0_0); P_0_0=eye(nx); end
-if isempty(x0); x0=zeros(size(F,1),1); end
+if isempty(x0); x0=zeros(size(A,1),1); end
 
 %% Conventional Kalman filter
 
@@ -69,22 +69,22 @@ for k=1:nt
     end
     
     % Measurement update    
-    Omega_k=H*P_k_kmin(:,:,k)*H.'+R; Omega_k=forcesym(Omega_k);
+    Omega_k=G*P_k_kmin(:,:,k)*G.'+R; Omega_k=forcesym(Omega_k);
     Omega_k_inv=eye(size(Omega_k))/Omega_k; 
 
-    P_k_k(:,:,k)=P_k_kmin(:,:,k)-P_k_kmin(:,:,k)*H.'*Omega_k_inv*H*P_k_kmin(:,:,k); P_k_k(:,:,k)=forcesym(P_k_k(:,:,k));
+    P_k_k(:,:,k)=P_k_kmin(:,:,k)-P_k_kmin(:,:,k)*G.'*Omega_k_inv*G*P_k_kmin(:,:,k); P_k_k(:,:,k)=forcesym(P_k_k(:,:,k));
     
-    m_hat_k_k(:,k)=m_hat_k_kmin(:,k)+(P_k_kmin(:,:,k)*H.')*Omega_k_inv*(y(:,k)-H*m_hat_k_kmin(:,k));
+    m_hat_k_k(:,k)=m_hat_k_kmin(:,k)+(P_k_kmin(:,:,k)*G.')*Omega_k_inv*(y(:,k)-G*m_hat_k_kmin(:,k));
     
-	K_k=(F*P_k_kmin(:,:,k)*H.'+S)*Omega_k_inv;
+	K_k=(A*P_k_kmin(:,:,k)*G.'+S)*Omega_k_inv;
     
     % Time update
-%     P_k_kmin(:,:,k+1)=(F-K_k*H)*P_k_kmin(:,:,k)*(F-K_k*H).'+Q+K_k*R*K_k.'-S*K_k.'-K_k*S.'; P_k_kmin(:,:,k+1)=forcesym(P_k_kmin(:,:,k+1));
- 	P_k_kmin(:,:,k+1)=F*P_k_kmin(:,:,k)*F.'-(F*P_k_kmin(:,:,k)*H.'+S)*Omega_k_inv*(F*P_k_kmin(:,:,k)*H.'+S).'+Q; P_k_kmin(:,:,k+1)=forcesym(P_k_kmin(:,:,k+1));
+%     P_k_kmin(:,:,k+1)=(A-K_k*G)*P_k_kmin(:,:,k)*(A-K_k*G).'+Q+K_k*R*K_k.'-S*K_k.'-K_k*S.'; P_k_kmin(:,:,k+1)=forcesym(P_k_kmin(:,:,k+1));
+ 	P_k_kmin(:,:,k+1)=A*P_k_kmin(:,:,k)*A.'-(A*P_k_kmin(:,:,k)*G.'+S)*Omega_k_inv*(A*P_k_kmin(:,:,k)*G.'+S).'+Q; P_k_kmin(:,:,k+1)=forcesym(P_k_kmin(:,:,k+1));
       
-    m_hat_k_kmin(:,k+1)=F*m_hat_k_kmin(:,k)+K_k*(y(:,k)-H*m_hat_k_kmin(:,k));
+    m_hat_k_kmin(:,k+1)=A*m_hat_k_kmin(:,k)+K_k*(y(:,k)-G*m_hat_k_kmin(:,k));
     
-    e_k(:,k)=y(:,k)-H*m_hat_k_kmin(:,k);
+    e_k(:,k)=y(:,k)-G*m_hat_k_kmin(:,k);
     
 end
 
@@ -101,11 +101,11 @@ if strcmpi(steadystate,'yes')
 % Try no scaling first
 if strcmpi(forcescaling,'no')
     
-    if issparse(F) | issparse(H)
-    [P_k_kmin_ss,~,~,info]=idare(full(F).',full(H).',Q,R,S,'noscaling');
-%     P_k_kmin_ss=dare_sparse_newton(F,H,Q,R,S); info.Report=0;
+    if issparse(A) | issparse(G)
+    [P_k_kmin_ss,~,~,info]=idare(full(A).',full(G).',Q,R,S,'noscaling');
+%     P_k_kmin_ss=dare_sparse_newton(A,G,Q,R,S); info.Report=0;
     else
-    [P_k_kmin_ss,~,~,info]=idare(F.',H.',Q,R,S,'noscaling');
+    [P_k_kmin_ss,~,~,info]=idare(A.',G.',Q,R,S,'noscaling');
     end
     
     if info.Report~=0
@@ -124,16 +124,16 @@ if strcmpi(forcescaling,'no')
         end
         
         forcescaling='yes';
-%         [P_k_kmin_ss,~,~,info]=idare(F.',H.',Q,R,S);
+%         [P_k_kmin_ss,~,~,info]=idare(A.',G.',Q,R,S);
 
     end
 end
 
 if strcmpi(forcescaling,'yes') 
-	if issparse(F) | issparse(H) | issparse(Q) | issparse(R) | issparse(S)
-        [P_k_kmin_ss,~,~,info]=idare(full(F).',full(H).',full(Q),full(R),full(S));
+	if issparse(A) | issparse(G) | issparse(Q) | issparse(R) | issparse(S)
+        [P_k_kmin_ss,~,~,info]=idare(full(A).',full(G).',full(Q),full(R),full(S));
     else
-        [P_k_kmin_ss,~,~,info]=idare(F.',H.',Q,R,S);
+        [P_k_kmin_ss,~,~,info]=idare(A.',G.',Q,R,S);
     end
 end
 
@@ -146,10 +146,10 @@ elseif info.Report==3
 end
 
 P_k_kmin_ss=forcesym(P_k_kmin_ss);
-Omega_k_ss=(H*P_k_kmin_ss*H.'+R); Omega_k_ss=forcesym(Omega_k_ss);
+Omega_k_ss=(G*P_k_kmin_ss*G.'+R); Omega_k_ss=forcesym(Omega_k_ss);
 Omega_k_ss_inv=eye(size(Omega_k_ss))/Omega_k_ss; Omega_k_ss_inv=forcesym(Omega_k_ss_inv);
-P_k_k_ss=P_k_kmin_ss-P_k_kmin_ss*H.'*Omega_k_ss_inv*H*P_k_kmin_ss; P_k_k_ss=forcesym(P_k_k_ss);
-K_k_ss=(F*P_k_kmin_ss*H.'+S)*Omega_k_ss_inv;
+P_k_k_ss=P_k_kmin_ss-P_k_kmin_ss*G.'*Omega_k_ss_inv*G*P_k_kmin_ss; P_k_k_ss=forcesym(P_k_k_ss);
+K_k_ss=(A*P_k_kmin_ss*G.'+S)*Omega_k_ss_inv;
 
 % close all
 
@@ -173,16 +173,16 @@ for k=1:nt
     end
     
     % measurement update    
-    Omega_k=H*P_k_kmin(:,:,k)*H.'+R; Omega_k=forcesym(Omega_k);
+    Omega_k=G*P_k_kmin(:,:,k)*G.'+R; Omega_k=forcesym(Omega_k);
     Omega_k_inv=eye(size(Omega_k))/Omega_k; 
 
-    P_k_k(:,:,k)=P_k_kmin(:,:,k)-P_k_kmin(:,:,k)*H.'*Omega_k_inv*H*P_k_kmin(:,:,k); P_k_k(:,:,k)=forcesym(P_k_k(:,:,k));
+    P_k_k(:,:,k)=P_k_kmin(:,:,k)-P_k_kmin(:,:,k)*G.'*Omega_k_inv*G*P_k_kmin(:,:,k); P_k_k(:,:,k)=forcesym(P_k_k(:,:,k));
     
-% 	K_k=(F*P_k_kmin(:,:,k)*H.'+S)*Omega_k_inv;
+% 	K_k=(A*P_k_kmin(:,:,k)*G.'+S)*Omega_k_inv;
 
     % time update
-%     P_k_kmin(:,:,k+1)=(F-K_k*H)*P_k_kmin(:,:,k)*(F-K_k*H).'+Q+K_k*R*K_k.'-S*K_k.'-K_k*S.'; P_k_kmin(:,:,k+1)=forcesym(P_k_kmin(:,:,k+1));
- 	P_k_kmin(:,:,k+1)=F*P_k_kmin(:,:,k)*F.'-(F*P_k_kmin(:,:,k)*H.'+S)*Omega_k_inv*(F*P_k_kmin(:,:,k)*H.'+S).'+Q; P_k_kmin(:,:,k+1)=forcesym(P_k_kmin(:,:,k+1));
+%     P_k_kmin(:,:,k+1)=(A-K_k*G)*P_k_kmin(:,:,k)*(A-K_k*G).'+Q+K_k*R*K_k.'-S*K_k.'-K_k*S.'; P_k_kmin(:,:,k+1)=forcesym(P_k_kmin(:,:,k+1));
+ 	P_k_kmin(:,:,k+1)=A*P_k_kmin(:,:,k)*A.'-(A*P_k_kmin(:,:,k)*G.'+S)*Omega_k_inv*(A*P_k_kmin(:,:,k)*G.'+S).'+Q; P_k_kmin(:,:,k+1)=forcesym(P_k_kmin(:,:,k+1));
       
     trace_P_k_k(k)=trace(P_k_k(:,:,k));
     
@@ -195,10 +195,10 @@ for k=1:nt
         P_k_kmin_ss=P_k_kmin(:,:,k); P_k_kmin_ss=forcesym(P_k_kmin_ss);
         
         P_k_kmin_ss=forcesym(P_k_kmin_ss);
-        Omega_k_ss=(H*P_k_kmin_ss*H.'+R); Omega_k_ss=forcesym(Omega_k_ss);
+        Omega_k_ss=(G*P_k_kmin_ss*G.'+R); Omega_k_ss=forcesym(Omega_k_ss);
         Omega_k_ss_inv=eye(size(Omega_k_ss))/Omega_k_ss; Omega_k_ss_inv=forcesym(Omega_k_ss_inv);
-        P_k_k_ss=P_k_kmin_ss-P_k_kmin_ss*H.'*Omega_k_ss_inv*H*P_k_kmin_ss; P_k_k_ss=forcesym(P_k_k_ss);
-        K_k_ss=(F*P_k_kmin_ss*H.'+S)*Omega_k_ss_inv;
+        P_k_k_ss=P_k_kmin_ss-P_k_kmin_ss*G.'*Omega_k_ss_inv*G*P_k_kmin_ss; P_k_k_ss=forcesym(P_k_k_ss);
+        K_k_ss=(A*P_k_kmin_ss*G.'+S)*Omega_k_ss_inv;
 
         figure(); 
         plot(delta_trace_P_k_k); ylog;
@@ -217,7 +217,7 @@ end
 end
 
 t0=tic;
-Mat_precalc=(P_k_kmin_ss*H.')*Omega_k_ss_inv;
+Mat_precalc=(P_k_kmin_ss*G.')*Omega_k_ss_inv;
 for k=1:nt
     
     % Initial
@@ -226,15 +226,15 @@ for k=1:nt
     end
     
     %
-    e_k(:,k)=y(:,k)-H*m_hat_k_kmin(:,k);
+    e_k(:,k)=y(:,k)-G*m_hat_k_kmin(:,k);
 
     % measurement update
-%     m_hat_k_k(:,k)=m_hat_k_kmin(:,k)+Mat_precalc*(y(:,k)-H*m_hat_k_kmin(:,k));
+%     m_hat_k_k(:,k)=m_hat_k_kmin(:,k)+Mat_precalc*(y(:,k)-G*m_hat_k_kmin(:,k));
     m_hat_k_k(:,k)=m_hat_k_kmin(:,k)+Mat_precalc*e_k(:,k); %faster (skipping repeated calculations of e)
 
     %time
-%     m_hat_k_kmin(:,k+1)=F*m_hat_k_kmin(:,k)+K_k_ss*(y(:,k)-H*m_hat_k_kmin(:,k));
-    m_hat_k_kmin(:,k+1)=F*m_hat_k_kmin(:,k)+K_k_ss*e_k(:,k); %faster (skipping repeated calculations of e)
+%     m_hat_k_kmin(:,k+1)=A*m_hat_k_kmin(:,k)+K_k_ss*(y(:,k)-G*m_hat_k_kmin(:,k));
+    m_hat_k_kmin(:,k+1)=A*m_hat_k_kmin(:,k)+K_k_ss*e_k(:,k); %faster (skipping repeated calculations of e)
     
 end
 m_hat_k_kmin(:,end)=[];
