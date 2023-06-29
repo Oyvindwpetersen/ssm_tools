@@ -44,6 +44,10 @@ if isempty(p)
    p=zeros(size(B,2),size(y,2));
 end
 
+if isempty(x0)
+   x0=zeros(size(A,2),1);
+end
+
 nx=size(A,1);
 ny=size(G,1);
 nt=size(y,2);
