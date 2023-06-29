@@ -38,6 +38,7 @@ addParameter(p,'plotconv',false,@islogical)
 addParameter(p,'convtol',1e-6,@isnumeric)
 addParameter(p,'minsteps',25,@isnumeric)
 addParameter(p,'maxsteps',20e3,@isnumeric)
+addParameter(p,'scale',false,@islogical)
 
 parse(p,varargin{1:end});
 
@@ -47,6 +48,7 @@ plotconv=p.Results.plotconv;
 convtol=p.Results.convtol;
 minsteps=p.Results.minsteps;
 maxsteps=p.Results.maxsteps;
+scale=p.Results.scale;
 
 %%
 
@@ -58,6 +60,14 @@ np=size(B,2);
 % convtol=1e-4;
 minsteps=max(minsteps,L);
 
+
+%%
+
+if scale==true
+
+    [A,B,G,J,y,Q,R,S,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,J,y,Q,R,S);
+    
+end
 
 %% Error handling
 
@@ -71,6 +81,10 @@ end
 
 if isempty(P01)
     P01=100*eye(size(A,1));
+
+    [~,~,P01]=KalmanFilterWithInput(A,B,G,J,Q,R,S,y(:,1:min(100,nt)),zeros(np,min(100,nt)),[],[],'noscaling',false,'showtext','no');
+
+    P01=P01+eye(size(P01))*min(diag(P01))*2;
     
     L_cyc=[min(2,L) ceil(L*0.5)]; L_cyc=unique(L_cyc);
     for j=1:length(L_cyc)
@@ -190,7 +204,7 @@ while convreached==false
     % else
     % Rbar_k_inv=pinv(Rbar_k);
     % end
-    Rbar_k_inv=forcesym(Rbar_k_inv);
+    % Rbar_k_inv=forcesym(Rbar_k_inv);
 
     HRbarH=H_L.'*Rbar_k_inv*H_L; HRbarH=forcesym(HRbarH);
     % HRbarH_pinv=pinv(HRbarH);
@@ -264,6 +278,8 @@ telapsed=toc(tstart);
 if do_text
     disp(['***** Steady state convergence calculated in ' sprintf('%2.1f', telapsed) ' s']);
 end
+
+
 %%
 
 if plotconv==true
@@ -293,6 +309,25 @@ end
 
 x_smooth=x_kplus_kL;
 p_smooth=phat_k_kL;
+
+
+
+
+if scale==true
+    x_smooth=T1*x_smooth;
+    P_x_ss=T1*P_x_ss*T1.';
+    
+    % Set these to empty for safety, not yet checked how these would be affected
+    P_xp_ss=[];
+    P_px_ss=[];
+    K_L_ss=[];
+    M_L_ss=[];
+end
+
+
+
+
+
 
 end
 
