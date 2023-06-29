@@ -1,9 +1,9 @@
 # ssm_tools
-Tools for state-space models in MATLAB 
+Various tools for state-space models in MATLAB 
 
 ## Topics:
 ###### Popular models:
-Linear vibration systems (K,C,M) \
+Linear vibration systems \
 Reduced-order modal models \
 Autoregressive models  \
 Matern state-space models \
