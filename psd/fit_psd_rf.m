@@ -282,7 +282,7 @@ end
 
 % Check real
 
-ratio=norm(imag(S_target))./norm(real(S_target));
+ratio=sqrt(sum(imag(S_target).^2)./sum(real(S_target).^2));
 
 if ratio>1e-6  
     error('Target spectral density must be non-imaginary');
