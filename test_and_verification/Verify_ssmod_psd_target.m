@@ -1,4 +1,5 @@
-%%
+%% Verification of state-space model fit for a
+% target psd on rational function form
 
 clc
 clear all
@@ -6,11 +7,13 @@ close all
 
 omega=[0:0.01:20];
 
-a=[1 -3 5 2];
+alpha=8
 n=[0 1 0];
-S_exact(1,1,:)=omega.^2./(1-3*omega.^2+5*omega.^4+2*omega.^6);
+d=[1 5 -3 0.5];
 
-[Fc,Lc,Hc,sigma_w,alpha]=ssmod_psd_rf(n,a);
+S_exact(1,1,:)=alpha*omega.^2./(0.5-3*omega.^2+5*omega.^4+1*omega.^6);
+
+[Fc,Lc,Hc,sigma_w]=ssmod_psd_rf(n,d,alpha);
 
 H=ssmod_tf(Fc,Lc,Hc,zeros(1,1),omega);
 
@@ -39,19 +42,20 @@ w_sim=mvnrnd(zeros(size(Fd,1),1),Qd,length(t)).';
 [S_welch_temp,f_welch]=estimateSpectrumWelch(p,1/dt,'Nwelch',10);
 
 w_welch=f_welch*2*pi;
-S_welch=S_welch_temp/(2*pi)*0.5;
+omega_welch_twosided=S_welch_temp/(2*pi)*0.5;
 
 close all
 
-plotTime(t,p);
+plottime(t,p);
 
 %%
 close all
 
-plotpsd(omega,S_exact,...
-    omega,S_ss,...
-    w_welch.',S_welch,...
-    'LineStyleSet',{'-' '--' '-'},'xlim',[0 10],'legend',{'Exact original' 'State-space model' 'Simulation'});
+plotopt=struct();
+plotopt.linestyle={'-' '--' '-'};
+plotopt.displayname={'Exact original' 'State-space model' 'Simulation'};
+plotopt.xlim=[0 10];
 
+plotpsd(omega,S_exact,omega,S_ss,w_welch.',omega_welch_twosided,plotopt);
 
-
+tilefigs
