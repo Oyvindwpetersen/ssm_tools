@@ -94,6 +94,9 @@ if isempty(P01)
 
 end
 
+% Turn warning back on.
+warning('off','MATLAB:nearlySingularMatrix');
+
 
 %% Matrices
 
@@ -325,7 +328,8 @@ if scale==true
 end
 
 
-
+% Turn warning back on.
+warning('on','MATLAB:nearlySingularMatrix');
 
 
 
