@@ -15,22 +15,33 @@ mod.dt=0.05;
 mod.a_cell={'10_U' '20_U' '30_U' '40_U' '50_U' '60_U' '70_U' '80_U' '90_U'}
 mod.d_cell=mod.a_cell;
 mod.p_cell={'30_U'}
+mod.e_cell={'25_U' '45_U' '65_U'}
+
+
 [mod.Sd,mod.Sa,mod.Sp]=DofSelection(mod.d_cell,mod.a_cell,mod.p_cell,mod.doflabel);
+[~,~,mod.Se]=DofSelection({},{},mod.e_cell,mod.doflabel);
 
 [mod.A mod.B mod.G mod.J mod.Ac mod.Bc]=ssmod_modal(mod.phi,mod.Omega,mod.Gamma,mod.Sa,mod.Sd,mod.Sp,mod.dt,'force','disc');
+[~, mod.Be ,~,mod.Je]=ssmod_modal(mod.phi,mod.Omega,mod.Gamma,mod.Sa,mod.Sd,mod.Se,mod.dt,'force','disc');
 
 mod.ny=size(mod.Sa,1); mod.nx=size(mod.A,1); mod.np=size(mod.Sp,2);
 
 %%
 
-mod.Q=eye(mod.nx)*[1e-2]^2;
-mod.R=eye(mod.ny)*[1e-4]^2;
-mod.S=zeros(mod.nx,mod.ny);
+Ce=eye(3);
+mod.R0=eye(mod.ny)*[1e-4]^2;
+mod.Q0=eye(mod.nx)*[1e-6]^2;
 
-mod.S=[ones(mod.nx/2,mod.ny)*0.1 ; ones(mod.nx/2,mod.ny)*-0.1].*diag(mod.Q).^0.5.*(diag(mod.R).').^0.5;
+mod.Q=mod.Be*Ce*mod.Be.'+mod.Q0;
+mod.R=mod.Je*Ce*mod.Je.'+mod.R0;
+mod.S=mod.Be*Ce*mod.Je.';
+
+% mod.S=zeros(mod.nx,mod.ny);
+% mod.S=[ones(mod.nx/2,mod.ny)*0.1 ; ones(mod.nx/2,mod.ny)*-0.2].*diag(mod.Q).^0.5.*(diag(mod.R).').^0.5;
 
 Ctot=[mod.Q mod.S ; mod.S.' mod.R]
 Ctot=plotcorr([mod.Q mod.S ; mod.S.' mod.R]);
+tilefigs
 
 sim.nt=1e6;
 sim.t=[1:sim.nt]*mod.dt;
@@ -44,8 +55,8 @@ close all
 sim.x0=zeros(mod.nx,1);
 [sim.x,sim.y]=ssmod_forward_stoch(mod.A,[],mod.G,[],[],sim.x0,[],sim.w,sim.v);
 
-plotTime(sim.t,sim.x);
-plotTime(sim.t,sim.y);
+plotfreq(sim.t,sim.x);
+plotfreq(sim.t,sim.y);
 
 tilefigs
 
@@ -54,21 +65,16 @@ tilefigs
 P_0_0=[]
 
 [x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KalmanFilter(mod.A,mod.G,mod.Q,mod.R,mod.S,sim.y,sim.x0,P_0_0,'forcescaling','yes');
-[x_k_kb,x_k_kminb,P_k_kb,P_k_kminb,K_k_ssb]=KalmanFilter(mod.A,mod.G,mod.Q,mod.R,mod.S*0,sim.y,sim.x0,P_0_0,'forcescaling','yes');
+
+[x_k_N,P_k_N]=RTSSmoother(mod.A,x_k_k,x_k_kmin,P_k_k,P_k_kmin);
 
 % For RTS, S must be handled by decoupling and new system matrices
+% [x_k_kb,x_k_kminb,P_k_kb,P_k_kminb,K_k_ssb]=KalmanFilter(mod.A,mod.G,mod.Q,mod.R,mod.S*0,sim.y,sim.x0,P_0_0,'forcescaling','yes');
 
-mod.A_star=mod.A-mod.S/mod.R*mod.G;
-[x_k_N,P_k_N]=RTSSmoother(mod.A_star,x_k_k,x_k_kmin,P_k_k,P_k_kmin);
-[x_k_Nb,P_k_Nb]=RTSSmoother(mod.A,x_k_kb,x_k_kminb,P_k_kb,P_k_kminb);
-[x_k_N_false,P_k_N_false]=RTSSmoother(mod.A,x_k_k,x_k_kmin,P_k_k,P_k_kmin);
-
-% close all
-% plotTime(t,x,x_k_kmin,x_k_kminb);
-% plotTime(t,x,x_k_k,x_k_kb);
-% 
-% plotTime(t,x,x_k_N,x_k_Nb,x_k_N_false);
-% plotFreq(t,x-x_k_N,x-x_k_Nb,x-x_k_N_false,'xlim',[0 5]);
+% mod.A_star=mod.A-mod.S/mod.R*mod.G;
+% [x_k_N,P_k_N]=RTSSmoother(mod.A_star,x_k_k,x_k_kmin,P_k_k,P_k_kmin);
+% [x_k_Nb,P_k_Nb]=RTSSmoother(mod.A,x_k_kb,x_k_kminb,P_k_kb,P_k_kminb);
+% [x_k_N_false,P_k_N_false]=RTSSmoother(mod.A,x_k_k,x_k_kmin,P_k_k,P_k_kmin);
 
 %%
 
