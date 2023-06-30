@@ -35,22 +35,25 @@ steadystate=p.Results.steadystate;
 showtext=p.Results.showtext;
 noscaling=p.Results.noscaling;
 
+%%
+
+ns=size(A,1);
+np=size(B,2);
+ny=size(G,1);
+nt=size(y,2);
+
 
 %% Zero matrices
 
 p=p_det;
 
 if isempty(p)
-    p=zeros(size(B,2),size(y,2));
+    p=zeros(np,nt);
 end
 
 if isempty(x0)
-    x0=zeros(size(A,2),1);
+    x0=zeros(ns,1);
 end
-
-nx=size(A,1);
-ny=size(G,1);
-nt=size(y,2);
 
 x_hat_k_kmin=zeros(nx,nt);
 x_hat_k_k=zeros(nx,nt);
@@ -59,11 +62,14 @@ e_k=zeros(ny,nt);
 trace_P_k_k=zeros(1,nt);
 delta_trace_P_k_k=zeros(1,nt);
 
-if isempty(P_0_0); P_0_0=eye(nx); end
-
 %% Conventional
 
-if steadystate=false
+if steadystate==false
+
+    if isempty(P_0_0)
+        P_0_0=eye(nx);
+    end
+
     P_k_kmin=zeros(nx,nx,nt);
     P_k_k=zeros(nx,nx,nt);
 
@@ -84,11 +90,11 @@ if steadystate=false
 
         x_hat_k_k(:,k)=x_hat_k_kmin(:,k)+(P_k_kmin(:,:,k)*G.')*Omega_k_inv*(y(:,k)-G*x_hat_k_kmin(:,k)-J*p(:,k));
 
-    	K_k=(A*P_k_kmin(:,:,k)*G.'+S)*Omega_k_inv;
+        K_k=(A*P_k_kmin(:,:,k)*G.'+S)*Omega_k_inv;
 
         % Time update
         %     P_k_kmin(:,:,k+1)=(F-K_k*H)*P_k_kmin(:,:,k)*(F-K_k*H).'+Q+K_k*R*K_k.'-S*K_k.'-K_k*S.'; P_k_kmin(:,:,k+1)=forcesym(P_k_kmin(:,:,k+1));
-     	P_k_kmin(:,:,k+1)=A*P_k_kmin(:,:,k)*A.'-(A*P_k_kmin(:,:,k)*G.'+S)*Omega_k_inv*(A*P_k_kmin(:,:,k)*G.'+S).'+Q; P_k_kmin(:,:,k+1)=forcesym(P_k_kmin(:,:,k+1));
+        P_k_kmin(:,:,k+1)=A*P_k_kmin(:,:,k)*A.'-(A*P_k_kmin(:,:,k)*G.'+S)*Omega_k_inv*(A*P_k_kmin(:,:,k)*G.'+S).'+Q; P_k_kmin(:,:,k+1)=forcesym(P_k_kmin(:,:,k+1));
 
         e_k(:,k)=y(:,k)-G*x_hat_k_kmin(:,k)-J*p(:,k);
 
@@ -105,7 +111,7 @@ end
 
 %% Steady state
 
-if steadystate=true
+if steadystate==true
 
     if noscaling==true
         [P_k_kmin_ss,~,~,info]=idare(A.',G.',Q,R,S,'noscaling');
@@ -124,7 +130,7 @@ if steadystate=true
             warning('***** DARE solution not finite, running with scaling');
         end
 
-    	if info.Report==3
+        if info.Report==3
             warning('***** DARE solution not found, running with scaling');
         end
 
