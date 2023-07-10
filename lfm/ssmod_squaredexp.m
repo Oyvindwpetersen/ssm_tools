@@ -17,7 +17,7 @@ function [Fc,Lc,Hc,sigma_w,S_trunc]=ssmod_squaredexp(L,sigma_p,ns,w_axis)
 % Lc: input matrix in state-space model
 % Hc: output matrix in state-space model
 % sigma_w: standard deviation of white noise input w(t) in state-space model 
-% S_trunc: PSD of approximated model
+% S_trunc: two-sided PSD of approximated model
 %
 % CF for SE model:
 % Kappa(t)=sigma_p^2*exp(-0.5*t^2/L^2)
