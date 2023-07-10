@@ -60,7 +60,7 @@ Dd=zeros(1,size(Hd,2));
 
 std_y=std(y)
 
-plotTime(t,y,'ylabel','Simulated process');
+plottime(t,y,'ylabel','Simulated process');
 xlim([0 1000])
 
 % Empirical spectrum
@@ -79,56 +79,39 @@ plotpsd(omega_axis,S_par_1_onesided,omega_axis,S_par_2_onesided,w_welch,S_welch,
 
 tilefigs
 
-%% Spectrum of white noise in discrete time
-
-close all
-
-% Empirical spectrum
-[Sw_welch,w_welch]=estimateSpectrumWelch(w,1/dt,'unit','rad','plot','no','Nwelch',1000);
-
-Fs_rad=2*pi*1/dt; % Sampling frequency in rad/s
-
-Sw_test_onesided=2*ones(1,1,length(omega_axis))*Qd(end,end)/Fs_rad;
-
-plotpsd(w_welch,Sw_welch,omega_axis,Sw_test_onesided,...
-    'xlabel','Frequency [rad/s]','ylabel','PSD',...
-    'displayname',{'' ''},...
-    'LineStyle',{'-' '--' '-'},...
-    'log',false,'xlim',[0 100]);
-
 %%
 
 % Qc=sigma_c^2
-% Qd=Qc*dt=
-
-% Theory: S(omega) in continuous time is Qc/(2*pi)
-% Theory: S(omega) in discrete time is Qd/Fs_rad to preserve 
-
-Swc_theory_onesided=2*ones(1,1,length(omega_axis))*Qc(end,end)/(2*pi);
-Swd_theory_onesided=2*ones(1,1,length(omega_axis))*Qd(end,end)/Fs_rad;
-
-[Htc]=ssmod_tf(Fc,Lc,Hc,0,omega_axis);
-[Htd]=ssmod_tf(Fd,Ld,Hd,Dd,omega_axis,dt);
-
-
-% These are not equal since Ld:=1 for the discrete model, the L-matrix has been included in the covariance function
-plottfw(omega_axis,abs(Htc),abs(Htd));
-
-
-Syc_theory_onesided=mtimes3(Htc,Swc_theory_onesided,Htc,'nnh');
-Syd_theory_onesided=mtimes3(Htd,Swd_theory_onesided,Htd,'nnh');
-
-close all
-
-% These are equal, the different definition of Swc and Swd cancel out the different scaling
-plotpsd(omega_axis,Syc_theory_onesided,Syd_theory_onesided,...
-    'xlabel','Frequency [rad/s]','ylabel','PSD',...
-    'displayname',{'' ''},...
-    'LineStyle',{'-' '--' '-'},...
-    'log',false,'xlim',[0 10]);
-
-
-
+% % Qd=Qc*dt=
+% 
+% % Theory: S(omega) in continuous time is Qc/(2*pi)
+% % Theory: S(omega) in discrete time is Qd/Fs_rad to preserve 
+% 
+% Swc_theory_onesided=2*ones(1,1,length(omega_axis))*Qc(end,end)/(2*pi);
+% Swd_theory_onesided=2*ones(1,1,length(omega_axis))*Qd(end,end)/Fs_rad;
+% 
+% [Htc]=ssmod_tf(Fc,Lc,Hc,0,omega_axis);
+% [Htd]=ssmod_tf(Fd,Ld,Hd,Dd,omega_axis,dt);
+% 
+% 
+% % These are not equal since Ld:=1 for the discrete model, the L-matrix has been included in the covariance function
+% plottf(omega_axis,abs(Htc),abs(Htd));
+% 
+% 
+% Syc_theory_onesided=mtimes3(Htc,Swc_theory_onesided,Htc,'nnh');
+% Syd_theory_onesided=mtimes3(Htd,Swd_theory_onesided,Htd,'nnh');
+% 
+% close all
+% 
+% % These are equal, the different definition of Swc and Swd cancel out the different scaling
+% plotpsd(omega_axis,Syc_theory_onesided,Syd_theory_onesided,...
+%     'xlabel','Frequency [rad/s]','ylabel','PSD',...
+%     'displayname',{'' ''},...
+%     'LineStyle',{'-' '--' '-'},...
+%     'log',false,'xlim',[0 10]);
+% 
+% 
+% 
 
 
 
