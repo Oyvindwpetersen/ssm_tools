@@ -82,7 +82,7 @@ end
 if isempty(P01)
     P01=100*eye(size(A,1));
 
-    [~,~,P01]=KalmanFilterWithInput(A,B,G,J,Q,R,S,y(:,1:min(100,nt)),zeros(np,min(100,nt)),[],[],'noscaling',false,'showtext','no');
+    [~,~,P01]=KalmanFilterWithInput(A,B,G,J,Q,R,S,y(:,1:min(100,nt)),zeros(np,min(100,nt)),[],[],'noscaling',false,'showtext',false);
 
     P01=P01+eye(size(P01))*min(diag(P01))*2;
     

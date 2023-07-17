@@ -80,7 +80,7 @@ end
 
 if isempty(P01) | P01==0
     % P01=eye(ns);
-    [~,~,P01]=KalmanFilterWithInput(A,B,G,J,Q,R,S,y(:,1:min(100,nt)),zeros(np,min(100,nt)),[],[],'noscaling',false,'showtext','no');
+    [~,~,P01]=KalmanFilterWithInput(A,B,G,J,Q,R,S,y(:,1:min(100,nt)),zeros(np,min(100,nt)),[],[],'noscaling',false,'showtext',false);
 end
 
 %assign initial values
