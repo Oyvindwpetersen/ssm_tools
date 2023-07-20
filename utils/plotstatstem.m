@@ -70,7 +70,7 @@ end
 
 if isempty(xticklabel)
     for k=1:length(data_stem{1})
-        xticklabel{k}=['x_' num2str(k)];
+        xticklabel{k}=['x_' '{' num2str(k) '}'];
     end
 end
 
