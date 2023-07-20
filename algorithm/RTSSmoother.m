@@ -60,14 +60,14 @@ end
 
 %% Zero matrices
 
-m_hat_k_k=x_k_k;
-m_hat_k_kmin=x_k_kmin;
+x_k_k=x_k_k;
+x_k_kmin=x_k_kmin;
 
 nx=size(A,1);
 % ny=size(H,1);
 nt=size(x_k_k,2);
-m_hat_k_N=zeros(nx,nt);
-m_hat_k_N(:,nt)=m_hat_k_k(:,nt);
+x_k_N=zeros(nx,nt);
+x_k_N(:,nt)=x_k_k(:,nt);
 
 %% Conventional
 
@@ -87,7 +87,7 @@ if steadystate==false
     for k=(nt-1):-1:1
 
         N_k=P_k_k(:,:,k)*A.'/P_k_kmin(:,:,k+1);
-        m_hat_k_N(:,k)=m_hat_k_k(:,k)+N_k*(m_hat_k_N(:,k+1)-m_hat_k_kmin(:,k+1));
+        x_k_N(:,k)=x_k_k(:,k)+N_k*(x_k_N(:,k+1)-x_k_kmin(:,k+1));
         P_k_N(:,:,k)=P_k_k(:,:,k)+N_k*(P_k_N(:,:,k+1)-P_k_kmin(:,:,k+1))*N_k.';
 
         if skip_Pklag==false & k>1
@@ -113,7 +113,7 @@ if steadystate==true
 
     t0=tic;
     for k=(nt-1):-1:1
-        m_hat_k_N(:,k)=m_hat_k_k(:,k)+N_k_ss*(m_hat_k_N(:,k+1)-m_hat_k_kmin(:,k+1));
+        x_k_N(:,k)=x_k_k(:,k)+N_k_ss*(x_k_N(:,k+1)-x_k_kmin(:,k+1));
     end
     telapsed=toc(t0);
 
@@ -160,7 +160,7 @@ end
 
 %% Output
 
-x_k_N=m_hat_k_N;
+x_k_N=x_k_N;
 
 if steadystate==true
     P_k_N=P_k_N_ss;
