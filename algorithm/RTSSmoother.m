@@ -60,9 +60,6 @@ end
 
 %% Zero matrices
 
-x_k_k=x_k_k;
-x_k_kmin=x_k_kmin;
-
 nx=size(A,1);
 % ny=size(H,1);
 nt=size(x_k_k,2);
@@ -159,8 +156,6 @@ end
 
 
 %% Output
-
-x_k_N=x_k_N;
 
 if steadystate==true
     P_k_N=P_k_N_ss;
