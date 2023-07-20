@@ -48,12 +48,22 @@ end
 
 if abs(n(1)-1)>1e-12
     n
-    error('First coefficient in n must be 1');
+    error('First (i.e. highest order) coefficient in n must be 1');
 end
 
 if abs(d(1)-1)>1e-12
     d
-    error('First coefficient in d must be 1');
+    error('First (i.e. highest order) coefficient in d must be 1');
+end
+
+if any(isinf(abs(n)))
+    n
+    error('n coefficients contain inf');
+end
+
+if any(isinf(abs(d)))
+    d
+    error('d coefficients contain inf');
 end
 
 % White noise variance
@@ -146,7 +156,7 @@ c_coeff=poly(z_selected);
 % Add zeros to b coeff if the nominator poly is lower than the denominator minus one (e.g. D~omega^6 and N~omega^2)
 c_zeros=zeros(1,num_d-num_n-1);
 
-%% State-space matrices
+%% State-space model
 
 ns=length(a_coeff);
 
@@ -156,15 +166,3 @@ Lc=zeros(ns,1); Lc(end)=1;
 
 Hc=[flip(c_coeff) c_zeros];
 
-%% 
-% return
-% 
-% H=ssmod_tf(Fc,Lc,Hc,zeros(1,1),omega);
-% 
-% Sw=ones(1,1,length(omega))*sigma_w_squared/(2*pi);
-% 
-% S_ss=mtimes3(H,Sw,H,'nnh');
-% 
-% close all
-% 
-% plotpsd(omega,S_exact,S_ss,'LineStyleSet',{'-' '--'},'xlim',[0 10]);
