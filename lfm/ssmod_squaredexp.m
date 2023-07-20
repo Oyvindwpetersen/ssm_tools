@@ -30,8 +30,8 @@ function [Fc,Lc,Hc,sigma_w,S_trunc]=ssmod_squaredexp(L,sigma_p,ns,w_axis)
 
 N=ns+1;
 
-if N>8 | N<2
-    error('ns must be in [2,8]');
+if ns>7 | ns<2
+    error('ns must be in [2,7]');
 end
 
 if L<=0
