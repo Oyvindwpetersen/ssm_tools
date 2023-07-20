@@ -12,7 +12,7 @@ addParameter(p,'gap',[0.1 0.1],@isnumeric)
 addParameter(p,'marg_h',[0.15 0.1],@isnumeric)
 addParameter(p,'marg_w',[0.1 0.05],@isnumeric)
 addParameter(p,'weight',[],@isnumeric)
-addParameter(p,'marker',{'o' 'x' 'd' 's' 'v'},@iscell)
+addParameter(p,'marker',{'x' 'x' 'x' 'x' 'x'},@iscell)
 addParameter(p,'markersize',3,@isnumeric)
 addParameter(p,'color',[[0 0 1] ; [1 0 0] ; [0 0 0] ;  [0 0.4 0] ; [1 0 1] ])
 addParameter(p,'xlabel','',@ischar)
@@ -60,6 +60,10 @@ end
 % [nx,npoints]=size(data_stem_matrix);
 
 %%
+
+% if isempty(marker)
+%     marker
+% end
 
 if ~iscell(color)
     color_matrix=color; clear color;
@@ -140,10 +144,6 @@ for j=1:n_sub
 
     end
 
-
-
-
-    
     axistight(gca,[ 0.1],'ylog');
     xlim([x_plot_all(1)-1 x_plot_all(end)+1]);
 
