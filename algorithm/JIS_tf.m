@@ -16,10 +16,10 @@ function [Hpy Hx0y Hx1y]=JIS_tf(A,B,G,J,Q,R,S,dt,omega_axis)
 % R: output noise covariance
 % S: mixed noise covariance
 % dt: time step
-% omega_axis: 
+% omega_axis: frequency axis
 %
 % Outputs:
-% Hpy: matrix with TF, output-to-force
+% Hpy: matrix with TF, output-to-force estimate
 % Hx0y: matrix with TF, output-to-filter estimate
 % Hx1y: matrix with TF, output-to-prediction estimate
 %
@@ -36,7 +36,6 @@ P0=[];
 [~,~,~,~,M_ss,L_ss] = JIS_ss(A,B,G,J,y_dummy,x0,Q,R,S,P0,'trunc',false,'convtol',1e-8);
 
 %%
-
 
 M2=[M_ss ; L_ss ; zeros(ns,ny) ];
 
