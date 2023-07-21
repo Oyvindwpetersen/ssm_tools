@@ -6,7 +6,7 @@ __old__/
 expired/
 doc_private/
 *expired*/
-*.asv*/
+**.asv*/
 
 # TOML file
 *.toml
