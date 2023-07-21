@@ -105,7 +105,7 @@ end
 
 %%
 
-[x_k_k,x_k_kmin,P_k_k,P_k_kmin]=KalmanFilterWithInput(A_star,B_star,G_star,J_star,Q_star,R_star,S_star,y,p_star,x0,P_0_0);
+[x_k_k,x_k_kmin,P_k_k,P_k_kmin]=KF(A_star,B_star,G_star,J_star,Q_star,R_star,S_star,y,p_star,x0,P_0_0);
 
 [x_k_N,P_k_N]=RTSSmoother(A_star,x_k_k,x_k_kmin,P_k_k,P_k_kmin);
 
