@@ -208,9 +208,6 @@ while convreached==false
     
 end
 
-% figure(); hold on; grid on; plot(ratio_trace_Pp); set(gca,'YScale','log');
-% figure(); hold on; grid on; plot(ratio_trace_P); set(gca,'YScale','log');
-
 %% Filter estimates
 
 for k=1:nt
