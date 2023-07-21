@@ -3,7 +3,7 @@ function [x_filt p_filt P_ss Pp_ss M_ss L_ss]=JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,vara
 %
 % Model
 % x(k+1)=A*x(k)+B*p(k)+w(k);
-% y=G*x(k)+J*p(k)+v(k);
+% y(k)=G*x(k)+J*p(k)+v(k);
 %
 % Inputs:
 % A: state matrix

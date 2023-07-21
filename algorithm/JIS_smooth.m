@@ -4,7 +4,7 @@ function [x_smooth p_smooth P_x_ss P_p_ss P_xp_ss P_px_ss]=JIS_smooth(A,B,G,J,y,
 %
 % Model
 % x(k+1)=A*x(k)+B*p(k)+w(k);
-% y=G*x(k)+J*p(k)+v(k);
+% y(k)=G*x(k)+J*p(k)+v(k);
 %
 % Inputs:
 % A: state matrix

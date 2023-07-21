@@ -5,7 +5,7 @@ function [Hpy Hx0y Hx1y]=JIS_tf(A,B,G,J,Q,R,S,dt,omega_axis)
 %
 % Model
 % x(k+1)=A*x(k)+B*p(k)+w(k);
-% y=G*x(k)+J*p(k)+v(k);
+% y(k)=G*x(k)+J*p(k)+v(k);
 %
 % Inputs:
 % A: state matrix

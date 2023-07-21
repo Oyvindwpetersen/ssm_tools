@@ -4,7 +4,7 @@ function [x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KalmanFilter(A,G,Q,R,S,y,x0,P_0_
 %
 % Model:
 % x(k+1)=A*x(k)+w(k);
-% y=G*x(k)+v(k);
+% y(k)=G*x(k)+v(k);
 %
 % Inputs:
 % A: state matrix
