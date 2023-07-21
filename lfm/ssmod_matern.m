@@ -20,6 +20,7 @@ function [Fc,Lc,Hc,sigma_w]=ssmod_matern(lambda,p_order,sigma_p)
 % p=1: CF(tau) ~ (c0+c1*tau)*exp(-b*tau)
 % p=2: CF(tau) ~ (c0+c1*tau+c2*tau^2)*exp(-b*tau)
 %
+
 %% Assign state space matrices
 
 if p_order==0
