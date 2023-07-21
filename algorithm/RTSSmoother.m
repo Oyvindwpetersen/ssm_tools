@@ -15,8 +15,8 @@ function [x_k_N,P_k_N,P_klag_N]=RTSSmoother(A,x_k_k,x_k_kmin,P_k_k,P_k_kmin,vara
 % P_klag_N: error covariance between k and k-1 given all N data
 %
 % Note:
-% For S~=0, the system must be transformed so that the process and maesurement noise is uncorrelated. A_star=A-S/R*G;
-% See Niu (2011) and Verify_KF_RTS.m
+% For S~=0, the system must be transformed so that the process and maesurement noise is uncorrelated, see Niu (2011). A_star=A-S/R*G;
+% 
 
 %% Parse inputs
 
