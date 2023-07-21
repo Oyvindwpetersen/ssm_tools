@@ -125,7 +125,7 @@ while convreached==false
     Rk=G*Pkk_*G'+R;  Rk=forcesym(Rk);
     
     % Truncation 1
-    if 0%ny>nm & trunc==true
+    if trunc==true & ny>nm
         [V1,lambda_orig1]=eig(Rk);
         [lambda1,I1]=sort(diag(lambda_orig1),1,'descend');
         lambdaRk(:,k)=lambda1;
@@ -138,7 +138,7 @@ while convreached==false
     end
     
     %trunc 2
-    if np>nm & trunc==true
+    if trunc==true & np>nm
         [V2,lambda_orig2]=eig(J'*Rk_inv*J);
         [lambda2,I2]=sort(diag(lambda_orig2),1,'descend');
         lambdaJRkJ(:,k)=lambda2;
@@ -158,7 +158,7 @@ while convreached==false
     % x_filt(:,k)=x_pred(:,k)+Lk*(y(:,k)-G*x_pred(:,k)-J*p_filt(:,k));
     
     %trunc 3
-    if ny>nm & strcmpi(trunc,'yes')
+    if trunc==true & ny>nm
         [V3,lambda_orig3]=eig(forcesym(J*Ppkk*J'));
         [lambda3,I3]=sort(diag(lambda_orig3),1,'descend');
         lambdaJPpkkJ(:,k)=lambda3;
