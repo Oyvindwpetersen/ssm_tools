@@ -3,8 +3,8 @@ function [x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KalmanFilterWithInput(A,B,G,J,Q,
 %% Kalman filter with known input
 %
 % Model:
-% x(k+1)=A*x(k)+B*p(k)+w(k);
-% y(k)=G*x(k)+J*p(k)+v(k);
+% x(k+1)=A*x(k)+B*p(k)+w(k)
+% y(k)=G*x(k)+J*p(k)+v(k)
 %
 % Inputs:
 % A: state matrix
@@ -93,7 +93,6 @@ if steadystate==false
         e_k(:,k)=y(:,k)-G*x_hat_k_kmin(:,k)-J*p(:,k);
 
         x_hat_k_kmin(:,k+1)=A*x_hat_k_kmin(:,k)+B*p(:,k)+K_k*e_k(:,k);
-
 
     end
 
