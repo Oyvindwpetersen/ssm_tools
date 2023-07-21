@@ -39,17 +39,27 @@ noscaling=p.Results.noscaling;
 
 p=p_det;
 
-if isempty(p)
-    p=zeros(size(B,2),size(y,2));
-end
-
-if isempty(x0)
-    x0=zeros(size(A,2),1);
-end
-
 nx=size(A,1);
 ny=size(G,1);
 nt=size(y,2);
+np=size(p,2);
+
+if isempty(p)
+    p=zeros(1,nt);
+    np=size(p,2);
+end
+
+if isempty(B)
+    B=zeros(nx,np);
+end
+
+if isempty(J)
+    J=zeros(ny,np);
+end
+
+if isempty(x0)
+    x0=zeros(nx,1);
+end
 
 x_hat_k_kmin=zeros(nx,nt);
 x_hat_k_k=zeros(nx,nt);
@@ -58,7 +68,9 @@ e_k=zeros(ny,nt);
 trace_P_k_k=zeros(1,nt);
 delta_trace_P_k_k=zeros(1,nt);
 
-if isempty(P_0_0); P_0_0=eye(nx); end
+if isempty(P_0_0);
+    P_0_0=eye(nx);
+end
 
 %% Conventional
 
@@ -145,10 +157,7 @@ if steadystate==true
     P_k_k_ss=P_k_kmin_ss-P_k_kmin_ss*G.'*Omega_k_ss_inv*G*P_k_kmin_ss; P_k_k_ss=forcesym(P_k_k_ss);
     K_k_ss=(A*P_k_kmin_ss*G.'+S)*Omega_k_ss_inv;
 
-    % close all
-
     % Possibly do further iterations on steady state
-
     % for k=1:100
     %
     %     % measurement update
