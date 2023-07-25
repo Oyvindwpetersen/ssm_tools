@@ -1,4 +1,4 @@
-function [x_filt p_filt P_ss Pp_ss M_ss L_ss]=JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,varargin)
+function [x_filt p_filt Px_k_k_ss Pp_ss M_ss L_ss x_pred Px_k_kmin_ss]=JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,varargin)
 %% Joint input and state estimation for linear system
 %
 % Model
@@ -196,8 +196,9 @@ while convreached==false
         disp(['Trace convergence reached, k=' num2str(k)]);
         M_ss=Mk;
         L_ss=Lk;
-        P_ss=Pkk;
+        Px_k_k_ss=Pkk;
         Pp_ss=Ppkk;
+        Px_k_kmin_ss=Pkk_;
     elseif k>=maxsteps
         figure(); hold on; grid on;
         plot(ratio_trace_Px);
@@ -217,14 +218,16 @@ for k=1:nt
     x_pred(:,k+1)=A*x_filt(:,k)+B*p_filt(:,k)+Bu*u(:,k);
     
 end
+x_pred=x_pred(:,1:end-1);
 
 telapsed=toc(tstart);
 disp(['JIS calculated in ' sprintf('%2.1f', telapsed) ' seconds, ' sprintf('%2.1f', telapsed*10^3./nt) ' seconds per 1k steps']);
 
 if scale==true
     x_filt=T1*x_filt;
-    P_ss=T1*P_ss*T1.';
-    
+    x_pred=T1*x_pred;
+    Px_k_k_ss=T1*Px_k_k_ss*T1.';
+    Px_k_kmin_ss=T1*Px_k_kmin_ss*T1.';
     % Set these to empty for safety, not yet checked how these would be affected
     M_ss=[];
     L_ss=[];
