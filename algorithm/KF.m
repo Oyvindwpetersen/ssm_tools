@@ -42,11 +42,11 @@ p=p_det;
 nx=size(A,1);
 ny=size(G,1);
 nt=size(y,2);
-np=size(p,2);
+np=size(p,1);
 
 if isempty(p)
     p=zeros(1,nt);
-    np=size(p,2);
+    np=size(p,1);
 end
 
 if isempty(B)
@@ -55,6 +55,10 @@ end
 
 if isempty(J)
     J=zeros(ny,np);
+end
+
+if isempty(S)
+    S=zeros(nx,ny);
 end
 
 if isempty(x0)
