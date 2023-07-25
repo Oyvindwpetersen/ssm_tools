@@ -82,9 +82,9 @@ end
 if isempty(P01)
     P01=100*eye(size(A,1));
 
-    [~,~,P01]=KalmanFilterWithInput(A,B,G,J,Q,R,S,y(:,1:min(100,nt)),zeros(np,min(100,nt)),[],[],'noscaling',false,'showtext',false);
+    [~,~,~,~,~,P01]=KF_RTS(A,B,G,J,Q,R,S,y(:,1:min(100,nt)),zeros(np,min(100,nt)),[],[],'noscaling',false,'showtext',false);
 
-    P01=P01+eye(size(P01))*min(diag(P01))*2;
+    % P01=P01+eye(size(P01))*min(diag(P01))*2;
     
     L_cyc=[min(2,L) ceil(L*0.5)]; L_cyc=unique(L_cyc);
     for j=1:length(L_cyc)
