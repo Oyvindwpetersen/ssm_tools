@@ -78,7 +78,7 @@ end
 
 if isempty(P0)
 
-    [~,~,P0,~] = JIS_ss(A,B,G,J,y(:,1:min(100,nt)),x0,Q,R,S,[],'showtext',false);
+    [~,~,P0,~] = JIS_ss(A,B,G,J,y(:,1:min(100,nt)),x0,Q,R,S,[],'showtext',false,'dispconv',false);
     
     L_cyc=[ceil(L*0.5)];
     %L_cyc=unique(L_cyc);
