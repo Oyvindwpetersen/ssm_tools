@@ -85,7 +85,7 @@ if isempty(x0) | x0==0
 end
 
 if isempty(P01) | P01==0
-    [~,~,P01]=KF(A,B,G,J,Q,R,S,y(:,1:min(100,nt)),zeros(np,min(100,nt)),[],[],'noscaling',false,'showtext',false);
+    [~,~,~,P01]=KF(A,B,G,J,Q,R,S,y(:,1:min(100,nt)),zeros(np,min(100,nt)),[],[],'noscaling',false,'showtext',false);
 end
 
 %assign initial values
@@ -172,14 +172,14 @@ while convreached==false
         JPpkkJ=(J*Pp_k_k*J.'); JPpkkJ=forcesym(JPpkkJ);
     end
     
-    P_k_k=P_k_kmin - Kk*(Rk-JPpkkJ)*Kk'; P_k_k=forcesym(P_k_k);
+    P_k_k=P_k_kmin - Kk*(Rk-JPpkkJ)*Kk.'; P_k_k=forcesym(P_k_k);
     Pxpkk=-Kk*J*Pp_k_k;
     Ppxkk=Pxpkk';
     
     % Time update
     % x_pred(:,k+1)=A*x_filt(:,k)+B*p_filt(:,k);
     Nk=A*Kk*(eye(ny)-J*Mk)+B*Mk;
-    P_k_kmin=[A B]*[ P_k_k Pxpkk;Ppxkk Pp_k_k]*[A';B']+Q-Nk*S'-S*Nk'; P_k_kmin=forcesym(P_k_kmin);
+    P_k_kmin=[A B]*[ P_k_k Pxpkk ; Ppxkk Pp_k_k]*[A.';B.']+Q-Nk*S.'-S*Nk.'; P_k_kmin=forcesym(P_k_kmin);
     
     % Trace
     ratio_trace_Px(k)=trace(abs(P_k_k-P_k_k_prev))./trace(P_k_k);
