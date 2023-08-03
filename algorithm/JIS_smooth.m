@@ -16,7 +16,7 @@ function [x_smooth p_smooth P_x_ss P_p_ss P_xp_ss P_px_ss]=JIS_smooth(A,B,G,J,y,
 % Q: state noise covariance
 % S: mixed noise covariance
 % x0: initial state estimate
-% P01: initial state error covariance
+% P0: initial state error covariance
 % L: number of lags
 %
 % Outputs:
