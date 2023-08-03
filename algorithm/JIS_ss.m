@@ -1,4 +1,4 @@
-function [x_filt p_filt Px_k_k_ss Pp_ss M_ss L_ss x_pred Px_k_kmin_ss]=JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,varargin)
+function [x_filt p_filt Px_k_k_ss Pp_ss M_ss K_ss x_pred Px_k_kmin_ss]=JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,varargin)
 %% Joint input and state estimation for linear system
 %
 % Model
@@ -25,28 +25,30 @@ function [x_filt p_filt Px_k_k_ss Pp_ss M_ss L_ss x_pred Px_k_kmin_ss]=JIS_ss(A,
 % M_ss: matrix
 % L_ss: matrix
 %
-
+ 
 %% Parse inputs
 
 p=inputParser;
+addParameter(p,'showtext',true,@islogical)
+addParameter(p,'dispconv',true,@islogical)
 addParameter(p,'trunc',false,@islogical)
 addParameter(p,'scale',false,@islogical)
 addParameter(p,'minsteps',100,@isnumeric)
 addParameter(p,'maxsteps',100e3,@isnumeric)
 addParameter(p,'convtol',1e-6,@isnumeric)
-addParameter(p,'dispconv',false,@islogical)
 addParameter(p,'Bu',[],@isnumeric)
 addParameter(p,'Ju',[],@isnumeric)
 addParameter(p,'u',[],@isnumeric)
 
 parse(p,varargin{:});
 
+showtext=p.Results.showtext;
+dispconv=p.Results.dispconv;
 trunc=p.Results.trunc;
 scale=p.Results.scale;
 minsteps=p.Results.minsteps;
 maxsteps=p.Results.maxsteps;
 convtol=p.Results.convtol;
-dispconv=p.Results.dispconv;
 Bu=p.Results.Bu;
 Ju=p.Results.Ju;
 u=p.Results.u;
@@ -65,6 +67,10 @@ x_pred=zeros(ns,nt);
 x_filt=zeros(ns,nt);
 p_filt=zeros(np,nt);
 
+% For state steady calculation
+P_k_k_prev=nan(ns);
+Pp_k_k_prev=nan(np);
+
 ratio_trace_Px=zeros(1,maxsteps);
 ratio_trace_Pp=zeros(1,maxsteps);
 
@@ -79,13 +85,12 @@ if isempty(x0) | x0==0
 end
 
 if isempty(P01) | P01==0
-    % P01=eye(ns);
-    [~,~,P01]=KF(A,B,G,J,Q,R,S,y(:,1:min(100,nt)),zeros(np,min(100,nt)),[],[],'noscaling',false,'showtext',false);
+    [~,~,~,P01]=KF(A,B,G,J,Q,R,S,y(:,1:min(100,nt)),zeros(np,min(100,nt)),[],[],'noscaling',false,'showtext',false);
 end
 
 %assign initial values
 x_pred(:,1)=[x0];
-Pkk_=P01;
+P_k_kmin=P01;
 
 % Scale system
 if scale==true
@@ -104,6 +109,7 @@ if all([isempty(Bu) isempty(Ju) isempty(u)])
     u=zeros(1,nt);
 elseif ~all([isempty(Bu) ~isempty(Ju) ~isempty(u)])
     % With deterministic input
+    error('Deterministic input not implemented yet');
 else
     size(Bu)
     size(Ju)
@@ -113,16 +119,14 @@ end
 
 %% Steady state
 
-Pkk_prev=zeros(ns); Pkk_current=zeros(ns);
-Ppkk_prev=zeros(np); Ppkk_current=zeros(np);
-
 tstart=tic;
 convreached=false; k=0;
 while convreached==false
+
     k=k+1;
     
     %input estimation
-    Rk=G*Pkk_*G'+R;  Rk=forcesym(Rk);
+    Rk=G*P_k_kmin*G.'+R;  Rk=forcesym(Rk);
     
     % Truncation 1
     if trunc==true & ny>nm
@@ -139,53 +143,54 @@ while convreached==false
     
     %trunc 2
     if trunc==true & np>nm
-        [V2,lambda_orig2]=eig(J'*Rk_inv*J);
+        [V2,lambda_orig2]=eig(J.'*Rk_inv*J);
         [lambda2,I2]=sort(diag(lambda_orig2),1,'descend');
         lambdaJRkJ(:,k)=lambda2;
         V2=V2(:,I2);
         tr2=nm;
         JRkJ_inv= V2(:,1:tr2)*inv(diag(lambda2(1:tr2)))*V2(:,1:tr2)'; JRkJ_inv=forcesym(JRkJ_inv);
     else
-        JRkJ_inv=eye(np)/(J'*Rk_inv*J); JRkJ_inv=forcesym(JRkJ_inv);
+        JRkJ_inv=eye(np)/(J.'*Rk_inv*J); JRkJ_inv=forcesym(JRkJ_inv);
     end
     
-    Mk=JRkJ_inv*J'*Rk_inv;
+    Mk=JRkJ_inv*J.'*Rk_inv;
     % p_filt(:,k)=Mk*(y(:,k)-G*x_pred(:,k));
-    Ppkk=JRkJ_inv;  Ppkk=forcesym(Ppkk);
+    Pp_k_k=JRkJ_inv;  Pp_k_k=forcesym(Pp_k_k);
     
     % Measurement update
-    Lk=Pkk_*G'*Rk_inv;
-    % x_filt(:,k)=x_pred(:,k)+Lk*(y(:,k)-G*x_pred(:,k)-J*p_filt(:,k));
+    Kk=P_k_kmin*G.'*Rk_inv;
+    % x_filt(:,k)=x_pred(:,k)+Kk*(y(:,k)-G*x_pred(:,k)-J*p_filt(:,k));
     
     %trunc 3
     if trunc==true & ny>nm
-        [V3,lambda_orig3]=eig(forcesym(J*Ppkk*J'));
+        [V3,lambda_orig3]=eig(forcesym(J*Pp_k_k*J.'));
         [lambda3,I3]=sort(diag(lambda_orig3),1,'descend');
         lambdaJPpkkJ(:,k)=lambda3;
         V3=V3(:,I3);
         tr3=min(nm,np);
         JPpkkJ=V3(:,1:tr3)*diag(lambda3(1:tr3))*V3(:,1:tr3)';  JPpkkJ=forcesym(JPpkkJ);
     else
-        JPpkkJ=(J*Ppkk*J'); JPpkkJ=forcesym(JPpkkJ);
+        JPpkkJ=(J*Pp_k_k*J.'); JPpkkJ=forcesym(JPpkkJ);
     end
     
-    Pkk=Pkk_ - Lk*(Rk-JPpkkJ)*Lk'; Pkk=forcesym(Pkk);
-    Pxpkk=-Lk*J*Ppkk;
+    P_k_k=P_k_kmin - Kk*(Rk-JPpkkJ)*Kk.'; P_k_k=forcesym(P_k_k);
+    Pxpkk=-Kk*J*Pp_k_k;
     Ppxkk=Pxpkk';
     
     % Time update
     % x_pred(:,k+1)=A*x_filt(:,k)+B*p_filt(:,k);
-    Nk=A*Lk*(eye(ny)-J*Mk)+B*Mk;
-    Pkk_=[A B]*[ Pkk Pxpkk;Ppxkk Ppkk]*[A';B']+Q-Nk*S'-S*Nk'; Pkk_=forcesym(Pkk_);
+
+    Sbar_k=A*P_k_kmin*G.'+S;
+    Kbar_k=Sbar_k/Rk+(B-Sbar_k/Rk*J)*Mk;
+
+    P_k_kmin=A*P_k_kmin*A.'+Q-Sbar_k*Kbar_k.'-Kbar_k*Sbar_k.'+Kbar_k*Rk*Kbar_k.'; P_k_kmin=forcesym(P_k_kmin);
     
     % Trace
-    Pkk_prev=Pkk_current;
-    Pkk_current=Pkk;
-    ratio_trace_Px(k)=trace(abs(Pkk_current-Pkk_prev))./trace(Pkk_current);
-    
-    Ppkk_prev=Ppkk_current;
-    Ppkk_current=Ppkk;
-    ratio_trace_Pp(k)=trace(abs(Ppkk_current-Ppkk_prev))./trace(Ppkk_current);
+    ratio_trace_Px(k)=trace(abs(P_k_k-P_k_k_prev))./trace(P_k_k);
+    ratio_trace_Pp(k)=trace(abs(Pp_k_k-Pp_k_k_prev))./trace(Pp_k_k);
+
+    P_k_k_prev=P_k_k;
+    Pp_k_k_prev=Pp_k_k;
     
     if dispconv & mod(k,100)==0
         disp(['***** Step ' num2str(k,'%3.0f') ', ratio_trace_P ' num2str(ratio_trace_Px(k),'%0.3e') ', ratio_trace_Pp ' num2str(ratio_trace_Pp(k),'%0.3e')]);
@@ -193,12 +198,16 @@ while convreached==false
     
     if k>minsteps & abs(ratio_trace_Px(k)) < convtol & abs(ratio_trace_Pp(k)) < convtol
         convreached=true;
-        disp(['Trace convergence reached, k=' num2str(k)]);
+        if dispconv & mod(k,100)==0
+            disp(['Trace convergence reached, k=' num2str(k)]);
+        end
         M_ss=Mk;
-        L_ss=Lk;
-        Px_k_k_ss=Pkk;
-        Pp_ss=Ppkk;
-        Px_k_kmin_ss=Pkk_;
+        K_ss=Kk;
+        Rbar_ss=Rk;
+        Sbar_ss=Sbar_k;
+        Px_k_k_ss=P_k_k;
+        Pp_ss=Pp_k_k;
+        Px_k_kmin_ss=P_k_kmin;
     elseif k>=maxsteps
         figure(); hold on; grid on;
         plot(ratio_trace_Px);
@@ -213,15 +222,21 @@ end
 
 for k=1:nt
     
-    p_filt(:,k)=M_ss*(y(:,k)-G*x_pred(:,k)-Ju*u(:,k));
-    x_filt(:,k)=x_pred(:,k)+L_ss*(y(:,k)-G*x_pred(:,k)-J*p_filt(:,k)-Ju*u(:,k));
-    x_pred(:,k+1)=A*x_filt(:,k)+B*p_filt(:,k)+Bu*u(:,k);
+    p_filt(:,k)=M_ss*(y(:,k)-G*x_pred(:,k));
+
+    e_k=(y(:,k)-G*x_pred(:,k)-J*p_filt(:,k));
+
+    x_filt(:,k)=x_pred(:,k)+K_ss*e_k;
+    x_pred(:,k+1)=A*x_pred(:,k)+B*p_filt(:,k)+Sbar_ss/Rbar_ss*e_k;
     
 end
 x_pred=x_pred(:,1:end-1);
 
 telapsed=toc(tstart);
-disp(['JIS calculated in ' sprintf('%2.1f', telapsed) ' seconds, ' sprintf('%2.1f', telapsed*10^3./nt) ' seconds per 1k steps']);
+
+if showtext==true
+    disp(['JIS calculated in ' sprintf('%2.1f', telapsed) ' seconds, ' sprintf('%2.1f', telapsed*10^3./nt) ' seconds per 1k steps']);
+end
 
 if scale==true
     x_filt=T1*x_filt;
@@ -230,77 +245,7 @@ if scale==true
     Px_k_kmin_ss=T1*Px_k_kmin_ss*T1.';
     % Set these to empty for safety, not yet checked how these would be affected
     M_ss=[];
-    L_ss=[];
+    K_ss=[];
+    Kbar_ss=[];
+    Sbar_ss=[];
 end
-
-
-%%
-
-
-
-
-
-
-
-
-
-
-
-
-%
-% return
-% close all
-%
-% figure(); hold on; grid on;
-% plot(lambdaRk'); xlim([0 k]);
-% set(gca,'YScale','log');
-%
-%
-% figure(); hold on; grid on;
-% plot(lambdaJRkJ');
-% set(gca,'YScale','log');
-%
-% figure(); hold on; grid on;
-% plot(lambdaJPpkkJ');
-% set(gca,'YScale','log');
-%
-% figure(); hold on; grid on;
-% plot(abs(lambdaJPpkkJ(1,:)./lambdaJPpkkJ(end,:)));
-% set(gca,'YScale','log');
-%
-% %%
-% close all
-%
-% figure(); hold on; grid on;
-% plot(squeeze(Rk_time(1,1,:)))
-%
-% figure(); hold on; grid on;
-% plot(squeeze(Pkk_time(1,1,:)))
-%
-% figure(); hold on; grid on;
-% plot(squeeze(Pkk__time(1,1,:)))
-%
-% figure(); hold on; grid on;
-% plot(squeeze(Ppkk_time(1,1,:)))
-%
-% set(gca,'YScale','log');
-%
-% %%
-% close all
-%
-% figure(); hold on; grid on;
-% plot(c1)
-% set(gca,'YScale','log');
-% title('Cony Rk')
-%
-% figure(); hold on; grid on;
-% plot(c2)
-% set(gca,'YScale','log');
-% title('Cony J^T Rk J')
-%
-% figure(); hold on; grid on;
-% plot(c3)
-% set(gca,'YScale','log');
-%
-%
-%
