@@ -48,7 +48,7 @@ Sigma_w_squared=diag(sigma_w).^2;
 Qwc=Lc*Sigma_w_squared*Lc.';
 Qxc=zeros(ns);
 
-Qac=blockDiagonal(Qxc,Qwc);
+Qac=blkdiag(Qxc,Qwc);
 
 Fac=[Ac Bc*Hc ; zeros(ns2,ns) Fc];
 
