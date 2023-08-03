@@ -24,6 +24,8 @@ function [Hpy Hx0y Hx1y]=JIS_tf(A,B,G,J,Q,R,S,dt,omega_axis)
 
 %%
 
+warning('Not updated yet');
+
 ns=size(A,1);
 ny=size(G,1);
 np=size(B,2);
