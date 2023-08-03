@@ -1,4 +1,4 @@
-function [x_smooth p_smooth P_x_ss P_p_ss P_xp_ss P_px_ss]=JIS_smooth(A,B,G,J,y,Q,R,S,x0,P01,L,varargin)
+function [x_smooth p_smooth P_x_ss P_p_ss P_xp_ss P_px_ss]=JIS_smooth(A,B,G,J,y,Q,R,S,x0,P0,L,varargin)
 
 %% Joint input and state estimation with smoothing
 %
@@ -32,7 +32,7 @@ function [x_smooth p_smooth P_x_ss P_p_ss P_xp_ss P_px_ss]=JIS_smooth(A,B,G,J,y,
 p=inputParser;
 % p.KeepUnmatched=true;
 
-addParameter(p,'text',true,@islogical)
+addParameter(p,'showtext',true,@islogical)
 addParameter(p,'dispconv',true,@islogical)
 addParameter(p,'plotconv',false,@islogical)
 addParameter(p,'convtol',1e-6,@isnumeric)
@@ -42,9 +42,9 @@ addParameter(p,'scale',false,@islogical)
 
 parse(p,varargin{1:end});
 
-do_text=p.Results.text;
-dispconv=p.Results.dispconv;
+showtext=p.Results.showtext;
 plotconv=p.Results.plotconv;
+dispconv=p.Results.dispconv;
 convtol=p.Results.convtol;
 minsteps=p.Results.minsteps;
 maxsteps=p.Results.maxsteps;
@@ -60,13 +60,10 @@ np=size(B,2);
 % convtol=1e-4;
 minsteps=max(minsteps,L);
 
-
 %%
 
 if scale==true
-
     [A,B,G,J,y,Q,R,S,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,J,y,Q,R,S);
-    
 end
 
 %% Error handling
@@ -79,55 +76,48 @@ if isempty(x0) | x0==0
     x0=zeros(size(A,1),1);
 end
 
-if isempty(P01)
-    P01=100*eye(size(A,1));
+if isempty(P0)
 
-    [~,~,~,~,~,P01]=KF_RTS(A,B,G,J,Q,R,S,y(:,1:min(100,nt)),zeros(np,min(100,nt)),[],[],'noscaling',false,'showtext',false);
-
-    % P01=P01+eye(size(P01))*min(diag(P01))*2;
+    [~,~,P0,~] = JIS_ss(A,B,G,J,y(:,1:min(100,nt)),x0,Q,R,S,[],'showtext',false);
     
-    L_cyc=[min(2,L) ceil(L*0.5)]; L_cyc=unique(L_cyc);
+    L_cyc=[ceil(L*0.5)];
+    %L_cyc=unique(L_cyc);
+    
     for j=1:length(L_cyc)
-        [~,~,P_x_ss,~,~,~]=JIS_smooth(A,B,G,J,y(:,1:min(100,nt)),Q,R,S,x0,P01,L_cyc(j),'dispconv',true,'text',false,'convtol',1e-6);
-        P01=P_x_ss;
+        [~,~,P_x_ss,~,~,~]=JIS_smooth(A,B,G,J,y(:,1:min(100,nt)),Q,R,S,x0,P0,L_cyc(j),'showtext',false,'convtol',1e-6);
+        P0=P_x_ss;
     end
 
 end
 
-% Turn warning back on.
+% Turn warning on
 warning('off','MATLAB:nearlySingularMatrix');
-
 
 %% Matrices
 
-%% Extended observability, Toeplitz, N-matrix
-
 tstart=tic;
 
+% Extended observability, Toeplitz, N-matrix
 Obs_L=extendedobs(A,G,L);
 
 H_L=toeplitz_block(A,B,G,J,L);
 
 N_L=N_matrix(A,G,L);
 
-%% Union matrices
-
+% Union matrices
 Id1_union=[eye(ns) zeros(ns,ns*(L-1))]; Id1_union=sparse(Id1_union);
 Id2_union=[eye(np) zeros(np,np*L)]; Id2_union=sparse(Id2_union);
 B_union=[B  zeros(ns,np*L)]; B_union=sparse(B_union);
 
-%% Extended noise matrices
-
+% Extended noise matrices
 Q_L_i=cell(1,L);
 R_Lplus_i=cell(1,L);
 S_L_i=cell(1,L);
 S_L_minusi=cell(1,L);
 
 for i=1:L
-
     [Q_L_i{i},R_Lplus_i{i},S_L_i{i}]=extendednoisecov(Q,R,S,L,i);
     [~,~,S_L_minusi{i}]=extendednoisecov(Q,R,S,L,-i);
-
 end
 
 [Q_L_nil,R_Lplus_nil,S_L_nil]=extendednoisecov(Q,R,S,L,0);
@@ -136,18 +126,12 @@ Rbar_k_precalc=R_Lplus_nil+N_L*Q_L_nil*N_L.'+N_L*S_L_nil+S_L_nil.'*N_L.';
 Sbar_k_precalc=Id1_union*Q_L_nil*N_L.'+Id1_union*S_L_nil;
 
 telapsed=toc(tstart);
-% if do_text
-    % disp(['Base matrices calculated in ' sprintf('%2.1f', telapsed) ' s']);
-% end
-% return
-
-clear Pp_save M_L_k_save  Rbar_k_cond
 
 %% Calculate steady state
 
 tstart=tic;
 
-P_x_k_kLminus=P01; %initial error covariance for state
+P_x_k_kLminus=P0; %initial error covariance for state
 K_L_k=cell(1,maxsteps);
 CommonSumTerm_k=cell(1,maxsteps);
 
@@ -159,12 +143,12 @@ Px_prev=nan(ns); Px_current=nan(ns);
 n=0; k=-1;
 while convreached==false
 
-    k=k+1; %time index, k=0,1,2,3...
-    n=n+1; %matlab matrix index, n=1,2,3,4...
+    k=k+1; % time index, k=0,1,2,3...
+    n=n+1; % matlab matrix index, n=1,2,3,4...
 
     %%% Input estimation
 
-    %Pxw and Pxv
+    % Pxw and Pxv
     Sum_loop_xw=zeros(ns,L*ns);
     Sum_loop_xv=zeros(ns,(L+1)*nd);
     Product_loop_i=eye(ns);
@@ -234,19 +218,12 @@ while convreached==false
 
     P_x_k_kLminus=P_x_kplus_kL;
 
-    %%% MISC SAVE
-
-    % Pp_save(1,n)=P_p_k_kL;
-    % M_L_k_save(:,n)=M_L_k;
-    % Rbar_k_cond(n)=cond(Rbar_k);
-
 
     %%% Convergence checks
 
     Pp_prev=Pp_current;
     Pp_current=P_p_k_kL;
     ratio_trace_Pp(n)=trace(abs(Pp_current-Pp_prev))./trace(Pp_current);
-
 
     Px_prev=Px_current;
     Px_current=P_x_kplus_kL;
@@ -273,15 +250,13 @@ while convreached==false
         disp(['***** Trace divergence reached, k=' num2str(k)]); break;
     end
 
-
 end
 
 telapsed=toc(tstart);
 
-if do_text
+if showtext
     disp(['***** Steady state convergence calculated in ' sprintf('%2.1f', telapsed) ' s']);
 end
-
 
 %%
 
@@ -313,9 +288,6 @@ end
 x_smooth=x_kplus_kL;
 p_smooth=phat_k_kL;
 
-
-
-
 if scale==true
     x_smooth=T1*x_smooth;
     P_x_ss=T1*P_x_ss*T1.';
@@ -328,10 +300,8 @@ if scale==true
 end
 
 
-% Turn warning back on.
+% Turn warning back on
 warning('on','MATLAB:nearlySingularMatrix');
-
-
 
 end
 
