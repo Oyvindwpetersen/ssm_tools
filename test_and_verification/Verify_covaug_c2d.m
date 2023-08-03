@@ -50,7 +50,7 @@ plotcorr(Qdw_aug);
 %% Covariance for additional white noise excitation
 
 Qce=diag([0.5 0.8]);
-Qce_aug=blockDiagonal(Bc*Qce*Bc.',zeros(2));
+Qce_aug=blkdiag(Bc*Qce*Bc.',zeros(2));
 
 Qde_aug=cov_c2d(Ac_aug,Qce_aug,dt);
 Qde_aug_approx=Qce_aug*dt;
