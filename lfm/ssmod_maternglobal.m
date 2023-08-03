@@ -68,9 +68,9 @@ if calcfast
     R_par=matern_cf(tau_axis,lambda_vec,sigma_w_vec,p_vec,'3d');
 end
 
-F=blockDiagonal(F_cell);
-L=blockDiagonal(L_cell);
-H=blockDiagonal(H_cell);
+F=blkdiag(F_cell{:});
+L=blkdiag(L_cell{:});
+H=blkdiag(H_cell{:});
 
 %% Slow way
 
