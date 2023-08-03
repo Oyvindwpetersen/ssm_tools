@@ -1,5 +1,7 @@
 function [x_filt p_filt Px_k_k_ss Pp_ss M_ss K_ss x_pred Px_k_kmin_ss]=JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,varargin)
-%% Joint input and state estimation for linear system
+%% Joint input and state estimation for linear systems
+%
+% Updated with correct handling of mixed covariance S
 %
 % Model
 % x(k+1)=A*x(k)+B*p(k)+w(k);
@@ -80,15 +82,17 @@ if trunc
     lambdaJPpkkJ=zeros(ny,maxsteps);
 end
 
+% Initial state zero 
 if isempty(x0) | x0==0
     x0=zeros(ns,1);
 end
 
+% Initial covariance from KF 
 if isempty(P01) | P01==0
-    [~,~,~,P01]=KF(A,B,G,J,Q,R,S,y(:,1:min(100,nt)),zeros(np,min(100,nt)),[],[],'noscaling',false,'showtext',false);
+    [~,~,~,P01]=KF(A,B,G,J,Q,R,S,zeros(ny,10),zeros(np,10),[],[],'noscaling',false,'showtext',false);
 end
 
-%assign initial values
+% Assign initial values
 x_pred(:,1)=[x0];
 P_k_kmin=P01;
 
