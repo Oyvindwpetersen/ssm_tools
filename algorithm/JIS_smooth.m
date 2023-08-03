@@ -55,7 +55,7 @@ scale=p.Results.scale;
 ns=size(A,1);
 % nm=size(A,1)/2;
 nt=length(y);
-nd=size(G,1);
+ny=size(G,1);
 np=size(B,2);
 % convtol=1e-4;
 minsteps=max(minsteps,L);
@@ -78,7 +78,7 @@ end
 
 if isempty(P0)
 
-    [~,~,P0,~] = JIS_ss(A,B,G,J,y(:,1:min(100,nt)),x0,Q,R,S,[],'showtext',false,'dispconv',false);
+    [~,~,P0,~] = JIS_ss(A,B,G,J,zeros(ny,10),x0,Q,R,S,[],'showtext',false,'dispconv',false);
     
     L_cyc=[ceil(L*0.5)];
     %L_cyc=unique(L_cyc);
@@ -150,7 +150,7 @@ while convreached==false
 
     % Pxw and Pxv
     Sum_loop_xw=zeros(ns,L*ns);
-    Sum_loop_xv=zeros(ns,(L+1)*nd);
+    Sum_loop_xv=zeros(ns,(L+1)*ny);
     Product_loop_i=eye(ns);
 
     if k>=1
@@ -278,7 +278,7 @@ for k=0:(nt-1-L)
     n=n+1;
 
     % d_L_k=[d_L_k((nd+1):end) ; y(:,n+L) ];
-    d_L_k=reshape(y(:,n:(n+L)),nd*(L+1),1);
+    d_L_k=reshape(y(:,n:(n+L)),ny*(L+1),1);
 
     phat_k_kL(:,n)=M_L_ss*(d_L_k - Obs_L * x_kplus_kL(:,n));
     x_kplus_kL(:,n+1)=A*x_kplus_kL(:,n)+K_L_ss*(d_L_k-Obs_L*x_kplus_kL(:,n));
