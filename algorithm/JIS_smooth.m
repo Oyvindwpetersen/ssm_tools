@@ -221,14 +221,12 @@ while convreached==false
 
     %%% Convergence checks
 
-    Pp_prev=Pp_current;
-    Pp_current=P_p_k_kL;
-    ratio_trace_Pp(n)=trace(abs(Pp_current-Pp_prev))./trace(Pp_current);
+    ratio_trace_Px(n)=trace(abs(P_x_kplus_kL-Px_prev))./trace(P_x_kplus_kL);
+    ratio_trace_Pp(n)=trace(abs(P_p_k_kL-Pp_prev))./trace(P_p_k_kL);
 
-    Px_prev=Px_current;
-    Px_current=P_x_kplus_kL;
-    ratio_trace_Px(n)=trace(abs(Px_current-Px_prev))./trace(Px_current);
-    
+    Px_prev=P_x_kplus_kL;
+    Pp_prev=P_p_k_kL;
+
     if dispconv & mod(k,100)==0 & k>0
         disp(['***** Step ' num2str(k,'%3.0f') ', ratio_trace_Px ' num2str(ratio_trace_Px(k),'%0.3e') ', ratio_trace_Pp ' num2str(ratio_trace_Pp(k),'%0.3e')]);
     end
