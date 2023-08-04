@@ -1,4 +1,4 @@
-function [x_filt p_filt Px_k_k_ss Pp_ss M_ss K_ss x_pred Px_k_kmin_ss]=JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,varargin)
+function [x_filt p_filt Px_k_k_ss Pp_ss M_ss K_ss x_pred Px_k_kmin_ss Pxpkk]=JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,varargin)
 %% Joint input and state estimation for linear systems
 %
 % Updated with correct handling of mixed covariance S
@@ -202,7 +202,7 @@ while convreached==false
     
     if k>minsteps & abs(ratio_trace_Px(k)) < convtol & abs(ratio_trace_Pp(k)) < convtol
         convreached=true;
-        if dispconv & mod(k,100)==0
+        if dispconv
             disp(['Trace convergence reached, k=' num2str(k)]);
         end
         M_ss=Mk;
@@ -228,9 +228,10 @@ for k=1:nt
     
     p_filt(:,k)=M_ss*(y(:,k)-G*x_pred(:,k));
 
-    e_k=(y(:,k)-G*x_pred(:,k)-J*p_filt(:,k));
+    e_k=y(:,k)-G*x_pred(:,k)-J*p_filt(:,k);
 
     x_filt(:,k)=x_pred(:,k)+K_ss*e_k;
+
     x_pred(:,k+1)=A*x_pred(:,k)+B*p_filt(:,k)+Sbar_ss/Rbar_ss*e_k;
     
 end
