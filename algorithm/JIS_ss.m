@@ -1,4 +1,4 @@
-function [x_filt p_filt Px_k_k_ss Pp_ss M_ss K_ss x_pred Px_k_kmin_ss Pxpkk]=JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,varargin)
+function [x_filt p_filt Px_k_k_ss Pp_k_k_ss M_ss K_ss Kbar_ss]=JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,varargin)
 %% Joint input and state estimation for linear systems
 %
 % Updated with correct handling of mixed covariance S
@@ -207,10 +207,11 @@ while convreached==false
         end
         M_ss=Mk;
         K_ss=Kk;
+        Kbar_ss=Kbar_k;
         Rbar_ss=Rk;
         Sbar_ss=Sbar_k;
         Px_k_k_ss=P_k_k;
-        Pp_ss=Pp_k_k;
+        Pp_k_k_ss=Pp_k_k;
         Px_k_kmin_ss=P_k_kmin;
     elseif k>=maxsteps
         figure(); hold on; grid on;
@@ -222,7 +223,7 @@ while convreached==false
     
 end
 
-%% Filter estimates
+%% Estimate
 
 for k=1:nt
     
@@ -243,11 +244,14 @@ if showtext==true
     disp(['JIS calculated in ' sprintf('%2.1f', telapsed) ' seconds, ' sprintf('%2.1f', telapsed*10^3./nt) ' seconds per 1k steps']);
 end
 
+%%
+
 if scale==true
     x_filt=T1*x_filt;
     x_pred=T1*x_pred;
     Px_k_k_ss=T1*Px_k_k_ss*T1.';
     Px_k_kmin_ss=T1*Px_k_kmin_ss*T1.';
+
     % Set these to empty for safety, not yet checked how these would be affected
     M_ss=[];
     K_ss=[];
