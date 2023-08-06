@@ -24,8 +24,9 @@ function [x_filt p_filt Px_k_k_ss Pp_k_k_ss M_ss K_ss Kbar_ss]=JIS_ss(A,B,G,J,y,
 % p_filt: filter input estimate
 % P_ss: filter state error covariance
 % Pp_ss: filter input error covariance
-% M_ss: matrix
-% L_ss: matrix
+% M_ss: gain matrix for input
+% K_ss: gain matrix for filter estimate of state
+% Kbar_ss: gain matrix for prediction estimate of state
 %
  
 %% Parse inputs
