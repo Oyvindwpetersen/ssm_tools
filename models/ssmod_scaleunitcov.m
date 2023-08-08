@@ -1,9 +1,9 @@
 function [As,Bs,Gs,Js,ys,Qs,Rs,Ss,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,J,y,Q,R,S)
 
-%% Scale stochastic state space model so that Q=I,R=I
+%% Scale stochastic state space model so that Q=I,R=I (note: S does not become zero nor identity)
 %
-% Rule #1: new state xs such that x=T1*xs, ie multiplied state eq by inv(T1)
-% Rule #2: new output ys=inv(T2)*y, ie multiplied output equation by inv(T2)
+% Rule #1: new state xs such that x=T1*xs, i.e. state equation is multiplied by inv(T1)
+% Rule #2: new output ys=inv(T2)*y, i.e. output equation is multiplied by inv(T2)
 %
 % Inputs:
 % A: state matrix
@@ -29,25 +29,33 @@ function [As,Bs,Gs,Js,ys,Qs,Rs,Ss,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,
 % T1_inv: transformation matrix inverse, see below
 % T2_inv: transformation matrix inverse, see below
 %
-%%%%%%%%%%%%%%%%%
+
+%% Derivation of scaling process
+%
 % State equation:
 % x(k+1)=A*x(k)+B*p(k)+w(k), cov(w(k))=Q;
 % T1*xs(k+1)=A*T1*xs_k+B*p(k)+w(k)
 % xs(k+1)=inv(T1)*A*T1*xs(k)+inv(T1)*B*p(k)+inv(T1)*w(k)
 % xs(k+1)=As*xs(k)+Bs*p(k)+ws(k)
+%
 % where
+%
 % As=inv(T1)*A*T1
 % Bs=inv(T1)*B
 % ws(k)=inv(T1)*w(k)
+%
 %%%%%%%%%%%%%%%%%
 % Output equation:
 % y(k)=G*x(k)+J*p(k)+v(k), cov(v(k))=R;
 % inv(T2)*y(k)=inv(T2)*G*T1*xs(k)+inv(T2)*J*p(k)+inv(T2)*v(k)
 % ys(k)=Gs*xs(k)+Js*p(k)+vs(k)
+%
 % where
+%
 % Gs=inv(T2)*G*T1
 % Js=inv(T2)*J
 % vs(k)=inv(T2)*v(k)
+%
 %%%%%%%%%%%%%%%%%
 % Next, require Qs=I
 % Qs=inv(T1)*Q*inv(T1)^T
@@ -55,6 +63,7 @@ function [As,Bs,Gs,Js,ys,Qs,Rs,Ss,T1,T2,T1_inv,T2_inv]=ssmod_scaleunitcov(A,B,G,
 % T1*T1^T=P*Sigma*P^T
 % Conclusion:
 % T1=P*Sigma.^0.5
+%
 %%%%%%%%%%%%%%%%%
 % Next, require Rs=I
 % Rs=inv(T2)*R*inv(T2)^T
