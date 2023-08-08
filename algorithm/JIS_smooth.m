@@ -153,6 +153,7 @@ while convreached==false
     Sum_loop_xv=zeros(ns,(L+1)*ny);
     Product_loop_i=eye(ns);
 
+    % Fill cell with term (I-K*N)
     if k>=1
         CommonSumTerm_k{n-1}=(Id1_union-K_L_k{n-1}*N_L);
     end
@@ -164,16 +165,21 @@ while convreached==false
         %         Product_loop_i=Product_loop_i*(A-K_L_k{n-j}*Obs_L);
         %     end
 
+        % For i=1, the product is I (defined above)
+        % For i>=2, the product is recurively calculated 
+        % by multiplying with the last factor j=(i-1)
         if i>=2
-            Product_loop_i=Product_loop_i*(A-K_L_k{n-(i-1)}*Obs_L); %Recursive PI-product
+            Product_loop_i=Product_loop_i*(A-K_L_k{n-(i-1)}*Obs_L);
         end
 
         %     CommonSumTerm=(Id1_union-K_L_k{n-i}*N_L);
         CommonSumTerm=CommonSumTerm_k{n-i};
         
+        % Last part of sum terms
         SumTerm_xw_i=CommonSumTerm*Q_L_i{i}-K_L_k{n-i}*S_L_minusi{i}.';
         SumTerm_xv_i=CommonSumTerm*S_L_i{i}-K_L_k{n-i}*R_Lplus_i{i};
         
+        % Add up
         Sum_loop_xw=Sum_loop_xw+Product_loop_i*SumTerm_xw_i;
         Sum_loop_xv=Sum_loop_xv+Product_loop_i*SumTerm_xv_i;
 
@@ -182,23 +188,21 @@ while convreached==false
     P_xw_k=Sum_loop_xw;
     P_xv_k=Sum_loop_xv;
 
+    % Covariance
     TempTerm=N_L*P_xw_k.'*Obs_L.'+P_xv_k.'*Obs_L.';
     Rbar_k=Obs_L*P_x_k_kLminus*Obs_L.'+Rbar_k_precalc+TempTerm+TempTerm.';
     Rbar_k=forcesym(Rbar_k);
 
-    % if k>1
-    Rbar_k_inv=Rbar_k\eye(size(Rbar_k));
-    % else
-    % Rbar_k_inv=pinv(Rbar_k);
-    % end
+    % Rbar_k_inv=Rbar_k\eye(size(Rbar_k));
     % Rbar_k_inv=forcesym(Rbar_k_inv);
 
-    HRbarH=H_L.'*Rbar_k_inv*H_L; HRbarH=forcesym(HRbarH);
-    % HRbarH_pinv=pinv(HRbarH);
-    HRbarH_pinv=HRbarH\eye(size(HRbarH));
+    HRbarH=H_L.'/Rbar_k*H_L; HRbarH=forcesym(HRbarH);
+    % HRbarH_pinv=HRbarH\eye(size(HRbarH));
+    HRbarH_pinv=pinv(HRbarH);
+
     HRbarH_pinv=forcesym(HRbarH_pinv);
 
-    M_L_k=Id2_union*HRbarH_pinv*H_L.'*Rbar_k_inv;
+    M_L_k=Id2_union*HRbarH_pinv*H_L.'/Rbar_k;
 
     P_p_k_kL=M_L_k*Rbar_k*M_L_k.'; P_p_k_kL=forcesym(P_p_k_kL);
 
@@ -210,7 +214,7 @@ while convreached==false
     Tbar_k=A*P_x_k_kLminus*A.'+Q+TempTerm+TempTerm.';
     Tbar_k=forcesym(Tbar_k);
 
-    K_L_k{n}=Sbar_k*Rbar_k_inv - (Sbar_k*Rbar_k_inv*H_L-B_union)*HRbarH_pinv*H_L.'*Rbar_k_inv;
+    K_L_k{n}=Sbar_k/Rbar_k - (Sbar_k/Rbar_k*H_L-B_union)*HRbarH_pinv*H_L.'/Rbar_k;
 
     P_x_kplus_kL=K_L_k{n}*Rbar_k*K_L_k{n}.'-K_L_k{n}*Sbar_k.'-Sbar_k*K_L_k{n}.'+Tbar_k; P_x_kplus_kL=forcesym(P_x_kplus_kL);
 
@@ -290,7 +294,8 @@ if scale==true
     x_smooth=T1*x_smooth;
     P_x_ss=T1*P_x_ss*T1.';
     
-    % Set these to empty for safety, not yet checked how these would be affected
+    % Set these to empty for safety
+    % Not yet checked how these matrices would be affected by system transformation
     P_xp_ss=[];
     P_px_ss=[];
     K_L_ss=[];
