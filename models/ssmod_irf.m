@@ -15,6 +15,7 @@ function [tau,h]=ssmod_irf(A,B,C,D,dt,tau_max,tau_vector)
 % tau: time lag vector
 % h: impulse response
 %
+
 %%
 
 if nargin==6 
