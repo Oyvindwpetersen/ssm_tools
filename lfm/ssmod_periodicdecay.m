@@ -1,7 +1,7 @@
 function [Fc,Lc,Hc,Qc,sigma_w]=ssmod_periodicdecay(w0,lambda,sigma_p,kernel,ns)
 
 %%
-% test
+% 
 % Decaying kernel
 if strcmpi(kernel,'se')
     [Fq,Lq,Hq,sigma_w]=ssmod_squaredexp(1/lambda,sigma_p,ns,[]);
