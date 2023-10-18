@@ -46,8 +46,8 @@ close all
 sim.x0=zeros(mod.nx,1);
 [sim.x,sim.y]=ssmod_forward_stoch(mod.A,[],mod.G,[],[],sim.x0,[],sim.w,sim.v);
 
-% plotTime(sim.t,sim.x);
-% plotTime(sim.t,sim.y);
+% plottime(sim.t,sim.x);
+% plottime(sim.t,sim.y);
 
 tilefigs
 
@@ -60,8 +60,8 @@ P_0_0=eye(size(mod.Q));
 
 close all
 
-plotTime(sim.t,sim.x,x_k_kmin,x_k_k,x_k_N);
-plotFreq(sim.t,sim.x,x_k_kmin,x_k_k,x_k_N,'xlim',[0 10]);
+plottime(sim.t,sim.x,x_k_kmin,x_k_k,x_k_N);
+plotfreq(sim.t,sim.x,x_k_kmin,x_k_k,x_k_N,'xlim',[0 10]);
 
 
 figure(); hold on;
@@ -82,11 +82,11 @@ legend({'P_k_kmin (filter)' 'P_k_k (filter)' 'P_k_N (filter)' 'P_k_kmin (empiric
 
 close all
 
-plotTime(sim.t,x_k_kmin,x_k_kmin_noss);
-plotTime(sim.t,x_k_k,x_k_k_noss);
-plotTime(sim.t,x_k_N,x_k_N_noss);
+plottime(sim.t,x_k_kmin,x_k_kmin_noss);
+plottime(sim.t,x_k_k,x_k_k_noss);
+plottime(sim.t,x_k_N,x_k_N_noss);
 
-% plotFreq(t,x,x_k_kmin,x_k_k,x_k_N,'xlim',[0 10]);
+% plotfreq(t,x,x_k_kmin,x_k_k,x_k_N,'xlim',[0 10]);
 
 delta_p=std(x_k_kmin-x_k_kmin_noss,0,2)./std(x_k_kmin,0,2)
 delta_f=std(x_k_k-x_k_k_noss,0,2)./std(x_k_k,0,2)
@@ -163,9 +163,9 @@ end
 [tau,x_k_k2]=ifft_function(Gxf2,1/mod.dt);
 [tau,x_k_N2]=ifft_function(Gxs2,1/mod.dt);
 
-plotTime(sim.t,x_k_kmin,x_k_kmin2);
-plotTime(sim.t,x_k_k,x_k_k2);
-plotTime(sim.t,x_k_N,x_k_N2);
+plottime(sim.t,x_k_kmin,x_k_kmin2);
+plottime(sim.t,x_k_k,x_k_k2);
+plottime(sim.t,x_k_N,x_k_N2);
 
 delta_p=std(x_k_kmin-x_k_kmin2,0,2)
 delta_f=std(x_k_k-x_k_k2,0,2)

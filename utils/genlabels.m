@@ -10,7 +10,7 @@ function [label_cell] = genlabels(dofs,number,varargin)
 %
 %% Test data
 %
-%[dof_cell] = getLabel({'U1' 'U2' 'U3'},[ 410 412])
+%[dof_cell] = genlabels({'U1' 'U2' 'U3'},[ 410 412])
 %
 %% Input handling
 
