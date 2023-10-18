@@ -29,18 +29,18 @@ linevertical(gca,[10],'-',2,'k')
 
 %% Forces
 
-mod.a_cell=getLabel('U2',[20 40]+1e3); 
-mod.p_cell=getLabel('U2',[12 ]+1e3);
-mod.d_cell=getLabel('U2',[20 40]+1e3);
+mod.a_cell=genlabels('U2',[20 40]+1e3); 
+mod.p_cell=genlabels('U2',[12 ]+1e3);
+mod.d_cell=genlabels('U2',[20 40]+1e3);
 
 
-mod.a_cell=getLabel('U2',[20 40 ]+1e3); 
-mod.p_cell=getLabel('U2',[20 ]+1e3);
-mod.d_cell=getLabel('U2',[20 40]+1e3);
+mod.a_cell=genlabels('U2',[20 40 ]+1e3); 
+mod.p_cell=genlabels('U2',[20 ]+1e3);
+mod.d_cell=genlabels('U2',[20 40]+1e3);
 
-% mod.a_cell=getLabel('U2',[10 20 40 50 60 70 ]+1e3); 
-% mod.p_cell=getLabel('U2',[10 20 40 50 60 70 ]+1e3);
-% mod.d_cell=getLabel('U2',[10 20 40 50 60 70 ]+1e3);
+% mod.a_cell=genlabels('U2',[10 20 40 50 60 70 ]+1e3); 
+% mod.p_cell=genlabels('U2',[10 20 40 50 60 70 ]+1e3);
+% mod.d_cell=genlabels('U2',[10 20 40 50 60 70 ]+1e3);
 
 [mod.Sd, mod.Sa, mod.Sp]= DofSelection(mod.d_cell,mod.a_cell,mod.p_cell,phi_label);
 
@@ -55,7 +55,6 @@ mod.np=length(mod.p_cell);
 
 % Check requirements
 tz=ssmod_tzero(mod.A,mod.B,mod.G,mod.J);
-disp(['rank(J) = ' num2str(rank(mod.J)) ', cond(J) = ' num2str(cond(mod.J),'%0.3e')]);
 
 
 %%
@@ -89,12 +88,12 @@ pspectrum(fid.p,fid.t,'spectrogram','TimeResolution',1, ...
 
 close all
 
-plotTime(fid.t,fid.x);
-plotTime(fid.t,fid.y_clean);
-plotFreq(fid.t,fid.y_clean,'xlim',[0 10]);
+plottime(fid.t,fid.x);
+plottime(fid.t,fid.y_clean);
+plotfreq(fid.t,fid.y_clean,'xlim',[0 10]);
 
-plotTime(fid.t,fid.p);
-plotFreq(fid.t,fid.p,'xlim',[0 10]);
+plottime(fid.t,fid.p);
+plotfreq(fid.t,fid.p,'xlim',[0 10]);
 
 tilefigs;
 
