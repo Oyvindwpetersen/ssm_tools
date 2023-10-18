@@ -60,6 +60,11 @@ Jac=Jc;
 
 Qd=cov_c2d(Fac,Qac,dt);
 
+if isempty(Qxd)
+    Qxd=zeros(size(Qd));
+end
+
+
 Qad=Qd+Qxd;
 
 Qad=(Qad+Qad.')/2;
