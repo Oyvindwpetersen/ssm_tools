@@ -38,3 +38,7 @@ ind=find(abs(tz)>1); compass(real(tz(ind)),imag(tz(ind)),'r');
 set(h_fake, 'Visible', 'Off');
 title('Transmission zeros');
 end
+
+
+
+disp(['rank(J) = ' num2str(rank(J)) ', cond(J) = ' num2str(cond(J),'%0.3e')]);
