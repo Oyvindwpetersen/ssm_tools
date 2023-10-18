@@ -234,7 +234,8 @@ for k=1:nt
 
     x_filt(:,k)=x_pred(:,k)+K_ss*e_k;
 
-    x_pred(:,k+1)=A*x_pred(:,k)+B*p_filt(:,k)+Sbar_ss/Rbar_ss*e_k;
+    % x_pred(:,k+1)=A*x_pred(:,k)+B*p_filt(:,k)+Sbar_ss/Rbar_ss*e_k; % This should be the same as below
+    x_pred(:,k+1)=A*x_pred(:,k)+Kbar_ss*(y(:,k)-G*x_pred(:,k));
     
 end
 x_pred=x_pred(:,1:end-1);
