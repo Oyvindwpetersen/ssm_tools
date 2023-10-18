@@ -1,4 +1,4 @@
-function [Hpy Hx0y Hx1y]=JIS_tf(A,B,G,J,Q,R,S,dt,omega_axis)
+function [Hpy Hx0y Hx1y]=JIS_tf(A,B,G,J,Q,R,S,dt,omega_axis,varargin)
 %% Transfer function for steady state operation of joint input and state estimator
 %
 % Model
@@ -22,9 +22,24 @@ function [Hpy Hx0y Hx1y]=JIS_tf(A,B,G,J,Q,R,S,dt,omega_axis)
 % Hx1y: matrix with TF, output-to-prediction estimate
 %
 
+%% Parse inputs
+
+p=inputParser;
+addParameter(p,'showtext',true,@islogical)
+addParameter(p,'dispconv',true,@islogical)
+addParameter(p,'trunc',false,@islogical)
+addParameter(p,'convtol',1e-6,@isnumeric)
+
+parse(p,varargin{:});
+
+showtext=p.Results.showtext;
+dispconv=p.Results.dispconv;
+trunc=p.Results.trunc;
+convtol=p.Results.convtol;
+
 %%
 
-warning('Not updated yet');
+% warning('Not updated yet');
 
 ns=size(A,1);
 ny=size(G,1);
@@ -34,17 +49,36 @@ y_dummy=nan(ny,1);
 x0=[];
 P0=[];
 
-[~,~,~,~,M_ss,L_ss] = JIS_ss(A,B,G,J,y_dummy,x0,Q,R,S,P0,'trunc',false,'convtol',1e-8);
+[~,~,~,~,M_ss,K_ss,Kbar_ss] = JIS_ss(A,B,G,J,y_dummy,x0,Q,R,S,P0,'showtext',showtext,'dispconv',dispconv,'trunc',trunc,'convtol',convtol);
+
+%% Old
+
+% 
+% M2=[M_ss ; L_ss ; zeros(ns,ny) ];
+% 
+% for k=1:length(omega_axis)
+% 
+%     M1=[ eye(np) zeros(np,ns) M_ss*G ;
+%         L_ss*J eye(ns) (-eye(ns)+L_ss*G);
+%         B A -exp(1i.*omega_axis(k)*dt)*eye(ns) ];
+% 
+%     M3=M1\M2;
+% 
+%     M4(:,:,k)=M3; %M4 is [Hpd;Hx0d;Hx1d]
+% 
+% end
 
 %%
 
-M2=[M_ss ; L_ss ; zeros(ns,ny) ];
+M2=[M_ss ; K_ss ; Kbar_ss ];
 
 for k=1:length(omega_axis)
 
+    z=exp(1i.*omega_axis(k)*dt);
+
     M1=[ eye(np) zeros(np,ns) M_ss*G ;
-        L_ss*J eye(ns) (-eye(ns)+L_ss*G);
-        B A -exp(1i.*omega_axis(k)*dt)*eye(ns) ];
+        K_ss*J eye(ns) (-eye(ns)+K_ss*G);
+        zeros(ns,np) zeros(ns,ns) z*eye(ns)-A+Kbar_ss*G ];
 
     M3=M1\M2;
 
