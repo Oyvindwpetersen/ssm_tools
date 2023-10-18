@@ -39,7 +39,7 @@ end
 
 %%
 
-n_comp=size(sigma_w_vec,1);
+n_comp=length(sigma_w_vec);
 
 F_cell=cell(1,n_comp);
 L_cell=cell(1,n_comp);
