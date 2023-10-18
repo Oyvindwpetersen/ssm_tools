@@ -36,7 +36,13 @@ MinvC=M\C;
 Minv=eye(ndof)/M;
 
 Ac=[zeros(ndof) eye(ndof) ; -MinvK -MinvC];
-Bc=[zeros(ndof,np) ; Minv*Sp];
+
+if isempty(Sd) & isempty(Sa)
+    
+else
+    Bc=[zeros(ndof,np) ; Minv*Sp];
+end
+
 
 if isempty(Sd) & isempty(Sa)
 	Gc=[];
