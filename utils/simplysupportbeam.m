@@ -1,4 +1,4 @@
-function [Kg,Mg,f,phi,K,M,phi_red,K_red,M_red,S_red,S_red_inv,nodecoord,doflabel]=simplysupportbeam(L,E,I,m,N_el,varargin)
+function [Kg,Mg,f,phi,K,M,phi_red,K_red,M_red,S_red,S_red_inv,nodecoord,doflabel,doflabel_red]=simplysupportbeam(L,E,I,m,N_el,varargin)
 
 %%
 

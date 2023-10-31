@@ -36,6 +36,11 @@ mod=struct();
 [mod.Kg,mod.Mg,mod.f,mod.phi,mod.K,mod.M,mod.phi_red,mod.K_red,mod.M_red,mod.S_red,mod.S_red_inv,mod.nodecoord,mod.doflabel]= ...
 simplysupportbeam(L,E,I,m,N_el,'bc',bc,'k_end',k_end);
 
+mod.doflabel_red=mod.doflabel;
+mod.doflabel_red(end-1)=[];
+mod.doflabel_red(1)=[];
+
+
 mod.Omega=diag(mod.f)*2*pi;
 
 mod.nm=nm;
