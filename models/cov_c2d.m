@@ -30,7 +30,7 @@ ns=size(Fac,1);
 
 if strcmpi(method,'matrix')
 
-	Matrix_1= expm( [Fac Qc; zeros(ns) -Fac.']*dt);
+	Matrix_1= expm( [Fac Qc ; zeros(ns) -Fac.']*dt);
 	Matrix_2=[ zeros(ns) ; eye(ns) ];
 
 	Matrix_3=Matrix_1*Matrix_2;
