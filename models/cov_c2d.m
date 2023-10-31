@@ -63,38 +63,34 @@ end
 
 %%
 
-if norm(Qd-Qd.')./norm(Qd) > 1e-6
-	a=norm(Qd-Qd.')./norm(Qd)
-	Qd=forcesym(Qd);
+ratio=norm(Qd-Qd.')./norm(Qd);
+
+if ratio>1e-6
+	ratio
 	warning('Loss of symmetry in covariance, take a look here')
-else
-	Qd=forcesym(Qd);
 end
 
-
-
-
-return
+Qd=forcesym(Qd);
 
 %% Tests
 
 
-ratio=norm(Qd-Qd_old)./norm(Qd_old)
-ratio
-
-[v,d]=eig(Qd);
-[v_old,d_old]=eig(Qd_old);
-
-figure();  hold on;
-plot(diag(d_old)./diag(d)-1);
+% ratio=norm(Qd-Qd_old)./norm(Qd_old)
+% ratio
+% 
+% [v,d]=eig(Qd);
+% [v_old,d_old]=eig(Qd_old);
+% 
+% figure();  hold on;
+% plot(diag(d_old)./diag(d)-1);
 
 
 %%
 
 % Fac=magic(50); Fac=Fac+Fac.';
-Fac=diag(-[0.2:0.2:2]); Fac=Fac-(magic(size(Fac))+magic(size(Fac)).')/1000;
-
-Qc=eye(size(Fac)); a=randn(size(Qc)); a=(a+a.')/10; Qc=Qc+a;
-dt=0.05
-
-plotcorr(Qc)
+% Fac=diag(-[0.2:0.2:2]); Fac=Fac-(magic(size(Fac))+magic(size(Fac)).')/1000;
+% 
+% Qc=eye(size(Fac)); a=randn(size(Qc)); a=(a+a.')/10; Qc=Qc+a;
+% dt=0.05
+% 
+% plotcorr(Qc)
