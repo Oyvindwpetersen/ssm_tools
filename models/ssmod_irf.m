@@ -21,6 +21,16 @@ function [tau,h]=ssmod_irf(A,B,C,D,dt,tau_max,tau_vector)
 if nargin==6 
     tau_vector=[];
 end
+
+%%
+
+ns=size(A,1);
+np=size(B,2);
+ny=size(C,1);
+
+if isempty(D)
+    D=zeros(ny,np);
+end
     
 %% Disc time
 
