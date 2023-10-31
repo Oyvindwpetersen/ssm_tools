@@ -42,6 +42,13 @@ if strcmpi(type,'io')
     end
 end
 
+
+if size(A,1)<50 | issparse(A)
+    fast=false;
+else
+    fast=true;
+end
+
 %%
 
 if strcmpi(type,'io')
@@ -50,10 +57,28 @@ if strcmpi(type,'io')
     
     if time_type=='cont'
         
-        for j=1:length(omega)
-            H(:,:,j)=C / (-A+1i*omega(j)*eye(ns)) * B+D;
+        if fast==false
+
+            for j=1:length(omega)
+                H(:,:,j)=C / (-A+1i*omega(j)*eye(ns)) * B+D;
+            end
+
+        else 
+
+            [Psi,Lambda_c]=eig(A); n=size(A,1);
+    
+            Lc=Psi\B;
+            Vc=C*Psi;
+            
+            lambda_c=diag(Lambda_c);
+            for j=1:length(omega)
+                val_inv=1./(-lambda_c+1i*omega(j));
+                mat_inv=sparse(1:n,1:n,val_inv,n,n);
+                H(:,:,j)=Vc*mat_inv*Lc+D;
+            end
+
         end
-        
+    
     elseif time_type=='disc'
         
         for j=1:length(omega)
