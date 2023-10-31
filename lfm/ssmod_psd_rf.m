@@ -118,7 +118,7 @@ a_coeff=poly(p_selected);
 
 if abs(a_coeff(1)-1)>1e-6
     a_coeff
-    warning('Highest c coefficient should be 1. Something is wrong, check this line');
+    warning('Highest a coefficient should be 1. Something is wrong, check this line');
 end
 
 % a_coeff=[a(k-1),...,a2,a1,a0]
@@ -153,7 +153,7 @@ end
 % c_coeff=[c(k),...,c2,c1,c0]
 c_coeff=poly(z_selected);
 
-% Add zeros to b coeff if the nominator poly is lower than the denominator minus one (e.g. D~omega^6 and N~omega^2)
+% Add zeros to c coeff if the nominator poly is lower than the denominator minus one (e.g. D~omega^6 and N~omega^2)
 c_zeros=zeros(1,num_d-num_n-1);
 
 %% State-space model
