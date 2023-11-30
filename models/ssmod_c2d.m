@@ -27,6 +27,7 @@ fast = p.Results.fast;
 
 A=[];
 B=[];
+F=[];
 
 if ~isempty(Ac) & fast==true
 A=expmnorm(dt*Ac);
