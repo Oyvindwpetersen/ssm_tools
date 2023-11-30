@@ -26,21 +26,21 @@ ndof=size(K,1);
 ny=size(Sa,1);
 np=size(Sp,2);
 
-Ac=zeros(2*ndof,2*ndof);
-Bc=zeros(2*ndof,np);
-Jc=zeros(ny,2*ndof);
-Gc=zeros(ny,np);
+% Ac=zeros(2*ndof,2*ndof);
+% Bc=zeros(2*ndof,np);
+% Jc=zeros(ny,2*ndof);
+% Gc=zeros(ny,np);
 
 MinvK=M\K;
 MinvC=M\C;
-Minv=eye(ndof)/M;
+% Minv=eye(ndof)/M;
 
 Ac=[zeros(ndof) eye(ndof) ; -MinvK -MinvC];
 
-if isempty(Sd) & isempty(Sa)
-    
+if isempty(Sp)
+    Bc=[];
 else
-    Bc=[zeros(ndof,np) ; Minv*Sp];
+    Bc=[zeros(ndof,np) ; M\Sp];
 end
 
 
@@ -49,7 +49,7 @@ if isempty(Sd) & isempty(Sa)
 	Jc=[];
 else
 	Gc=[(Sd-Sa*MinvK) , -Sa*MinvC ];
-	Jc=[Sa * Minv * Sp];
+	Jc=[Sa*M\Sp];
 end
 
 [A B G J F]=ssmod_c2d(Ac,Bc,Gc,Jc,dt);
