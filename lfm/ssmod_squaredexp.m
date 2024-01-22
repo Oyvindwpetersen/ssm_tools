@@ -20,10 +20,10 @@ function [Fc,Lc,Hc,sigma_w,S_trunc]=ssmod_squaredexp(L,sigma_p,ns,w_axis)
 % S_trunc: two-sided PSD of approximated model
 %
 % CF for SE model:
-% Kappa(t)=sigma_p^2*exp(-0.5*t^2/L^2)
+% R(t)=sigma_p^2*exp(-0.5*t^2/L^2)
 %
 % PSD from the inverse Fourier transform:
-% S(w)=1/(2*pi) int Kappa(t) exp(-i*w*tau) dtau
+% S(w)=1/(2*pi) int R(t) exp(-i*w*tau) dtau
 % S(w)=sigma_p^2*L/sqrt(2*pi)*exp(-0.5*L^2*w^2)
 %
 %% Checks
