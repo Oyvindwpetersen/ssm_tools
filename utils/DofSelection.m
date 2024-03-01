@@ -1,4 +1,4 @@
-function [Sd,Sa,Sp]=DofSelection(d_cell,a_cell,p_cell,doflabel)
+function [Sd,Sa,Sp]=dofselection(d_cell,a_cell,p_cell,doflabel)
 
 %% Create selection matrices
 
