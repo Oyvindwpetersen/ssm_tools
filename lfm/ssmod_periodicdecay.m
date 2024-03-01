@@ -1,4 +1,4 @@
-function [Fc,Lc,Hc,Qc,sigma_w]=ssmod_periodicdecay(w0,lambda,sigma_p,kernel,ns)
+function [Fc,Lc,Hc,Qc,sigma_w]=ssmod_periodicdecay(omega0,lambda,sigma_p,kernel,ns)
 
 %%
 % 
@@ -13,7 +13,7 @@ else
 end
 
 % Periodic kernel
-Fp=[0 -w0*1 ; w0*1 0];
+Fp=[0 -omega0*1 ; omega0*1 0];
 Lp=eye(2);
 Hp=[1 0];
 
