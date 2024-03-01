@@ -49,7 +49,7 @@ if isempty(Sd) & isempty(Sa)
 	Jc=[];
 else
 	Gc=[(Sd-Sa*MinvK) , -Sa*MinvC ];
-	Jc=[Sa*M\Sp];
+	Jc=Sa*(M\Sp);
 end
 
 [A B G J F]=ssmod_c2d(Ac,Bc,Gc,Jc,dt);
