@@ -80,11 +80,11 @@ if isempty(P0)
 
     [~,~,P0,~] = JIS_ss(A,B,G,J,zeros(ny,10),x0,Q,R,S,[],'showtext',false,'dispconv',false);
     
-    L_cyc=[ceil(L*0.5)];
+    L_cyc=[ceil(L*[0.5])];
     %L_cyc=unique(L_cyc);
     
     for j=1:length(L_cyc)
-        [~,~,P_x_ss,~,~,~]=JIS_smooth(A,B,G,J,y(:,1:min(100,nt)),Q,R,S,x0,P0,L_cyc(j),'showtext',false,'convtol',1e-6);
+        [~,~,P_x_ss,~,~,~]=JIS_smooth(A,B,G,J,y(:,1:min(100,nt)),Q,R,S,x0,P0,L_cyc(j),'showtext',false,'convtol',1e-4);
         P0=P_x_ss;
     end
 
@@ -215,9 +215,9 @@ while convreached==false
     Tbar_k=forcesym(Tbar_k);
 
     K_L_k{n}=Sbar_k/Rbar_k - (Sbar_k/Rbar_k*H_L-B_union)*HRbarH_pinv*H_L.'/Rbar_k;
-
+    
     P_x_kplus_kL=K_L_k{n}*Rbar_k*K_L_k{n}.'-K_L_k{n}*Sbar_k.'-Sbar_k*K_L_k{n}.'+Tbar_k; P_x_kplus_kL=forcesym(P_x_kplus_kL);
-
+    
     %%% Next iteraton initialization
 
     P_x_k_kLminus=P_x_kplus_kL;
