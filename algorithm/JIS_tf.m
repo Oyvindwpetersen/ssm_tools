@@ -51,23 +51,6 @@ P0=[];
 
 [~,~,~,~,M_ss,K_ss,Kbar_ss] = JIS_ss(A,B,G,J,y_dummy,x0,Q,R,S,P0,'showtext',showtext,'dispconv',dispconv,'trunc',trunc,'convtol',convtol);
 
-%% Old
-
-% 
-% M2=[M_ss ; L_ss ; zeros(ns,ny) ];
-% 
-% for k=1:length(omega_axis)
-% 
-%     M1=[ eye(np) zeros(np,ns) M_ss*G ;
-%         L_ss*J eye(ns) (-eye(ns)+L_ss*G);
-%         B A -exp(1i.*omega_axis(k)*dt)*eye(ns) ];
-% 
-%     M3=M1\M2;
-% 
-%     M4(:,:,k)=M3; %M4 is [Hpd;Hx0d;Hx1d]
-% 
-% end
-
 %%
 
 M2=[M_ss ; K_ss ; Kbar_ss ];
@@ -90,3 +73,19 @@ Hpy=M4(1:np,:,:);
 Hx0y=M4(np+[1:ns],:,:);
 Hx1y=M4(np+ns+[1:ns],:,:);
 
+%% Old
+
+% 
+% M2=[M_ss ; L_ss ; zeros(ns,ny) ];
+% 
+% for k=1:length(omega_axis)
+% 
+%     M1=[ eye(np) zeros(np,ns) M_ss*G ;
+%         L_ss*J eye(ns) (-eye(ns)+L_ss*G);
+%         B A -exp(1i.*omega_axis(k)*dt)*eye(ns) ];
+% 
+%     M3=M1\M2;
+% 
+%     M4(:,:,k)=M3; %M4 is [Hpd;Hx0d;Hx1d]
+% 
+% end
