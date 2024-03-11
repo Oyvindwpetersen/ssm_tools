@@ -72,7 +72,7 @@ e_k=zeros(ny,nt);
 trace_P_k_k=zeros(1,nt);
 delta_trace_P_k_k=zeros(1,nt);
 
-if isempty(P_0_0);
+if isempty(P_0_0)
     P_0_0=eye(nx);
 end
 
