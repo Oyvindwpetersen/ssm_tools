@@ -1,25 +1,52 @@
 function [H0y H1y H0p H1p]=KF_tf(A,B,G,J,Q,R,S,dt,omega_axis)
 
+%% Transfer function for steady state operation of Kalman filter
+%
+% Model
+% x(k+1)=A*x(k)+B*p(k)+w(k)
+% y(k)=G*x(k)+J*p(k)+v(k)
+%
+% Inputs:
+% A: state matrix
+% B: input matrix
+% G: output matrix
+% J: direct transmission matrix
+% Q: state noise covariance
+% R: output noise covariance
+% S: mixed noise covariance
+% dt: time step
+% omega_axis: frequency axis
+%
+% Outputs:
+% H0y: transfer from y to filter estimate
+% H1y: transfer from y to prediction estimate
+% H0p: transfer from p to filter estimate
+% H1p: transfer from p to prediction estimate
+%
+%
+% | x0(w) | = | H0y(w) | y(w) + | H0p(w) | p(w)
+% | x1(w) |   | H1y(w) |        | H1p(w) | 
+%
+
 %%
 
-%% Run KF
-
-% x0=zeros(size(Fad,1),1);
-% P_0_0=[];
-
-y=zeros(size(G,1),1e3);
-p_det=zeros(size(B,2),1e3);
-
+nx=size(A,1);
+ny=size(G,1);
+np=size(B,2);
 
 if isempty(B) & isempty(J)
     exist_input=false;
+    p_dummy=[];
 else
     exist_input=true;
-end   
+    p_dummy=zeros(size(B,2),1e3);
+end
 
-% Obtain matrices
+y=zeros(size(G,1),1e3);
 
-[x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KF(A,B,G,J,Q,R,S,y,p_det,[],[],'steadystate',true);
+%% Run KF
+
+[~,~,P_k_k,P_k_kmin]=KF(A,B,G,J,Q,R,S,y,p_dummy,[],[],'steadystate',true);
 
 % [x_k_N,P_k_N]=RTSSmoother(Fad,x_k_k,x_k_kmin,P_k_k,P_k_kmin,'steadystate','yes');
 
@@ -27,20 +54,15 @@ end
 %     error('Implementation not supporting S~=0, due to modification necessary in RTS smoother');
 % end
 
-%% TF of filter and smoother
+%% Calculate TF
 
 P_k_kmin_ss=P_k_kmin;
-P_k_k_ss=P_k_k;
 
 Omega_k_ss=(G*P_k_kmin_ss*G.'+R); Omega_k_ss=forcesym(Omega_k_ss);
 Omega_k_ss_inv=eye(size(Omega_k_ss))/Omega_k_ss; Omega_k_ss_inv=forcesym(Omega_k_ss_inv);
 K_k_ss=(A*P_k_kmin_ss*G.'+S)*Omega_k_ss_inv;
 
 M_k_ss=P_k_kmin_ss*G.'*Omega_k_ss_inv;
-
-nx=size(A,1);
-ny=size(G,1);
-np=size(B,2);
 
 H_y=zeros(nx*2,ny,length(omega_axis));
 H_p=zeros(nx*2,np,length(omega_axis));
@@ -65,6 +87,8 @@ for k=1:length(omega_axis)
 
 end
 
+%% Split
+
 H0y=H_y(1:nx,:,:);
 H1y=H_y((nx+1):(nx*2),:,:);
 
@@ -75,41 +99,3 @@ else
     H0p=[];
     H1p=[];
 end
-
-
-% for k=1:length(omega_axis)
-%     z=exp(1i*w_axis(k)*mod.dt);
-%     Mat=[
-%         -eye(nx)+K_k_ss*mod.G eye(nx) zeros(nx) ;
-%         z*eye(nx) -mod.A zeros(nx) ;
-%         N_k_ss*z -eye(nx) eye(nx)-N_k_ss*z
-%         ];
-%
-%     H_yx(:,:,k)=Mat\[K_k_ss ; zeros(nx,ny) ; zeros(nx,ny) ];
-
-% end
-
-
-
-%
-% for k=1:length(w_axis)
-%     z=exp(1i*w_axis(k)*dt);
-
-%     Mat=[
-%         -eye(nx)+K_k_ss*Had eye(nx) zeros(nx) ;
-%         z*eye(nx) -Fad zeros(nx) ;
-%         N_k_ss*z -eye(nx) eye(nx)-N_k_ss*z
-%         ];
-
-%     Mat_L=[
-%         -eye(nx)+P_k_kmin_ss*Had.'*Omega_k_ss_inv*Had eye(nx) zeros(nx) ;
-%         z*eye(nx)-Fad+K_k_ss*Had zeros(nx) zeros(nx) ;
-%         N_k_ss*z -eye(nx) eye(nx)-N_k_ss*z
-%         ];
-%
-%     H_yx(:,:,k)=Mat_L\Mat_R;
-%
-% end
-
-
-% Hs=H_yx((nx*2+1):end,:,:);
