@@ -35,7 +35,7 @@ xi=-real(lambda)./abs(lambda);
 psi=C{j}*phi;
 
 for k=1:size(psi,2)
-   [~,rotrad,~,~]=rotate_modes(psi(:,k));
+   [~,rotrad,~,~]=mpcweighted(psi(:,k));
 	psi(:,k)=conj(psi(:,k))*exp(1i*rotrad);
 	phi(:,k)=conj(phi(:,k))*exp(1i*rotrad);
 end
