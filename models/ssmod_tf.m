@@ -42,7 +42,6 @@ if strcmpi(type,'io')
     end
 end
 
-
 if size(A,1)<50 | issparse(A)
     fast=false;
 else
