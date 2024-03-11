@@ -1,4 +1,4 @@
-function hbar=stat(data_stem,data_point,varargin)
+function hbar=plotstatstem(data_stem,data_point,varargin)
 
 %% Plot variance of 
 
