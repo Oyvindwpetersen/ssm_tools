@@ -17,9 +17,14 @@ function [Hpy Hx0y Hx1y]=JIS_tf(A,B,G,J,Q,R,S,dt,omega_axis,varargin)
 % omega_axis: frequency axis
 %
 % Outputs:
-% Hpy: matrix with TF, output-to-force estimate
-% Hx0y: matrix with TF, output-to-filter estimate
-% Hx1y: matrix with TF, output-to-prediction estimate
+% Hpy: transfer from y to force estimate
+% Hx0y: transfer from y to state filter estimate
+% Hx1y: transfer from y to state prediction estimate
+%
+%
+% | p(w)  | = | Hpy(w)  |
+% | x0(w) | = | Hx0y(w) | y(w) 
+% | x1(w) |   | Hx1y(w) |
 %
 
 %% Parse inputs
@@ -37,9 +42,7 @@ dispconv=p.Results.dispconv;
 trunc=p.Results.trunc;
 convtol=p.Results.convtol;
 
-%%
-
-% warning('Not updated yet');
+%% Parameters
 
 ns=size(A,1);
 ny=size(G,1);
@@ -49,9 +52,11 @@ y_dummy=nan(ny,1);
 x0=[];
 P0=[];
 
+%% Run estimation
+
 [~,~,~,~,M_ss,K_ss,Kbar_ss] = JIS_ss(A,B,G,J,y_dummy,x0,Q,R,S,P0,'showtext',showtext,'dispconv',dispconv,'trunc',trunc,'convtol',convtol);
 
-%%
+%% Calculate TF
 
 M2=[M_ss ; K_ss ; Kbar_ss ];
 
@@ -60,12 +65,12 @@ for k=1:length(omega_axis)
     z=exp(1i.*omega_axis(k)*dt);
 
     M1=[ eye(np) zeros(np,ns) M_ss*G ;
-        K_ss*J eye(ns) (-eye(ns)+K_ss*G);
+        K_ss*J eye(ns) (K_ss*G-eye(ns));
         zeros(ns,np) zeros(ns,ns) z*eye(ns)-A+Kbar_ss*G ];
 
     M3=M1\M2;
 
-    M4(:,:,k)=M3; %M4 is [Hpd;Hx0d;Hx1d]
+    M4(:,:,k)=M3; %M4 is [Hpy;Hx0y;Hx1y]
 
 end
 
