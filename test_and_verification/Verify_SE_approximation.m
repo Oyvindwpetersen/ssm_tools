@@ -43,7 +43,7 @@ std_y=std(y)
 plottime(t,y,'ylabel','Simulated process');
 xlim([0 1000])
 
-[S_welch,w_welch]=estimateSpectrumWelch(y,1/dt,'unit','rad','plot','no','Nwelch',1000);
+[S_welch,w_welch]=estimateSpectrumWelch(y,1/dt,'unit','rad','plot','no','Nwelch',100);
 
 % Exact PSD for SE
 S_SE_exact(1,1,:)=exp(-0.5*L^2*omega_axis.^2) * sigma_p^2*L/sqrt(2*pi);
