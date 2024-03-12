@@ -1,5 +1,4 @@
 function [H0y H1y H0p H1p]=KF_tf(A,B,G,J,Q,R,S,dt,omega_axis)
-
 %% Transfer function for steady state operation of Kalman filter
 %
 % Model
@@ -28,7 +27,7 @@ function [H0y H1y H0p H1p]=KF_tf(A,B,G,J,Q,R,S,dt,omega_axis)
 % | x1(w) |   | H1y(w) |        | H1p(w) | 
 %
 
-%%
+%% Parameters
 
 nx=size(A,1);
 ny=size(G,1);
