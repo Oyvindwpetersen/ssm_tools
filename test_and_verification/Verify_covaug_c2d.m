@@ -84,11 +84,12 @@ Ad_aug=expm(Ac_aug*dt);
 
 %% Effect of dt on 
 
+
 dt_mat=10.^[-3:0.1:0];
 
 for k=1:length(dt_mat)
 
-    Qdw_aug=covarianceContToDisc(Ac_aug,Qcw_aug,dt_mat(k));
+    Qdw_aug=cov_c2d(Ac_aug,Qcw_aug,dt_mat(k));
 
     ratio(k,:)=diag(Qdw_aug)
 
@@ -103,11 +104,11 @@ xlog;
 
 %% Check matrix method vs numerical integral method
 
-Qdw_aug1=covarianceContToDisc(Ac_aug,Qcw_aug,dt,'matrix');
-Qdw_aug2=covarianceContToDisc(Ac_aug,Qcw_aug,dt,'integral');
+Qdw_aug1=cov_c2d(Ac_aug,Qcw_aug,dt,'matrix');
+Qdw_aug2=cov_c2d(Ac_aug,Qcw_aug,dt,'integral');
 
-Qde_aug1=covarianceContToDisc(Ac_aug,Qce_aug,dt,'matrix');
-Qde_aug2=covarianceContToDisc(Ac_aug,Qce_aug,dt,'integral');
+Qde_aug1=cov_c2d(Ac_aug,Qce_aug,dt,'matrix');
+Qde_aug2=cov_c2d(Ac_aug,Qce_aug,dt,'integral');
 
 ratio_w=Qdw_aug1./Qdw_aug2
 ratio_e=Qde_aug1./Qde_aug2
@@ -124,3 +125,6 @@ plotcovmatrix(ratio_e,XTickLabel,XTickLabel,'','');
 % plotscriptmain('h',6,'w',6,'name','Qe_ratio','path',cd,'labelsize',6,'ticksize',6,'legendsize',6,'titlesize',6,'box','on','format',{'jpg'});
 
 tilefigs
+
+
+
