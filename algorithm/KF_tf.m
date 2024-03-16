@@ -1,4 +1,4 @@
-function [H0y H1y H0p H1p]=KF_tf(A,B,G,J,Q,R,S,dt,omega_axis)
+function [H_x0y_kf H_x1y_kf H_x0p_kf H_x1p_kf]=KF_tf(A,B,G,J,Q,R,S,dt,omega_axis)
 %% Transfer function for steady state operation of Kalman filter
 %
 % Model
@@ -88,13 +88,13 @@ end
 
 %% Split
 
-H0y=H_y(1:nx,:,:);
-H1y=H_y((nx+1):(nx*2),:,:);
+H_x0y_kf=H_y(1:nx,:,:);
+H_x1y_kf=H_y((nx+1):(nx*2),:,:);
 
 if exist_input
-    H0p=H_p(1:nx,:,:);
-    H1p=H_p((nx+1):(nx*2),:,:);
+    H_x0p_kf=H_p(1:nx,:,:);
+    H_x1p_kf=H_p((nx+1):(nx*2),:,:);
 else
-    H0p=[];
-    H1p=[];
+    H_x0p_kf=[];
+    H_x1p_kf=[];
 end

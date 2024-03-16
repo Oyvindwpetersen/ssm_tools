@@ -1,4 +1,4 @@
-function [Hpy Hx0y Hx1y]=JIS_tf(A,B,G,J,Q,R,S,dt,omega_axis,varargin)
+function [H_py_jis H_x0y_jis H_x1y_jis]=JIS_tf(A,B,G,J,Q,R,S,dt,omega_axis,varargin)
 %% Transfer function for steady state operation of joint input and state estimator
 %
 % Model
@@ -74,9 +74,9 @@ for k=1:length(omega_axis)
 
 end
 
-Hpy=M4(1:np,:,:);
-Hx0y=M4(np+[1:ns],:,:);
-Hx1y=M4(np+ns+[1:ns],:,:);
+H_py_jis=M4(1:np,:,:);
+H_x0y_jis=M4(np+[1:ns],:,:);
+H_x1y_jis=M4(np+ns+[1:ns],:,:);
 
 %% Old
 
