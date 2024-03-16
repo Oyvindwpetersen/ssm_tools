@@ -207,7 +207,7 @@ while convreached==false
         disp(['***** Step ' num2str(k,'%3.0f') ', ratio_trace_P ' num2str(ratio_trace_Px(k),'%0.3e') ', ratio_trace_Pp ' num2str(ratio_trace_Pp(k),'%0.3e')]);
     end
     
-    if k>minsteps & abs(ratio_trace_Px(k)) < convtol & abs(ratio_trace_Pp(k)) < convtol
+    if k>=minsteps & abs(ratio_trace_Px(k)) < convtol & abs(ratio_trace_Pp(k)) < convtol
         convreached=true;
         if dispconv
             disp(['Trace convergence reached, k=' num2str(k)]);
