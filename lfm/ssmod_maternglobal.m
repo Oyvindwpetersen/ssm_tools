@@ -1,4 +1,4 @@
-function [F,L,H,Ht,S_par,R_par]=ssmod_maternglobal(lambda_vec,sigma_w_vec,p_vec,w_axis,tau_axis,calcfast)
+function [F,L,H,Ht,S_par,R_par]=ssmod_maternglobal(lambda_vec,sigma_w_vec,p_vec,omega_axis,tau_axis,calcfast)
 
 %% Block diagonal Matern state space model
 %
@@ -6,7 +6,7 @@ function [F,L,H,Ht,S_par,R_par]=ssmod_maternglobal(lambda_vec,sigma_w_vec,p_vec,
 % lambda_vec: vector with hyperparameters, inverse length scale
 % sigma_vec: vector with hyperparameters, standard deviations
 % p_vec: vector with order
-% w_axis: frequency axis in [rad/s], can be omitted
+% omega_axis: frequency axis in [rad/s], can be omitted
 % tau_axis: time axis in [s], can be omitted
 % calcfast: false/true for premade equations or general calculation through state-space model
 %
@@ -26,7 +26,7 @@ if nargin<5
 end
 
 if nargin<4
-    w_axis=[];
+    omega_axis=[];
 end
 
 if any(sigma_w_vec<0)
@@ -46,7 +46,7 @@ L_cell=cell(1,n_comp);
 H_cell=cell(1,n_comp);
 
 if calcfast
-	S_par=zeros(n_comp,n_comp,length(w_axis));
+	S_par=zeros(n_comp,n_comp,length(omega_axis));
 end
 
 for k=1:n_comp
@@ -58,7 +58,7 @@ for k=1:n_comp
 
 	% Two-sided PSD
 	if calcfast
-		S_par(k,k,:)=sum( 1/(2*pi)*(sigma_w.^2) .* ( (lambda.^2)+w_axis.^2 ).^(-p_vec(k)-1) , 1);
+		S_par(k,k,:)=sum( 1/(2*pi)*(sigma_w.^2) .* ( (lambda.^2)+omega_axis.^2 ).^(-p_vec(k)-1) , 1);
 		Ht=[];
 	end
 end
@@ -77,10 +77,10 @@ H=blkdiag(H_cell{:});
 if ~calcfast
 
 	% TF for state-space model
-	Ht=ssmod_tf(F,L,H,0,w_axis,[],'type','io');
+	Ht=ssmod_tf(F,L,H,0,omega_axis,[],'type','io');
 
 	% PSD for white noise
-	Sigma_w_squared=repmat(diag(sigma_w_vec).^2,1,1,length(w_axis));
+	Sigma_w_squared=repmat(diag(sigma_w_vec).^2,1,1,length(omega_axis));
 	S_w=1/(2*pi)*Sigma_w_squared;
 
 	% Two-sided PSD
