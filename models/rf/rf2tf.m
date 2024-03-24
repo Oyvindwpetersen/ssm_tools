@@ -1,9 +1,9 @@
-function H_RF=rf2tf(w_axis,a,d)
+function H_RF=rf2tf(omega_axis,a,d)
 
 %% Transfer function for rational function
 %
 % Inputs:
-% w_axis: frequency axis in [rad/s]
+% omega_axis: frequency axis in [rad/s]
 % a: scale factor vector
 % d: poles (real)
 %
@@ -15,11 +15,11 @@ function H_RF=rf2tf(w_axis,a,d)
 a_vec(:,1)=a;
 d_vec(:,1)=d;
 
-if size(w_axis,1)>size(w_axis,2)
-    w_axis=w_axis.';
+if size(omega_axis,1)>size(omega_axis,2)
+    omega_axis=omega_axis.';
 end
 
-H_RF=a_vec./(1i*w_axis+d_vec);
+H_RF=a_vec./(1i*omega_axis+d_vec);
 
 H_RF=sum(H_RF,1);
 
