@@ -68,6 +68,10 @@ H_p=zeros(nx*2,np,length(omega_axis));
 
 matrix_y=[M_k_ss ; K_k_ss ];
 
+if exist_input
+    matrix_p=[-M_k_ss*J ; B-K_k_ss*J];
+end
+
 for k=1:length(omega_axis)
 
     z=exp(1i*omega_axis(k)*dt);
@@ -80,7 +84,6 @@ for k=1:length(omega_axis)
     H_y(:,:,k)=matrix_x\matrix_y;
     
     if exist_input
-        matrix_p=[-M_k_ss*J ; B-K_k_ss*J];
         H_p(:,:,k)=matrix_x\matrix_p;
     end
 
