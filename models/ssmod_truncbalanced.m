@@ -21,7 +21,7 @@ function [Ac_t Bc_t Cc_t Dc_t T]=ssmod_truncbalanced(Ac,Bc,Cc,Dc,n,varargin)
 
 p=inputParser;
 p.KeepUnmatched=true;
-addParameter(p,'plot','yes',@ischar)
+addParameter(p,'plot',true,@islogical)
 
 parse(p,varargin{:})
 plot_sv=p.Results.plot;
@@ -53,7 +53,7 @@ Bc_t=Bbar(1:n,:);
 Cc_t=Cbar(:,1:n);
 Dc_t=Dbar;
 
-if strcmpi(plot_sv,'yes')
+if strcmpi(plot_sv,true)
 
 SD_sum=sum(SD);
 
