@@ -100,16 +100,16 @@ P_k_k_ss=P_k_k;
 N_k_ss=P_k_k_ss*mod.A.'/P_k_kmin_ss;
 
 [f_axis,Gy]=fft_function(sim.y,mod.dt);
-w_axis=f_axis*2*pi;
+omega_axis=f_axis*2*pi;
 
-% w_axis=[0:0.0001:1]*2*pi;
+% omega_axis=[0:0.0001:1]*2*pi;
 nx=size(mod.A,1);
 ny=size(mod.G,1);
 
-H_yx=zeros(nx*3,ny,length(w_axis));
+H_yx=zeros(nx*3,ny,length(omega_axis));
 
-for k=1:length(w_axis)
-    z=exp(1i*w_axis(k)*mod.dt);
+for k=1:length(omega_axis)
+    z=exp(1i*omega_axis(k)*mod.dt);
     Mat=[
         -eye(nx)+K_k_ss*mod.G eye(nx) zeros(nx) ;
         z*eye(nx) -mod.A zeros(nx) ;
@@ -121,7 +121,7 @@ for k=1:length(w_axis)
 end
 
 close all
-plotTransferFunction(w_axis,H_yx,'xlim',[-2 2]*2*pi);
+plotTransferFunction(omega_axis,H_yx,'xlim',[-2 2]*2*pi);
 ylimall(gcf,[-2 2])
 
 
@@ -129,15 +129,15 @@ Hp=H_yx(1:nx,:,:);
 Hf=H_yx((nx+1):(nx*2),:,:);
 Hs=H_yx((nx*2+1):end,:,:);
 
-% plotTransferFunction(w_axis,Hp);
-% plotTransferFunction(w_axis,Hf);
-% plotTransferFunction(w_axis,Hs);
+% plotTransferFunction(omega_axis,Hp);
+% plotTransferFunction(omega_axis,Hf);
+% plotTransferFunction(omega_axis,Hs);
 
-plotTransferFunction(w_axis,abs(Hp),w_axis,abs(Hf),w_axis,abs(Hs),'xlim',[-5 5]*2*pi);
-plotTransferFunction(w_axis,phasecomplex(Hp),w_axis,phasecomplex(Hf),w_axis,phasecomplex(Hs),'xlim',[-5 5]*2*pi);
+plotTransferFunction(omega_axis,abs(Hp),omega_axis,abs(Hf),omega_axis,abs(Hs),'xlim',[-5 5]*2*pi);
+plotTransferFunction(omega_axis,phasecomplex(Hp),omega_axis,phasecomplex(Hf),omega_axis,phasecomplex(Hs),'xlim',[-5 5]*2*pi);
 linevertical(getSortedAxes(gcf),diag(omega),'--',1,'k');
 
-plotTransferFunction(w_axis,Hp,w_axis,Hf,w_axis,Hs,'xlim',[-5 5]*2*pi);
+plotTransferFunction(omega_axis,Hp,omega_axis,Hf,omega_axis,Hs,'xlim',[-5 5]*2*pi);
 
 linevertical(getSortedAxes(gcf),diag(omega),'--',1,'k');
 
@@ -149,11 +149,11 @@ close all
 % [f_axis,Gxf]=fft_function(x_k_k,dt);
 % [f_axis,Gxs]=fft_function(x_k_N,dt);
 
-Gxp2=zeros(mod.nx,length(w_axis));
-Gxf2=zeros(mod.nx,length(w_axis));
-Gxs2=zeros(mod.nx,length(w_axis));
+Gxp2=zeros(mod.nx,length(omega_axis));
+Gxf2=zeros(mod.nx,length(omega_axis));
+Gxs2=zeros(mod.nx,length(omega_axis));
 
-for k=1:length(w_axis)
+for k=1:length(omega_axis)
     Gxp2(:,k)=Hp(:,:,k)*Gy(:,k);
     Gxf2(:,k)=Hf(:,:,k)*Gy(:,k);
     Gxs2(:,k)=Hs(:,:,k)*Gy(:,k);
