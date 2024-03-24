@@ -1,4 +1,4 @@
-function [Fc_out,Lc_out,Hc_out,lambda_hat,sigma_w_hat,sigma_p_hat,S_par_out,R_par_out,ind]=fitmatern_mom(tau_axis,R_target,w_axis,S_target,varargin)
+function [Fc_out,Lc_out,Hc_out,lambda_hat,sigma_w_hat,sigma_p_hat,S_par_out,R_par_out,ind]=fitmatern_mom(tau_axis,R_target,omega_axis,S_target,varargin)
 
 %%
 
@@ -60,7 +60,7 @@ if scaletopsd
     for k=1:size(R_target,1)
 
         % Divide by 2 since S_target is a one-sided spectrum
-        S_target_at_freq=interp1z(w_axis,S_target(k,k,:),omegan(k)) /2;
+        S_target_at_freq=interp1z(omega_axis,S_target(k,k,:),omegan(k)) /2;
         
         % Two sided Matern: 
         sigma_w_hat_adjusted(k,1)=sqrt( S_target_at_freq*2*pi*(lambda_hat(k,1).^2+omegan(k).^2) );
@@ -82,7 +82,7 @@ sigma_w_hat=sigma_w_hat_adjusted;
 end
 
 
-[Fc_out,Lc_out,Hc_out,~,S_par_out,R_par_out]=ssmod_maternglobal(lambda_hat,sigma_w_hat,p_mat*ones(size(lambda_hat)),w_axis,tau_axis,true);
+[Fc_out,Lc_out,Hc_out,~,S_par_out,R_par_out]=ssmod_maternglobal(lambda_hat,sigma_w_hat,p_mat*ones(size(lambda_hat)),omega_axis,tau_axis,true);
 
 
 
@@ -97,7 +97,7 @@ if strcmpi(doPlot,'yes')
     
 plotcf(tau_axis,R_target,tau_axis,R_par_out,'type','auto','xlim',[0 max(tau_axis)],'legend',{'Target' 'Matern fit' });
 
-plotpsd(w_axis,S_target,w_axis,S_par_out*2,'xlim',[0 w_axis(end)],'type','auto','log','yes','legend',{'Target' 'Matern fit'});
+plotpsd(omega_axis,S_target,omega_axis,S_par_out*2,'xlim',[0 omega_axis(end)],'type','auto','log','yes','legend',{'Target' 'Matern fit'});
 
 end
 
