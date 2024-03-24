@@ -1,4 +1,4 @@
-function [A B G J Ac Bc Gc Jc F]=ssmod_modal(phi,omega,gamma,Sa,Sd,Sp,dt,varargin)
+function [Ad Bd Gd Jd Ac Bc Gc Jc F]=ssmod_modal(phi,omega,gamma,Sa,Sd,Sp,dt,varargin)
 
 %% Impulse response function for state space model
 
@@ -12,10 +12,10 @@ function [A B G J Ac Bc Gc Jc F]=ssmod_modal(phi,omega,gamma,Sa,Sd,Sp,dt,varargi
 % dt: time discretization
 
 % Outputs:
-% A: state matrix (disc)
-% B: input matrix (disc)
-% G: output matrix (disc)
-% J: direct transmission matrix (disc)
+% Ad: state matrix (disc)
+% Bd: input matrix (disc)
+% Gd: output matrix (disc)
+% Jd: direct transmission matrix (disc)
 % Ac: state matrix (cont)
 % Bc: input matrix (cont)
 % F: matrix for first-order-hold
@@ -57,11 +57,11 @@ Bc=[zeros(nm,np);TempTermForce];
 Gc=[Sd*phi-Sa*phi*omega.^2, Sv*phi-Sa*phi*gamma];
 Jc=[Sa*phi*TempTermForce];
 
-A=expm(dt*Ac);
-B=[A-eye(size(A))]*(Ac\Bc);
+Ad=expm(dt*Ac);
+Bd=[A-eye(size(Ad))]*(Ac\Bc);
 
-G=Gc;
-J=Jc;
+Gd=Gc;
+Jd=Jc;
 
 %first order hold
-F=Ac\(B-Bc*dt)*dt^-1;
+F=Ac\(Bd-Bc*dt)*dt^-1;
