@@ -1,4 +1,4 @@
-function [A B G J Ac Bc Gc Jc F]=ssmod_rf_aug(K,C,M,Ahat,Bhat,Chat,Sa,Sd,Sp,dt)
+function [Ad Bd Gd Jd Ac Bc Gc Jc F]=ssmod_rf_aug(K,C,M,Ahat,Bhat,Chat,Sa,Sd,Sp,dt)
 
 %% State space model of augmented system with velocity input
 %
@@ -58,5 +58,5 @@ else
 	Jc=[Sa * Minv * Sp];
 end
 
-[A B G J F]=ssmod_c2d(Ac,Bc,Gc,Jc,dt);
+[Ad Bd Gd Jd F]=ssmod_c2d(Ac,Bc,Gc,Jc,dt);
 
