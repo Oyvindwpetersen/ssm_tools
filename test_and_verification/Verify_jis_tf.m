@@ -1,4 +1,4 @@
-%% TF of JIS (run Verify_alg first)
+%% TF of JIS (run Verify_algorithms first)
 
 
 [x_jis p_jis Px_jis_ss Pp_jis_ss] = JIS_ss(mod.A,mod.B,mod.G,mod.J,sim.y,sim.x0,mod.Q,mod.R,mod.S,mod.P01,'trunc',false);
