@@ -58,7 +58,7 @@ Gc=[Sd*phi-Sa*phi*omega.^2, Sv*phi-Sa*phi*gamma];
 Jc=[Sa*phi*TempTermForce];
 
 Ad=expm(dt*Ac);
-Bd=[A-eye(size(Ad))]*(Ac\Bc);
+Bd=[Ad-eye(size(Ad))]*(Ac\Bc);
 
 Gd=Gc;
 Jd=Jc;
