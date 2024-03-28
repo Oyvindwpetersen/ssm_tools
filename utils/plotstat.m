@@ -16,13 +16,12 @@ end
 %% Input
 
 p=inputParser;
-p.KeepUnmatched=true;
 
 addParameter(p,'gap',[0.1 0.1],@isnumeric)
 addParameter(p,'marg_h',[0.15 0.1],@isnumeric)
 addParameter(p,'marg_w',[0.1 0.05],@isnumeric)
 addParameter(p,'weight',[],@isnumeric)
-addParameter(p,'marker',{'x' 'o' 'd' 's' },@iscell)
+addParameter(p,'marker',{'x' 'o' 'd' 's' '*'},@iscell)
 addParameter(p,'markersize',3,@isnumeric)
 addParameter(p,'color',[ [0 0 1] ; [1 0 0] ; [0 0 0] ;  [0 0.4 0] ; [1 0 1] ])
 addParameter(p,'xlabel','',@ischar)
