@@ -1,6 +1,6 @@
 function [x_k_k,x_k_kmin,x_k_N,P_k_k,P_k_kmin,P_k_N]=KF_RTS(A,B,G,J,Q,R,S,y,p_det,varargin)
 
-%% Kalman Filter and Rauch–Tung–Striebel smoother
+%% Kalman filter and Rauch–Tung–Striebel smoother
 %
 % Model:
 % x(k+1)=A*x(k)+B*p(k)+w(k);
@@ -27,63 +27,35 @@ function [x_k_k,x_k_kmin,x_k_N,P_k_k,P_k_kmin,P_k_N]=KF_RTS(A,B,G,J,Q,R,S,y,p_de
 % P_k_kmin: prediction error cov
 % P_k_N: smoothing error cov
 %
-%
-% Transformation in case S is not zero
-%
-% x(k+1)=A*x(k)+B*p(k)+w(k)
-% y(k)=G*x(k)+J*p(k)+v(k)
-%
-% State equation, add and subtract output term:
-% x(k+1)=A*x(k)+B*p(k)+w(k)+S*inv(R)*y(k)-S*inv(R)*y(k)
-% x(k+1)=A*x(k)+B*p(k)+w(k)+S*inv(R)*y(k)-S*inv(R)*(G*x(k)+J*p(k)+v(k))
-%
-% Resulting model:
-% x(k+1)=[A-S*inv(R)*G]*x(k)+[B-S*inv(R)*J , S*inv(R)]*[p(k) ; y(k)]+w(k)-S*inv(R)*v(k)
-% y(k)=G*x(k)+[J , 0]*[p(k) ; y(k)]+v(k)
-%
-% The stacked vector [p(k) ; y(k)] is now treated as the deterministic (known) input
-% The new process noise is w_star(k)=w(k)+S*inv(R)*v(k)
-% The new output noise is v_star(k)=v(k)
-% The covariance between w_star(k) and v_star(k) is zero (S_star is zero)
-% The states x are not transformed in any way
 
 %% Parse inputs
 
 p=inputParser;
 p.KeepUnmatched=true;
 
-addParameter(p,'steadystate',true,@islogical)
 addParameter(p,'showtext',true,@islogical)
 addParameter(p,'noscaling',false,@islogical)
+addParameter(p,'method','standard',@ischar) %standard, decorr
 addParameter(p,'x0',[],@isnumerical)
 addParameter(p,'P0',[],@isnumerical)
 
 parse(p,varargin{1:end});
 
-steadystate=p.Results.steadystate;
 showtext=p.Results.showtext;
 noscaling=p.Results.noscaling;
+method=p.Results.method;
 x0=p.Results.x0;
 P0=p.Results.P0;
 
-
-%%
+%% Parameters
 
 nx=size(A,1);
 ny=size(G,1);
 nt=size(y,2);
 
-%%
-
-% if isempty(B) & isempty(J)
-    % B=zeros(nx,1);
-    % J=zeros(ny,1);
-    % p=zeros(1,nt);
-    
-% end
-
 %% Transformation in case S is not zero
 %
+% Model:
 % x(k+1)=A*x(k)+B*p(k)+w(k)
 % y(k)=G*x(k)+J*p(k)+v(k)
 %
@@ -96,49 +68,64 @@ nt=size(y,2);
 % y(k)=G*x(k)+[J , 0]*[p(k) ; y(k)]+v(k)
 %
 % The stacked vector [p(k) ; y(k)] is now treated as the deterministic (known) input
-% The new process noise is w_star(k)=w(k)+S*inv(R)*v(k)
+% The new process noise is w_star(k)=w(k)-S*inv(R)*v(k)
 % The new output noise is v_star(k)=v(k)
 % The covariance between w_star(k) and v_star(k) is zero (S_star is zero)
 % The states x are not transformed in any way
+%
 
-% State space matrices
+%% No correlation between process and measurement noise
+
+if ~any(any(S))
+
+    [x_k_k,x_k_kmin,P_k_k,P_k_kmin]=KF(A,B,G,J,Q,R,S,y,p_det,x0,P0,'showtext',showtext,'noscaling',noscaling);
+
+    [x_k_N,P_k_N]=RTSSmoother(A,x_k_k,x_k_kmin,P_k_k,P_k_kmin,'showtext',showtext);
+
+end
+
+%% Correlated noise
 
 if any(any(S))
 
-    A_star=A-S/R*G;
-    G_star=G;
-    
-    if isempty(B) & isempty(J)
-        B_star=[S/R];
-        J_star=[zeros(ny,ny)];
-    else
-        B_star=[B-S/R*J S/R];
-        J_star=[J zeros(ny,ny)];
+    if strcmpi(method,'standard')
+
+        % Run KF as standard
+        [x_k_k,x_k_kmin,P_k_k,P_k_kmin]=KF(A,B,G,J,Q,R,S,y,p_det,x0,P0,'showtext',showtext,'noscaling',noscaling);
+
+        % Decorrelate for RTS smoother, this only affects the state matrix
+
+        % Optimal and Robust estimation, p 140
+        % It is worth remarking that the backward recursive smoother depends neither
+        % on the data nor on the deterministic input
+
+        [x_k_N,P_k_N]=RTSSmoother(A-S/R*G,x_k_k,x_k_kmin,P_k_k,P_k_kmin,'showtext',showtext);
+
+    elseif strcmpi(method,'decorr')
+
+        % Decorrelate both for KF and RTS smoother
+
+        A_star=A-S/R*G;
+        G_star=G;
+
+        if isempty(B) & isempty(J)
+            B_star=[S/R];
+            J_star=[zeros(ny,ny)];
+        else
+            B_star=[B-S/R*J S/R];
+            J_star=[J zeros(ny,ny)];
+        end
+
+        p_star=[p_det ; y];
+        Q_star=Q-S/R*S.';
+        R_star=R;
+        S_star=zeros(nx,ny);
+
+        [x_k_k,x_k_kmin,P_k_k,P_k_kmin]=KF(A_star,B_star,G_star,J_star,Q_star,R_star,S_star,y,p_star,x0,P0,'showtext',showtext,'noscaling',noscaling);
+
+        [x_k_N,P_k_N]=RTSSmoother(A_star,x_k_k,x_k_kmin,P_k_k,P_k_kmin,'showtext',showtext);
+
     end
 
-    
-    p_star=[p_det ; y];
-    Q_star=Q-S/R*S.';
-    R_star=R;
-    S_star=zeros(size(A,1),size(G,1));
-    warning('S is non-zero. The theory needs to be checked properly for the treatment in smoothing.');
-else
-
-    A_star=A;
-    B_star=B;
-    G_star=G;
-    J_star=J;
-    
-    p_star=p_det;
-    Q_star=Q;
-    R_star=R;
-    S_star=S;
 end
-
-%%
-
-[x_k_k,x_k_kmin,P_k_k,P_k_kmin]=KF(A_star,B_star,G_star,J_star,Q_star,R_star,S_star,y,p_star,x0,P0);
-
-[x_k_N,P_k_N]=RTSSmoother(A_star,x_k_k,x_k_kmin,P_k_k,P_k_kmin);
-
 
