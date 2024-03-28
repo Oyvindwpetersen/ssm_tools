@@ -36,9 +36,9 @@ skipRTS=p.Results.skipRTS;
 G=p.Results.G;
 R=p.Results.R;
 
-%% Note on RTS
+%% Note
 
-% From Optimal and Robust estimation, p 140
+% Optimal and Robust estimation, p 140
 % It is worth remarking that the backward recursive smoother depends neither
 % on the data nor on the deterministic input
 
@@ -105,8 +105,12 @@ if steadystate==true
 
     N_k_ss=P_k_k_ss*A.'/P_k_kmin_ss;
 
+    % Steady state equation
+    % -P_k_N_ss   +   N_k_ss*P_k_N_ss*N_k_ss^T   -   N_k_ss*P_k_N_ss*N_k_ss^T   +    P_k_k_ss=0;
+
     Q_temp=P_k_k_ss-N_k_ss*P_k_kmin_ss*N_k_ss.'; Q_temp=forcesym(Q_temp);
-    P_k_N_ss=dlyap(N_k_ss,Q_temp); P_k_N_ss=forcesym(P_k_N_ss);
+    P_k_N_ss=dlyap(N_k_ss,Q_temp);
+    P_k_N_ss=forcesym(P_k_N_ss);
 
     t0=tic;
     for k=(nt-1):-1:1
