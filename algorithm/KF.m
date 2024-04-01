@@ -1,4 +1,4 @@
-function [x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss]=KF(A,B,G,J,Q,R,S,y,p_det,x0,P01,varargin)
+function [x_k_k,x_k_kmin,P_k_k,P_k_kmin,K_k_ss,M_k_ss,Omega_k_ss]=KF(A,B,G,J,Q,R,S,y,p_det,x0,P01,varargin)
 
 %% Kalman filter with known input
 %
@@ -177,7 +177,7 @@ if steadystate==true
     % end
 
     t0=tic;
-    Mat_precalc=(P_k_kmin_ss*G.')*Omega_k_ss_inv;
+    M_k_ss=(P_k_kmin_ss*G.')*Omega_k_ss_inv;
     for k=1:nt
 
         % Initial
@@ -188,11 +188,9 @@ if steadystate==true
         e_k(:,k)=y(:,k)-G*x_hat_k_kmin(:,k)-J*p(:,k);
 
         % Measurement update
-        %     x_hat_k_k(:,k)=x_hat_k_kmin(:,k)+Mat_precalc*(y(:,k)-H*x_hat_k_kmin(:,k));
-        x_hat_k_k(:,k)=x_hat_k_kmin(:,k)+Mat_precalc*e_k(:,k); %faster (skipping repeated calculations of e)
+        x_hat_k_k(:,k)=x_hat_k_kmin(:,k)+M_k_ss*e_k(:,k); %faster (skipping repeated calculations of e)
 
         % Time update
-        %     x_hat_k_kmin(:,k+1)=F*x_hat_k_kmin(:,k)+K_k_ss*(y(:,k)-H*x_hat_k_kmin(:,k));
         x_hat_k_kmin(:,k+1)=A*x_hat_k_kmin(:,k)+B*p(:,k)+K_k_ss*e_k(:,k); %faster (skipping repeated calculations of e)
 
     end
