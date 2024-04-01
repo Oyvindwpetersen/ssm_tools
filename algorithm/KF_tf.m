@@ -1,7 +1,7 @@
 function [H_x0y_kf H_x1y_kf H_x0p_kf H_x1p_kf]=KF_tf(A,B,G,J,Q,R,S,dt,omega_axis)
 %% Transfer function for steady state operation of Kalman filter
 %
-% Model
+% Model:
 % x(k+1)=A*x(k)+B*p(k)+w(k)
 % y(k)=G*x(k)+J*p(k)+v(k)
 %
@@ -45,18 +45,9 @@ y=zeros(size(G,1),1e3);
 
 %% Run KF
 
-[~,~,P_k_k,P_k_kmin]=KF(A,B,G,J,Q,R,S,y,p_dummy,[],[],'steadystate',true);
-
+[~,~,P_k_k,P_k_kmin,K_k_ss,M_k_ss]=KF(A,B,G,J,Q,R,S,y,p_dummy,[],[],'steadystate',true);
 
 %% Calculate TF
-
-P_k_kmin_ss=P_k_kmin;
-
-Omega_k_ss=(G*P_k_kmin_ss*G.'+R); Omega_k_ss=forcesym(Omega_k_ss);
-Omega_k_ss_inv=eye(size(Omega_k_ss))/Omega_k_ss; Omega_k_ss_inv=forcesym(Omega_k_ss_inv);
-K_k_ss=(A*P_k_kmin_ss*G.'+S)*Omega_k_ss_inv;
-
-M_k_ss=P_k_kmin_ss*G.'*Omega_k_ss_inv;
 
 H_y=zeros(nx*2,ny,length(omega_axis));
 H_p=zeros(nx*2,np,length(omega_axis));
