@@ -99,7 +99,6 @@ omega_a0=anti_omega(idx_r(bool_nonconj));
 xi_a=anti_xi(idx_r(~bool_nonconj));
 xi_a0=anti_xi(idx_r(bool_nonconj));
 
-
 % If polynomial is not altered, calculate k0 and k1
 if isreduced==false
 
@@ -121,7 +120,7 @@ end
 % anti_xi=k1./(2*sqrt(k0));
 
 return
-%%
+%% Debug
 
 clc
 close all
