@@ -47,11 +47,6 @@ y=zeros(size(G,1),1e3);
 
 [~,~,P_k_k,P_k_kmin]=KF(A,B,G,J,Q,R,S,y,p_dummy,[],[],'steadystate',true);
 
-% [x_k_N,P_k_N]=RTSSmoother(Fad,x_k_k,x_k_kmin,P_k_k,P_k_kmin,'steadystate','yes');
-
-% if any(any(S))
-%     error('Implementation not supporting S~=0, due to modification necessary in RTS smoother');
-% end
 
 %% Calculate TF
 
