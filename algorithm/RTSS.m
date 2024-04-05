@@ -56,7 +56,7 @@ end
 if isempty(G)
     skip_Pklag=true;
 else
-    skip_Pklag=false;
+   error('RTSS code currently not configured for the Pklag');
 end
 
 %% Zero matrices
@@ -74,13 +74,6 @@ if steadystate==false
     P_k_N=zeros(nx,nx,nt);
     P_k_N(:,:,nt)=P_k_k(:,:,nt);
 
-    % if skip_Pklag==false
-        % Omega=G*P_k_kmin(:,:,nt)*G.'+R;
-        % P_klag_N=zeros(nx,nx,nt);
-        % P_klag_N(:,:,nt)=...
-            % (eye(nx)-P_k_kmin(:,:,nt)*G.'/Omega*G)*A*P_k_k(:,:,nt-1);
-    % end
-
     t0=tic;
     for k=(nt-1):-1:1
 
@@ -88,10 +81,6 @@ if steadystate==false
         x_k_N(:,k)=x_k_k(:,k)+N_k*(x_k_N(:,k+1)-x_k_kmin(:,k+1));
         P_k_N(:,:,k)=P_k_k(:,:,k)+N_k*(P_k_N(:,:,k+1)-P_k_kmin(:,:,k+1))*N_k.';
 
-        % if skip_Pklag==false & k>1
-            % N_kmin=P_k_k(:,:,k-1)*A.'/P_k_kmin(:,:,k);
-            % P_klag_N(:,:,k)=P_k_k(:,:,k)*N_kmin+N_k*(P_klag_N(:,:,k+1)-A*P_k_k(:,:,k))*N_kmin.';
-        % end
     end
     telapsed=toc(t0);
 
@@ -107,7 +96,7 @@ if steadystate==true
     N_k_ss=P_k_k_ss*A.'/P_k_kmin_ss;
 
     % Steady state equation
-    % -P_k_N_ss   +   N_k_ss*P_k_N_ss*N_k_ss^T   -   N_k_ss*P_k_N_ss*N_k_ss^T   +    P_k_k_ss=0;
+    % -P_k_N_ss   +   N_k_ss*P_k_N_ss*N_k_ss^T   -   N_k_ss*P_k_N_ss*N_k_ss^T   +    P_k_k_ss   =   0;
 
     Q_temp=P_k_k_ss-N_k_ss*P_k_kmin_ss*N_k_ss.'; Q_temp=forcesym(Q_temp);
     P_k_N_ss=dlyap(N_k_ss,Q_temp);
@@ -121,6 +110,24 @@ if steadystate==true
 
     P_klag_N_ss=[];
 end
+
+%%
+
+if showtext==true
+    disp(['RTS smoother calculated in ' sprintf('%2.1f', telapsed) ' seconds, ' sprintf('%2.1f', telapsed*10^6./nt) ' seconds per 1M steps']);
+end
+
+
+%% Output
+
+if steadystate==true
+    P_k_N=P_k_N_ss;
+    P_klag_N=P_klag_N_ss;
+else
+    % P_k_N=P_k_N;
+    % P_klag_N=P_klag_N;
+end
+
 
 %% Calculate the covariance
 
@@ -155,21 +162,33 @@ end
 % 
 % end
 
-%%
 
-if showtext==true
-    disp(['RTS smoother calculated in ' sprintf('%2.1f', telapsed) ' seconds, ' sprintf('%2.1f', telapsed*10^6./nt) ' seconds per 1M steps']);
-end
+%% Old code
 
-
-%% Output
-
-if steadystate==true
-    P_k_N=P_k_N_ss;
-    P_klag_N=P_klag_N_ss;
-else
-    % P_k_N=P_k_N;
-    % P_klag_N=P_klag_N;
-end
-
-
+% if steadystate==false
+% 
+%     P_k_N=zeros(nx,nx,nt);
+%     P_k_N(:,:,nt)=P_k_k(:,:,nt);
+% 
+%     % if skip_Pklag==false
+%         % Omega=G*P_k_kmin(:,:,nt)*G.'+R;
+%         % P_klag_N=zeros(nx,nx,nt);
+%         % P_klag_N(:,:,nt)=...
+%             % (eye(nx)-P_k_kmin(:,:,nt)*G.'/Omega*G)*A*P_k_k(:,:,nt-1);
+%     % end
+% 
+%     t0=tic;
+%     for k=(nt-1):-1:1
+% 
+%         N_k=P_k_k(:,:,k)*A.'/P_k_kmin(:,:,k+1);
+%         x_k_N(:,k)=x_k_k(:,k)+N_k*(x_k_N(:,k+1)-x_k_kmin(:,k+1));
+%         P_k_N(:,:,k)=P_k_k(:,:,k)+N_k*(P_k_N(:,:,k+1)-P_k_kmin(:,:,k+1))*N_k.';
+% 
+%         % if skip_Pklag==false & k>1
+%             % N_kmin=P_k_k(:,:,k-1)*A.'/P_k_kmin(:,:,k);
+%             % P_klag_N(:,:,k)=P_k_k(:,:,k)*N_kmin+N_k*(P_klag_N(:,:,k+1)-A*P_k_k(:,:,k))*N_kmin.';
+%         % end
+%     end
+%     telapsed=toc(t0);
+% 
+% end
