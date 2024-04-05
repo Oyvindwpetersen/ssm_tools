@@ -96,8 +96,7 @@ if any(any(S))
         % Decorrelate for RTS smoother, this only affects the state matrix
 
         % Optimal and Robust estimation, p 140
-        % It is worth remarking that the backward recursive smoother depends neither
-        % on the data nor on the deterministic input
+        % It is worth remarking that the backward recursive smoother depends neither on the data nor on the deterministic input
 
         [x_k_N,P_k_N]=RTSS(A-S/R*G,x_k_k,x_k_kmin,P_k_k,P_k_kmin,'showtext',showtext);
 
