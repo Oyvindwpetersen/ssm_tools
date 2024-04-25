@@ -65,7 +65,7 @@ for k=1:length(omega_axis)
     z=exp(1i.*omega_axis(k)*dt);
 
     M1=[ eye(np) zeros(np,ns) M_ss*G ;
-        K_ss*J eye(ns) (K_ss*G-eye(ns));
+        K_ss*J eye(ns) (K_ss*G-eye(ns)) ;
         zeros(ns,np) zeros(ns,ns) z*eye(ns)-A+Kbar_ss*G ];
 
     M3=M1\M2;
