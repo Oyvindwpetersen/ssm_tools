@@ -3,8 +3,6 @@
 
 [x_jis p_jis Px_jis_ss Pp_jis_ss] = JIS_ss(mod.A,mod.B,mod.G,mod.J,sim.y,sim.x0,mod.Q,mod.R,mod.S,mod.P01,'trunc',false);
 
-
-
 [f_axis,Gy]=fft_function(sim.y,mod.dt);
 Gy=permute(Gy,[1 3 2]);
 
