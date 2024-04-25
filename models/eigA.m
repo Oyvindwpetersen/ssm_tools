@@ -27,25 +27,25 @@ end
 
 if size(A,3)==1
 
-[v,d_discrete]=eig(A);
+    [v,d_tmp]=eig(A);
 
-if nargin==1 | isempty(dt)
-% Ac=A;
-d_cont=d_discrete;
-elseif nargin==2
-d_cont=log(d_discrete)./dt;
-end
+    if nargin==1 | isempty(dt)
+        % Ac=A;
+        d_cont=d_tmp;
+    elseif nargin==2
+        d_cont=log(d_tmp)./dt;
+    end
 
-[~,i_sort]=sort(abs(diag(d_cont)));
-d_cont=diag(d_cont); d_cont=d_cont(i_sort);
-v=v(:,i_sort);
+    [~,i_sort]=sort(abs(diag(d_cont)));
+    d_cont=diag(d_cont); d_cont=d_cont(i_sort);
+    v=v(:,i_sort);
 
-v=v./max(abs(v),[],1);
+    v=v./max(abs(v),[],1);
 
-lambda=d_cont;
-phi=v;
-omega=abs(lambda); 
-xi=-real(lambda)./abs(lambda); 
+    lambda=d_cont;
+    phi=v;
+    omega=abs(lambda);
+    xi=-real(lambda)./abs(lambda);
 
 end
 
@@ -56,38 +56,38 @@ s3=size(A_all,3);
 s1=size(A_all,1);
 
 if s3>1
-    
+
     for k=1:s3
-	A=A_all(:,:,k);
-        
-    [v,d_discrete]=eig(A);
+    	A=A_all(:,:,k);
 
-    if nargin==1 | isempty(dt)
-    % Ac=A;
-    d_cont=d_discrete;
-    elseif nargin==2
-    d_cont=log(d_discrete)./dt;
+        [v,d_discrete]=eig(A);
+
+        if nargin==1 | isempty(dt)
+            % Ac=A;
+            d_cont=d_discrete;
+        elseif nargin==2
+            d_cont=log(d_discrete)./dt;
+        end
+
+        [~,i_sort]=sort(abs(diag(d_cont)));
+        d_cont=diag(d_cont); d_cont=d_cont(i_sort);
+        v=v(:,i_sort);
+
+        v=v./max(abs(v),[],1);
+
+        lambda=d_cont;
+        %     phi=v;
+        omega=abs(lambda);
+        xi=-real(lambda)./abs(lambda);
+
+        v_all(:,:,k)=v;
+        lambda_all(:,k)=lambda;
+        omega_all(:,k)=omega;
+        xi_all(:,k)=xi;
+
     end
 
-    [~,i_sort]=sort(abs(diag(d_cont)));
-    d_cont=diag(d_cont); d_cont=d_cont(i_sort);
-    v=v(:,i_sort);
-
-    v=v./max(abs(v),[],1);
-
-    lambda=d_cont;
-%     phi=v;
-    omega=abs(lambda);
-    xi=-real(lambda)./abs(lambda);
-    
-    v_all(:,:,k)=v;
-    lambda_all(:,k)=lambda;
-    omega_all(:,k)=omega;
-    xi_all(:,k)=xi;
-    
-    end
-    
-%     v=v_all;
+    %     v=v_all;
     lambda=lambda_all;
     omega=omega_all;
     xi=xi_all;
