@@ -29,6 +29,16 @@ force = p.Results.force;
 
 %%
 
+if isvector(omega)
+    omega=diag(omega);
+end
+
+if isvector(gamma)
+    gamma=diag(gamma);
+end
+
+%%
+
 nm=size(omega,1);
 ny=size(Sa,1);
 np=size(Sp,2);
