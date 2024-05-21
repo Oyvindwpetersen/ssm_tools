@@ -1,4 +1,4 @@
-function [omega_a,xi_a,omega_a0,xi_a0,k0,k1,K]=antires(omega,xi,phi,idx_d,idx_p)
+function [omega_a,xi_a,omega_a0,xi_a0,k0,k1,K]=antires(omega,xi,phi,idx_o,idx_p)
 
 %% Anti resonance frequencies for modal systems
 %
@@ -6,7 +6,7 @@ function [omega_a,xi_a,omega_a0,xi_a0,k0,k1,K]=antires(omega,xi,phi,idx_d,idx_p)
 % omega: undamped natural frequencies
 % xi: damping ratios
 % phi: mode shape matrix
-% idx_d: row index of phi for output
+% idx_o: row index of phi for output
 % idx_p: row index of phi for input
 %
 % Outputs:
@@ -31,6 +31,18 @@ end
 
 nm=length(omega);
 
+%%
+
+if length(idx_o)>1
+    for n=1:length(idx_o)
+        [omega_a{n},xi_a{n},omega_a0{n},xi_a0{n}]=antires(omega,xi,phi,idx_o(n),idx_p);
+        k0=[];
+        k1=[];
+        K=[];
+    end
+    return
+end
+
 %% Common nominator
 
 coeff_sum_tmp=[];
@@ -54,7 +66,7 @@ for m=1:nm
 
     end
 
-    phi_dm=phi(idx_d,m);
+    phi_dm=phi(idx_o,m);
     phi_pm=phi(idx_p,m);
 
     coeff_sum_tmp(m,:)=coeff_all*phi_dm*phi_pm;
@@ -66,14 +78,20 @@ end
 % Sum all m=[1:nm]
 coeff_sum=sum(coeff_sum_tmp,1);
 
-% If coefficient of highest term is zero, remove it
+% If coefficient of highest term(s) is zero, remove it
+idx_coeff_zero=[];
 tol_ph=1e-12;
-if (coeff_sum(1))<tol_ph
-    coeff_sum=coeff_sum(2:end);
-    isreduced=true;
-else
-    isreduced=false;
+for k=1:length(coeff_sum)
+    if abs(coeff_sum(k))<tol_ph
+        idx_coeff_zero(end+1)=k;
+    else
+        break
+    end
 end
+
+idx_coeff_nonzero=setdiff(1:length(coeff_sum),idx_coeff_zero);
+coeff_sum=coeff_sum(idx_coeff_nonzero);
+
 
 % Normalize such that coefficient of highest term is unity
 K=coeff_sum(1);
@@ -100,7 +118,7 @@ xi_a=anti_xi(idx_r(~bool_nonconj));
 xi_a0=anti_xi(idx_r(bool_nonconj));
 
 % If polynomial is not altered, calculate k0 and k1
-if isreduced==false
+if isempty(idx_coeff_zero)
 
     for k=1:length(r_uni)
 
@@ -129,7 +147,7 @@ H1=0;
 omega_axis=linspace(0,40,1e4);
 s=1i*omega_axis;
 for m=1:nm
-    H1=H1+phi(idx_d,m)*phi(idx_p,m)./...
+    H1=H1+phi(idx_o,m)*phi(idx_p,m)./...
         (s.^2+2*xi(m)*omega(m)*s+omega(m).^2);
 end
 
@@ -139,7 +157,7 @@ H1=0;
 omega_axis=linspace(0,40,1e4);
 s=1i*omega_axis;
 for m=1:nm
-    H1=H1+phi(idx_d,m)*phi(idx_p,m)./...
+    H1=H1+phi(idx_o,m)*phi(idx_p,m)./...
         (s.^2+2*xi(m)*omega(m)*s+omega(m).^2);
 end
 
