@@ -61,7 +61,7 @@ Abar_coeff_even_trunc=A_coeff_even_trunc.*L.^Power_even_trunc/(A_coeff_even_trun
 % Constant value on top of fraction
 Constant0=sigma_p^2*L/sqrt(2*pi)/(A_coeff_even_trunc(end)*L^Power_even_trunc(end));
 
-% Fill zero coeff for odd w^1,w^3,...
+% Fill zero coeff for odd polynomials: omega^1,omega^3,...
 Abar_coeff_all_trunc=[Abar_coeff_even_trunc .* SignChange(1:N) ; zeros(size(Abar_coeff_even_trunc))];
 Abar_coeff_all_trunc=Abar_coeff_all_trunc(1:end-1);
 
