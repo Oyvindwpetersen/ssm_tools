@@ -31,7 +31,7 @@ end
 
 nm=length(omega);
 
-%%
+%% If mulitple outputs are considered, run in recursive loop
 
 if length(idx_o)>1
     for n=1:length(idx_o)
