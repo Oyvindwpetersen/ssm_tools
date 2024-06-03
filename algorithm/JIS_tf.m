@@ -34,6 +34,7 @@ addParameter(p,'showtext',true,@islogical)
 addParameter(p,'dispconv',true,@islogical)
 addParameter(p,'trunc',false,@islogical)
 addParameter(p,'convtol',1e-6,@isnumeric)
+addParameter(p,'fast',false,@islogical)
 
 parse(p,varargin{:});
 
@@ -41,6 +42,7 @@ showtext=p.Results.showtext;
 dispconv=p.Results.dispconv;
 trunc=p.Results.trunc;
 convtol=p.Results.convtol;
+fast=p.Results.fast;
 
 %% Parameters
 
@@ -60,19 +62,53 @@ P0=[];
 
 M2=[M_ss ; K_ss ; Kbar_ss ];
 
+M4=zeros(np+ns+ns,ny,length(omega_axis));
+
 for k=1:length(omega_axis)
 
     z=exp(1i.*omega_axis(k)*dt);
 
-    M1=[ eye(np) zeros(np,ns) M_ss*G ;
-        K_ss*J eye(ns) (K_ss*G-eye(ns)) ;
-        zeros(ns,np) zeros(ns,ns) z*eye(ns)-A+Kbar_ss*G ];
+    if ~fast
+    
+        % Conventional method (inverse)
 
-    M3=M1\M2;
+        M1=[ eye(np) zeros(np,ns) M_ss*G ;
+            K_ss*J eye(ns) (K_ss*G-eye(ns)) ;
+            zeros(ns,np) zeros(ns,ns) z*eye(ns)-A+Kbar_ss*G ];
+    
+        M3=M1\M2;
+    
+        M4(:,:,k)=M3; %M4 is [Hpy;Hx0y;Hx1y]
 
-    M4(:,:,k)=M3; %M4 is [Hpy;Hx0y;Hx1y]
+    elseif fast
+    
+        % Fast inverse of matrix
+        
+        % Calculate first time only (frequency independent)
+        if k==1
+            term_1=-K_ss*J*M_ss+K_ss;
+            term_2=(K_ss*J*M_ss*G-(K_ss*G-eye(ns)));
+        end
+        
+        N=z*eye(ns)-A+Kbar_ss*G;
+        term_3=N\Kbar_ss;
 
+        M4(:,:,k)=[...
+            M_ss-M_ss*G*term_3 ; ...
+            term_1+term_2*term_3 ; ...
+            term_3
+            ];
+
+           % M4(:,:,k)=[...
+           %  M_ss-M_ss*G*N_inv*Kbar_ss ; ...
+           %  -K_ss*J*M_ss+K_ss+(K_ss*J*M_ss*G-(K_ss*G-eye(ns)))*N_inv*Kbar_ss ; ...
+           %  N_inv*Kbar_ss
+           %  ];
+
+    end
+            
 end
+
 
 H_py_jis=M4(1:np,:,:);
 H_x0y_jis=M4(np+[1:ns],:,:);
