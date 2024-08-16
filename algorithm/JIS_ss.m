@@ -1,4 +1,5 @@
-function [x_filt p_filt Px_k_k_ss Pp_k_k_ss M_ss K_ss Kbar_ss]=JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,varargin)
+function [x_filt,p_filt,Px_k_k_ss,Pp_k_k_ss,M_ss,K_ss,Kbar_ss,x_pred,Px_k_kmin_ss,Pxp_k_kmin_ss]=...
+         JIS_ss(A,B,G,J,y,x0,Q,R,S,P01,varargin)
 %% Joint input and state estimation for linear systems
 %
 % Updated with correct handling of mixed covariance S
@@ -91,7 +92,7 @@ end
 % Initial covariance from KF 
 if isempty(P01) | P01==0
     
-    q=1e6*eye(np);
+    q=1e8*eye(np);
     Q_tmp=Q+B*q*B.';
     R_tmp=R+J*q*J.';
     S_tmp=S+B*q*J.';
@@ -220,11 +221,17 @@ while convreached==false
         Px_k_k_ss=P_k_k;
         Pp_k_k_ss=Pp_k_k;
         Px_k_kmin_ss=P_k_kmin;
+
+        Pxp_k_k_ss=Pxpkk;
+
+        % Covariance between x_pred and p_filt
+        Pxp_k_kmin_ss=(eye(ns)-K_ss*(eye(ny)-J*M_ss)*G)\(Pxp_k_k_ss-K_ss*(eye(ny)-J*M_ss)*R*M_ss.');
+
     elseif k>=maxsteps
         figure(); hold on; grid on;
         plot(ratio_trace_Px);
         plot(ratio_trace_Pp);
-        set(gca,'YScale','log'); title('Ratio Px');
+        set(gca,'yscale','log'); title('Ratio P');
         error(['Divergence reached, k=' num2str(k)]);
     end
     
@@ -265,4 +272,5 @@ if scale==true
     K_ss=[];
     Kbar_ss=[];
     Sbar_ss=[];
+
 end
