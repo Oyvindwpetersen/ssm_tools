@@ -42,6 +42,10 @@ if sigma_p<=0
 	error('sigma_p must be greater than zero');
 end
 
+if nargin<4
+    omega_axis=[];
+end
+
 %%
 
 % Taylor expansion of exp(-0.5*L^2*w^2): 1/(w^0*L^0*A0+w^2*L^2*A2+w^4*L^4*A4+...until...w^10*L^10*A10)
