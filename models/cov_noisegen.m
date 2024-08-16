@@ -19,20 +19,18 @@ function [w,v]=cov_noisegen(Q,R,S,t)
 %% Generate noise
 nt=length(t);
 
-if ~any(any(Q)) & ~any(any(S))
-	[w]=zeros(size(Q,1),nt);
-    [v]=mvnrnd(zeros(size(R,1),1),R,nt).';
-    return
-end
-
-
-if isempty(Q) & isempty(S)
-    [w]=mvnrnd(zeros(size(Q,1),1),Q,nt).';
-    return
-end
-
 nq=size(Q,1);
 nr=size(R,1);
+
+if isempty(Q)
+    Q=zeros(1,1);
+    nq=size(Q,1);
+end
+
+if isempty(R)
+    R=zeros(1,1);
+    nr=size(R,1);
+end
 
 if isempty(S)
     S=zeros(nq,nr);
@@ -44,8 +42,22 @@ Ctot=(Ctot+Ctot.')/2;
 
 [v,d]=eig(Ctot);
 dd=diag(d);
+
 if any(dd<0)
-    disp(dd);
+
+    idx_neg=find(dd<0);
+    
+    if all( abs(dd(idx_neg))<eps )
+
+        dd(idx_neg)=dd(idx_neg)+eps;
+
+        d_new=diag(dd);
+
+        Ctot=v*d_new*v.';
+        
+    else
+        disp(dd);
+    end
 end
 
 [wv]=mvnrnd(zeros(size(Ctot,1),1),Ctot,nt).';
