@@ -77,16 +77,17 @@ if isempty(x0) | x0==0
 end
 
 if isempty(P0)
-
+    
     [~,~,P0,~] = JIS_ss(A,B,G,J,zeros(ny,10),x0,Q,R,S,[],'showtext',false,'dispconv',false);
     
     L_cyc=[ceil(L*[0.5])];
     %L_cyc=unique(L_cyc);
     
     for j=1:length(L_cyc)
-        [~,~,P_x_ss,~,~,~]=JIS_smooth(A,B,G,J,y(:,1:min(100,nt)),Q,R,S,x0,P0,L_cyc(j),'showtext',false,'convtol',1e-4);
+        [~,~,P_x_ss,~,~,~]=JIS_smooth(A,B,G,J,y(:,1:min(100,nt)),Q,R,S,x0,P0,L_cyc(j),'showtext',false,'dispconv',false,'convtol',1e-5);
         P0=P_x_ss;
     end
+    
 
 end
 
