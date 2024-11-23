@@ -1,7 +1,7 @@
 function [Fc,Lc,Hc,Qc,sigma_w]=ssmod_periodicdecay(omega0,lambda,sigma_p,kernel,ns)
 
 %%
-% 
+ 
 % Decaying kernel
 if strcmpi(kernel,'se')
     [Fq,Lq,Hq,sigma_w]=ssmod_squaredexp(1/lambda,sigma_p,ns,[]);
@@ -18,7 +18,6 @@ Lp=eye(2);
 Hp=[1 0];
 
 % Matrices by kronecker product
-
 Fc=kron(Fq,eye(2))+kron(eye(size(Fq)),Fp);
 Lc=kron(Lq,Lp);
 Hc=kron(Hq,Hp);
