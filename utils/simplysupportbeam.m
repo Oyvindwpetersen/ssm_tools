@@ -68,6 +68,8 @@ if strcmpi(bc,'support')
     
     K_red=K(ind_keep,ind_keep);
     M_red=M(ind_keep,ind_keep);
+
+    doflabel_red=doflabel(ind_keep);
     
 elseif strcmpi(bc,'spring')
     
