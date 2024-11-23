@@ -3,6 +3,22 @@ function plotcovmatrix(C,XTickLabel,YTickLabel,xlab,ylab)
 
 %%
 
+if nargin<2
+    XTickLabel=[];
+end
+
+if nargin<3
+    YTickLabel=[];
+end
+
+if nargin<4
+    xlab='';
+end
+
+if nargin<5
+    ylab='';
+end
+
 [n1,n2]=size(C);
 
 if isempty(YTickLabel)
