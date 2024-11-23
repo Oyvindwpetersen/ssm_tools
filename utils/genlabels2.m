@@ -1,4 +1,4 @@
-function [label_cell] = genlabels(dofs,number,varargin)
+function [label_cell] = genlabels2(dofs,number,varargin)
 %% Produce cell of labels of degrees of freedom
 %
 % Inputs: 
@@ -14,18 +14,18 @@ function [label_cell] = genlabels(dofs,number,varargin)
 %
 %% Input handling
 
-p=inputParser;
-p.KeepUnmatched=true;
+% p=inputParser;
+% p.KeepUnmatched=true;
+% 
+% addParameter(p,'postfix','',@ischar)
+% addParameter(p,'prefix','',@ischar)
+% parse(p,varargin{:})
+% 
+% postfix=p.Results.postfix;
+% prefix=p.Results.prefix;
 
-addParameter(p,'postfix','',@ischar)
-addParameter(p,'prefix','',@ischar)
-parse(p,varargin{:})
-
-postfix=p.Results.postfix;
-prefix=p.Results.prefix;
-
-% postfix='';
-% prefix='';
+postfix='';
+prefix='';
 
 %%
 
@@ -61,13 +61,18 @@ n1=length(number);
 n2=length(dofs);
 
 label_cell=cell(n1*n2,1);
-i=0;
+idx=[1:length(dofs)];
 for k=1:n1
     num=sprintf(['%d'],number(k)); % from int2str
 
-    for j=1:n2
-        i=i+1;
-        label_cell{i}=[prefix num '_' dofs{j} postfix ];
-    end
+    fullLabels = cellfun(@(x)[[num '_'], x], dofs, 'UniformOutput', false);
+
+    label_cell(idx)=fullLabels;
+
+    idx=idx+length(dofs);
+    % for j=1:n2
+    %     i=i+1;
+    %     label_cell{i}=[prefix num '_' dofs{j} postfix ];
+    % end
 end
 
