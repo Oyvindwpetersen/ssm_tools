@@ -49,7 +49,7 @@ end
 
 N=size(y,2);
 
-negLL_1=N*log(det(Omega));
+negLL_1=N*logdet(Omega);
 
 negLL_1h=negLL_1/N;
 
