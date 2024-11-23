@@ -55,7 +55,7 @@ if isinf(abs(det_S))
     
 end
     
-negLL_1=N*log(det_S);
+negLL_1=N*logdet(Omega);
 
 negLL_1h=negLL_1/N;
 
