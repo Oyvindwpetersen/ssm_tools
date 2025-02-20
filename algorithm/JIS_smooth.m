@@ -16,7 +16,7 @@ function [x_smooth p_smooth P_x_ss P_p_ss P_xp_ss P_px_ss]=JIS_smooth(A,B,G,J,y,
 % Q: state noise covariance
 % S: mixed noise covariance
 % x0: initial state estimate
-% P0: initial state error covariance
+% P0: initial state error covariance (set to empty for auto)
 % L: number of lags
 %
 % Outputs:
@@ -79,15 +79,18 @@ end
 if isempty(P0)
     
     [~,~,P0,~] = JIS_ss(A,B,G,J,zeros(ny,10),x0,Q,R,S,[],'showtext',false,'dispconv',false);
-    
+
     L_cyc=[ceil(L*[0.5])];
     %L_cyc=unique(L_cyc);
-    
+
     for j=1:length(L_cyc)
         [~,~,P_x_ss,~,~,~]=JIS_smooth(A,B,G,J,y(:,1:min(100,nt)),Q,R,S,x0,P0,L_cyc(j),'showtext',false,'dispconv',false,'convtol',1e-5);
         P0=P_x_ss;
     end
-    
+
+    % Cp=eye(np)*1e12;
+    % [~,~,~,P_k_k,P_k_kmin,P_k_N]=KF_RTSS(A,[],G,[],Q+B*Cp*B.',R+J*Cp*J.',S+B*Cp*J.',y(:,1:min(100,nt)),[]);
+    % P0_rts=P_k_N;
 
 end
 
