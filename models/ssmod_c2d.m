@@ -19,7 +19,7 @@ function [A B C D F]=ssmod_c2d(Ac,Bc,Cc,Dc,dt,varargin)
 %% Input
 
 p=inputParser;
-addParameter(p,'fast',true,@islogical)
+addParameter(p,'fast',false,@islogical)
 parse(p,varargin{:});
 fast = p.Results.fast;
 
