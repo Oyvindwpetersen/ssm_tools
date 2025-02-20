@@ -1,6 +1,6 @@
 function [w,v]=cov_noisegen(Q,R,S,t)
 
-%% Convert covariance from cont to disc 
+%% Simulate noise processes from covariance matrix
 %
 % Model:
 % w(k);
