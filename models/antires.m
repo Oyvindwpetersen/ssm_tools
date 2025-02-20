@@ -12,8 +12,8 @@ function [omega_a,xi_a,omega_a0,xi_a0,k0,k1,K]=antires(omega,xi,phi,idx_o,idx_p)
 % Outputs:
 % omega_a: anti resonance frequencies
 % xi_a: anti resonance damping ratios
-% omega_a0: anti resonance frequencies (non-conjuage pairs)
-% xi_a0: anti resonance damping ratios (non-conjuage pairs)
+% omega_a0: anti resonance frequencies (non-conjugate pairs)
+% xi_a0: anti resonance damping ratios (non-conjugate pairs)
 % k0: factorized coefficients
 % k1: factorized coefficients
 % K: normalization constant
@@ -31,7 +31,7 @@ end
 
 nm=length(omega);
 
-%% If mulitple outputs are considered, run in recursive loop
+%% If multiple outputs are considered, run in recursive loop
 
 if length(idx_o)>1
     for n=1:length(idx_o)
@@ -92,7 +92,6 @@ end
 idx_coeff_nonzero=setdiff(1:length(coeff_sum),idx_coeff_zero);
 coeff_sum=coeff_sum(idx_coeff_nonzero);
 
-
 % Normalize such that coefficient of highest term is unity
 K=coeff_sum(1);
 coeff_sum=coeff_sum/K;
@@ -102,37 +101,56 @@ lambda_z=roots(coeff_sum);
 anti_omega=abs(lambda_z);
 anti_xi=-real(lambda_z)./anti_omega;
 
+%%
+
+% idx_rem=abs(abs(anti_xi)-1)<1e-3;
+idx_rem=abs(anti_xi)>0.5;
+
+lambda_z_red=lambda_z(~idx_rem);
+
 % Most roots will be complex pairs
-r=roots(coeff_sum);
-[~,idx_r]=uniquetol(abs(r),1e-6);
-r_uni=r(idx_r);
+% [~,idx_r]=uniquetol(abs(lambda_z),1e-6);
+% r_uni=r(idx_r);
+
+lambda_z_red=flip(cplxpair(lambda_z_red,1e-12));
+idx_pair=[1:2:length(lambda_z_red)];
+
+omega_a0=abs(lambda_z(idx_rem));
+xi_a0=-real(lambda_z(idx_rem))./omega_a0;
+
+
+omega_a=abs(lambda_z_red(idx_pair));
+xi_a=-real(lambda_z_red(idx_pair))./omega_a;
+
+[~,i_sort]=sort(omega_a);
+
+omega_a=omega_a(i_sort);
+xi_a=xi_a(i_sort);
+
 
 % Find those that correspond to non-conjugate pairs
-xi_tmp=anti_xi(idx_r);
-bool_nonconj=abs(xi_tmp-1)<1e-6;
+% xi_tmp=anti_xi(idx_r);
+% bool_nonconj=abs(xi_tmp-1)<1e-6;
 
-omega_a=anti_omega(idx_r(~bool_nonconj));
-omega_a0=anti_omega(idx_r(bool_nonconj));
 
-xi_a=anti_xi(idx_r(~bool_nonconj));
-xi_a0=anti_xi(idx_r(bool_nonconj));
+%%
 
 % If polynomial is not altered, calculate k0 and k1
-if isempty(idx_coeff_zero)
-
-    for k=1:length(r_uni)
-
-        % Construct polynomial from (s-r)(s-r*)
-        p=poly([r_uni(k),conj(r_uni(k))]);
-
-        k1(k)=p(end-1);
-        k0(k)=p(end);
-    end
-
-else
+% if isempty(idx_coeff_zero)
+% 
+%     for k=1:length(r_uni)
+% 
+%         % Construct polynomial from (s-r)(s-r*)
+%         p=poly([r_uni(k),conj(r_uni(k))]);
+% 
+%         k1(k)=p(end-1);
+%         k0(k)=p(end);
+%     end
+% 
+% else
     k1=[];
     k0=[];
-end
+% end
 
 % anti_omega=sqrt(k0);
 % anti_xi=k1./(2*sqrt(k0));
