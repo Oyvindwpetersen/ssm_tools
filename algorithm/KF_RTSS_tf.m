@@ -1,4 +1,9 @@
 function [H_x0y_kf H_x1y_kf H_x0p_kf H_x1p_kf]=KF_RTS_tf(A,B,G,J,Q,R,S,dt,omega_axis)
+
+
+
+% Not updated?
+
 %% Transfer function for steady state operation of Kalman filter
 %
 % Model:
