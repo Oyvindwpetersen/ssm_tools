@@ -89,16 +89,42 @@ if isempty(x0) | x0==0
     x0=zeros(ns,1);
 end
 
-% Initial covariance from KF 
+% Initial covariance from KF
+
 if isempty(P01) | P01==0
+
+    P_found=false;
     
-    q=1e8*eye(np);
-    Q_tmp=Q+B*q*B.';
-    R_tmp=R+J*q*J.';
-    S_tmp=S+B*q*J.';
+    do_smaller=false;
+    mag=[1e10 1e9 1e8 1e7 1e6 1e5 1e4 1e3 1e2];
+    for k=1:length(mag)
+
+        q=mag(k)*eye(np);
+        Q_tmp=Q+B*q*B.';
+        R_tmp=R+J*q*J.';
+        S_tmp=S+B*q*J.';
     
-    [~,~,~,P01]=KF(A,[],G,[],Q_tmp,R_tmp,S_tmp,zeros(ny,10),[],[],[],'noscaling',false,'showtext',false);
+        try
+            [~,~,~,P01]=KF(A,[],G,[],Q_tmp,R_tmp,S_tmp,zeros(ny,10),[],[],[],'noscaling',false,'showtext',false);
+            P_found=true;
+        catch
+            P_found=false;
+        end
+
+        if P_found==true
+            continue
+        end
+
+    end
+
+    if P_found==false
+        [~,~,~,P01]=KF(A,[],G,[],Q,R,S,zeros(ny,10),[],[],[],'noscaling',false,'showtext',false);
+    end
 end
+
+
+
+
 
 % Assign initial values
 x_pred(:,1)=[x0];
