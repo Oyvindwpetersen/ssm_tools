@@ -1,4 +1,4 @@
-function sd_emp=sdstatemp(x_ref,x_test,n_cut)
+function sd_emp=sdstatemp(x_ref,x_test,n_cut,normalize)
 
 %% Calculate statistics (SD) of time series estimate(s) vs. reference
 %
@@ -15,6 +15,11 @@ function sd_emp=sdstatemp(x_ref,x_test,n_cut)
 % Ensure cell
 if ~iscell(x_test)
     x_test={x_test};
+end
+
+% Default no normalization
+if nargin<4
+    normalize=false;
 end
 
 % Default no trimming of 
@@ -38,6 +43,10 @@ sd_emp={};
 for k=1:length(x_test)
 
     sd_emp{k}=[std(x_ref(:,t_range)-x_test{k}(:,t_range),0,2) ];
+
+    if normalize
+        sd_emp{k}=sd_emp{k}./std(x_ref(:,t_range),0,2);
+    end
 
 end
 
