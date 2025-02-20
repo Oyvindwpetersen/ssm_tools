@@ -32,6 +32,7 @@ addParameter(p,'split',{},@iscell)
 addParameter(p,'space',2,@isnumeric)
 addParameter(p,'spread',true,@islogical)
 addParameter(p,'normalize',false,@islogical)
+addParameter(p,'interpreter','latex',@ischar)
 
 parse(p,varargin{ind_data+1:end});
 
@@ -50,6 +51,7 @@ split=p.Results.split;
 space=p.Results.space;
 spread=p.Results.spread;
 normalize=p.Results.normalize;
+interpreter=p.Results.interpreter;
 
 %%
 
@@ -140,8 +142,10 @@ for j=1:n_sub
     axistight(gca,[ 0.1],'ylog');
     xlim([ min(x_plot_k{1})-1 max(x_plot_k{end})+1]);
 
-    set(gca,'XTick',x_plot_k{1}*0.5+x_plot_k{end}*0.5,'XTickLabel',xticklabel(idx_plot));
+    set(ha(j),'XTick',x_plot_k{1}*0.5+x_plot_k{end}*0.5,'XTickLabel',xticklabel(idx_plot));
 
+    xaxisproperties= get(gca, 'XAxis');
+    xaxisproperties.TickLabelInterpreter = 'latex';
 end
 
 % tilefigs
