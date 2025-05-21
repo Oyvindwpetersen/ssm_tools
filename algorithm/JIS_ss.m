@@ -96,7 +96,7 @@ if isempty(P01) | P01==0
     P_found=false;
     
     do_smaller=false;
-    mag=[1e10 1e9 1e8 1e7 1e6 1e5 1e4 1e3 1e2];
+    mag=[1e9 1e8 1e7 1e6 1e5 1e4 1e3 1e2];
     for k=1:length(mag)
 
         q=mag(k)*eye(np);
@@ -121,9 +121,6 @@ if isempty(P01) | P01==0
         [~,~,~,P01]=KF(A,[],G,[],Q,R,S,zeros(ny,10),[],[],[],'noscaling',false,'showtext',false);
     end
 end
-
-
-
 
 
 % Assign initial values
