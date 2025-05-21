@@ -80,6 +80,64 @@ plotpsd(omega_axis,S_par_1_onesided,omega_axis,S_par_2_onesided,w_welch,S_welch,
 tilefigs
 
 
+%%
+
+
+% omega_axis=linspace(0,20,1e4);
+
+H=ssmod_tf(Fc,Lc,Hc,[],omega_axis);
+
+S_w=sigma_w.^2/(2*pi)*ones(1,1,length(omega_axis));
+
+S_par_3=mtimes3(H,S_w,H,'nnh');
+
+S_par_3_onesided=S_par_3*2;
+
+close all
+
+plotpsd(omega_axis,S_par_3_onesided,w_welch,S_welch,...
+    'xlabel','Frequency [rad/s]','ylabel','PSD',...
+    'displayname',{'Test' 'Welch'},...
+    'LineStyle',{'-' '--' '-'},...
+    'log',false,'xlim',[0 5]);
+
+
+return
+%%
+
+
+
+close all
+
+
+% factor=1/dt^2;
+
+% Exact covariances
+Qc2=sigma_w^2
+Qd2=Qc2/dt;
+[Fd2,Ld2,Hd2,~]=ssmod_c2d(Fc,Lc,Hc,[],dt);
+
+
+w2=mvnrnd(zeros(size(Fd,1),1),Qd2,length(t)).';
+
+[s2,y2]=ssmod_forward(Fd2,Ld2,Hd2,[],[],[0],w2);
+
+std_y2=std(y2)
+
+plottime(t,y2,'ylabel','Simulated process');
+xlim([0 1000])
+
+% Empirical spectrum
+[S_welch2,w_welch2]=estimateSpectrumWelch(y2,1/dt,'unit','rad','plot','no','Nwelch',100);
+
+
+plotpsd(w_welch,S_welch,w_welch2,S_welch2,...
+    'xlabel','Frequency [rad/s]','ylabel','PSD',...
+    'LineStyle',{'-' '--' '-'},...
+    'log',false,'xlim',[0 5]);
+
+
+tilefigs
 
 
 
