@@ -1,4 +1,4 @@
-%%
+%% Verify process noise covariance by numerical and analytical calculations
 
 clc
 clear all
